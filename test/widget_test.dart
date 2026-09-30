@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   testWidgets('app starts on the initial splash page', (tester) async {
     await tester.pumpWidget(const FashionApp());
+    await tester.pump();
 
     expect(find.byType(InitialSplashPage), findsOneWidget);
     expect(find.byType(BrandLogo), findsOneWidget);
@@ -18,6 +19,7 @@ void main() {
   testWidgets('initial splash navigates to brand reveal after the delay',
       (tester) async {
     await tester.pumpWidget(const FashionApp());
+    await tester.pump();
 
     await tester.pump(AppConstants.initialSplashDuration);
     await tester.pumpAndSettle();
