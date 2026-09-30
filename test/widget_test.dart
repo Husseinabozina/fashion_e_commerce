@@ -46,7 +46,15 @@ void main() {
   testWidgets('product card opens product details', (tester) async {
     await _reachHome(tester);
 
-    await tester.tap(find.text('9060').first);
+    await tester.drag(
+      find.byType(ListView).first,
+      const Offset(0, -520),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('9060'), findsOneWidget);
+
+    await tester.tap(find.text('9060'));
     await tester.pumpAndSettle();
 
     expect(find.byType(ProductDetailsPage), findsOneWidget);
