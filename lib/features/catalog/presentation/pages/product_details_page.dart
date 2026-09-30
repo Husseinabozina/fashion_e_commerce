@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
 import 'package:flutter/material.dart';
@@ -258,7 +259,11 @@ class _DetailsTopBar extends StatelessWidget {
         const Icon(Icons.share_outlined),
         const SizedBox(width: 18),
         const Icon(Icons.favorite_border_rounded),
-        const SizedBox(width: 10),
+        const SizedBox(width: 14),
+        IconButton(
+          onPressed: () => Navigator.of(context).pushNamed(Routes.cart),
+          icon: const Icon(Icons.shopping_bag_outlined),
+        ),
       ],
     );
   }
@@ -412,13 +417,25 @@ class _AddToBagBar extends StatelessWidget {
           height: 52,
           child: FilledButton(
             onPressed: canAdd
-                ? () {
+                ? () async {
+                    final added = await context
+                        .read<ProductDetailsCubit>()
+                        .addSelectedToCart();
+                    if (!context.mounted || !added) return;
+
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         backgroundColor: AppColors.nearBlack,
                         content: Text(
                           'Added ${state.product.name} · Size ${state.selectedSize}',
                           style: const TextStyle(color: AppColors.white),
+                        ),
+                        action: SnackBarAction(
+                          label: 'VIEW BAG',
+                          textColor: AppColors.acidLime,
+                          onPressed: () {
+                            Navigator.of(context).pushNamed(Routes.cart);
+                          },
                         ),
                       ),
                     );

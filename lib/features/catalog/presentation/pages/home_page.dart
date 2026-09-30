@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/home_catalog.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/widgets/product_card.dart';
@@ -90,11 +91,9 @@ class _TopBar extends StatelessWidget {
         const SizedBox(width: 16),
         const Icon(Icons.favorite_border_rounded),
         const SizedBox(width: 16),
-        Badge(
-          backgroundColor: AppColors.acidLime,
-          textColor: AppColors.nearBlack,
-          label: const Text('2'),
-          child: const Icon(Icons.shopping_bag_outlined),
+        IconButton(
+          onPressed: () => Navigator.of(context).pushNamed(Routes.cart),
+          icon: const Icon(Icons.shopping_bag_outlined),
         ),
       ],
     );
