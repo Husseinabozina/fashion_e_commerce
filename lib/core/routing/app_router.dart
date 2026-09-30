@@ -10,6 +10,10 @@ import 'package:fashion_e_commerce/features/catalog/presentation/cubit/search_cu
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/home_page.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/product_details_page.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/search_page.dart';
+import 'package:fashion_e_commerce/features/orders/presentation/cubit/order_details_cubit.dart';
+import 'package:fashion_e_commerce/features/orders/presentation/cubit/orders_cubit.dart';
+import 'package:fashion_e_commerce/features/orders/presentation/pages/order_details_page.dart';
+import 'package:fashion_e_commerce/features/orders/presentation/pages/orders_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/pages/brand_reveal_splash_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/pages/initial_splash_page.dart';
 import 'package:fashion_e_commerce/features/wishlist/presentation/pages/wishlist_page.dart';
@@ -52,8 +56,34 @@ abstract final class AppRouter {
           settings,
         ),
       Routes.wishlist => _page(const WishlistPage(), settings),
+      Routes.orders => _page(
+          BlocProvider<OrdersCubit>(
+            create: (_) => serviceLocator<OrdersCubit>()..load(),
+            child: const OrdersPage(),
+          ),
+          settings,
+        ),
+      Routes.orderDetails => _orderDetailsRoute(settings),
       _ => _unknownRoute(settings),
     };
+  }
+
+  static MaterialPageRoute<dynamic> _orderDetailsRoute(
+    RouteSettings settings,
+  ) {
+    final orderId = settings.arguments;
+
+    if (orderId is! String || orderId.isEmpty) {
+      return _unknownRoute(settings);
+    }
+
+    return _page(
+      BlocProvider<OrderDetailsCubit>(
+        create: (_) => serviceLocator<OrderDetailsCubit>()..load(orderId),
+        child: const OrderDetailsPage(),
+      ),
+      settings,
+    );
   }
 
   static MaterialPageRoute<dynamic> _productDetailsRoute(

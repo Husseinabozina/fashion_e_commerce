@@ -25,6 +25,15 @@ import 'package:fashion_e_commerce/features/catalog/domain/usecases/search_produ
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/search_cubit.dart';
+import 'package:fashion_e_commerce/features/orders/data/datasources/in_memory_orders_data_source.dart';
+import 'package:fashion_e_commerce/features/orders/data/datasources/orders_data_source.dart';
+import 'package:fashion_e_commerce/features/orders/data/repositories/orders_repository_impl.dart';
+import 'package:fashion_e_commerce/features/orders/domain/repositories/orders_repository.dart';
+import 'package:fashion_e_commerce/features/orders/domain/usecases/get_order_details.dart';
+import 'package:fashion_e_commerce/features/orders/domain/usecases/get_orders.dart';
+import 'package:fashion_e_commerce/features/orders/domain/usecases/request_return.dart';
+import 'package:fashion_e_commerce/features/orders/presentation/cubit/order_details_cubit.dart';
+import 'package:fashion_e_commerce/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:fashion_e_commerce/features/wishlist/data/datasources/in_memory_wishlist_data_source.dart';
 import 'package:fashion_e_commerce/features/wishlist/data/datasources/wishlist_data_source.dart';
 import 'package:fashion_e_commerce/features/wishlist/data/repositories/wishlist_repository_impl.dart';
@@ -88,6 +97,21 @@ void configureDependencies() {
     ..registerLazySingleton<ToggleWishlist>(
       () => ToggleWishlist(serviceLocator<WishlistRepository>()),
     )
+    ..registerLazySingleton<OrdersDataSource>(
+      InMemoryOrdersDataSource.new,
+    )
+    ..registerLazySingleton<OrdersRepository>(
+      () => OrdersRepositoryImpl(serviceLocator<OrdersDataSource>()),
+    )
+    ..registerLazySingleton<GetOrders>(
+      () => GetOrders(serviceLocator<OrdersRepository>()),
+    )
+    ..registerLazySingleton<GetOrderDetails>(
+      () => GetOrderDetails(serviceLocator<OrdersRepository>()),
+    )
+    ..registerLazySingleton<RequestReturn>(
+      () => RequestReturn(serviceLocator<OrdersRepository>()),
+    )
     ..registerLazySingleton<CheckoutDataSource>(
       DemoCheckoutDataSource.new,
     )
@@ -98,7 +122,10 @@ void configureDependencies() {
       () => GetCheckoutOptions(serviceLocator<CheckoutRepository>()),
     )
     ..registerLazySingleton<PlaceOrder>(
-      () => PlaceOrder(serviceLocator<CheckoutRepository>()),
+      () => PlaceOrder(
+        serviceLocator<CheckoutRepository>(),
+        serviceLocator<OrdersRepository>(),
+      ),
     )
     ..registerFactory<HomeCubit>(
       () => HomeCubit(serviceLocator<GetHomeCatalog>()),
@@ -131,6 +158,15 @@ void configureDependencies() {
         serviceLocator<GetCheckoutOptions>(),
         serviceLocator<PlaceOrder>(),
         serviceLocator<ClearCart>(),
+      ),
+    )
+    ..registerFactory<OrdersCubit>(
+      () => OrdersCubit(serviceLocator<GetOrders>()),
+    )
+    ..registerFactory<OrderDetailsCubit>(
+      () => OrderDetailsCubit(
+        serviceLocator<GetOrderDetails>(),
+        serviceLocator<RequestReturn>(),
       ),
     );
 }

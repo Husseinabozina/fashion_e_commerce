@@ -7,4 +7,6 @@ abstract final class Routes {
   static const String checkout = '/checkout';
   static const String search = '/search';
   static const String wishlist = '/wishlist';
+  static const String orders = '/orders';
+  static const String orderDetails = '/order-details';
 }

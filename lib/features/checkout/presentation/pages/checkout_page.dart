@@ -636,13 +636,27 @@ class _OrderSuccessPage extends StatelessWidget {
               ),
               const Spacer(),
               _PrimaryCheckoutButton(
-                label: 'BACK TO HOME  →',
+                label: 'VIEW ORDER  →',
+                onPressed: () {
+                  Navigator.of(context).pushNamed(
+                    Routes.orderDetails,
+                    arguments: receipt.orderId,
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+              OutlinedButton(
                 onPressed: () {
                   Navigator.of(context).pushNamedAndRemoveUntil(
                     Routes.home,
                     (route) => false,
                   );
                 },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.white,
+                  side: const BorderSide(color: AppColors.white),
+                ),
+                child: const Text('BACK TO HOME'),
               ),
             ],
           ),
