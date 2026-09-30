@@ -39,7 +39,7 @@ void main() {
 
     expect(find.byType(HomePage), findsOneWidget);
     expect(find.text('NOVA_'), findsOneWidget);
-    expect(find.text('NEW ARRIVALS'), findsOneWidget);
+    expect(find.text('DROP\n026'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
