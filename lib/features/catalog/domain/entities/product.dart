@@ -12,6 +12,7 @@ class Product {
     required this.description,
     this.previousPrice,
     this.isNew = false,
+    this.outOfStockSizes = const <String>[],
   });
 
   final String id;
@@ -26,4 +27,7 @@ class Product {
   final String fit;
   final String description;
   final bool isNew;
+  final List<String> outOfStockSizes;
+
+  bool isSizeAvailable(String size) => !outOfStockSizes.contains(size);
 }

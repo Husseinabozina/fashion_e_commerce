@@ -16,6 +16,8 @@ import 'package:fashion_e_commerce/features/catalog/presentation/pages/home_page
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/product_details_page.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/search_page.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/shop_page.dart';
+import 'package:fashion_e_commerce/features/notifications/presentation/cubit/notifications_cubit.dart';
+import 'package:fashion_e_commerce/features/notifications/presentation/pages/notifications_page.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/cubit/order_details_cubit.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/pages/order_details_page.dart';
@@ -70,6 +72,13 @@ abstract final class AppRouter {
           settings,
         ),
       Routes.wishlist => _page(const WishlistPage(), settings),
+      Routes.notifications => _page(
+          BlocProvider<NotificationsCubit>(
+            create: (_) => serviceLocator<NotificationsCubit>()..load(),
+            child: const NotificationsPage(),
+          ),
+          settings,
+        ),
       Routes.orders => _page(
           BlocProvider<OrdersCubit>(
             create: (_) => serviceLocator<OrdersCubit>()..load(),

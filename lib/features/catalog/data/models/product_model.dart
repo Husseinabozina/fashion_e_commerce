@@ -14,6 +14,7 @@ class ProductModel extends Product {
     required super.description,
     super.previousPrice,
     super.isNew,
+    super.outOfStockSizes,
   });
 
   factory ProductModel.fromMap(String id, Map<String, dynamic> map) {
@@ -30,6 +31,9 @@ class ProductModel extends Product {
       fit: map['fit'] as String? ?? '',
       description: map['description'] as String? ?? '',
       isNew: map['isNew'] as bool? ?? false,
+      outOfStockSizes: List<String>.from(
+        map['outOfStockSizes'] as List? ?? const <String>[],
+      ),
     );
   }
 }

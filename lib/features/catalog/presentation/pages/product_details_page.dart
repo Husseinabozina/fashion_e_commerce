@@ -170,7 +170,52 @@ class _ProductDetailsContent extends StatelessWidget {
                 spacing: 8,
                 runSpacing: 8,
                 children: product.sizes.map((size) {
+                  final available = product.isSizeAvailable(size);
                   final selected = state.selectedSize == size;
+                  final subscribed = state.subscribedSizes.contains(size);
+
+                  if (!available) {
+                    return ActionChip(
+                      avatar: Icon(
+                        subscribed
+                            ? Icons.notifications_active_rounded
+                            : Icons.notifications_none_rounded,
+                        size: 17,
+                      ),
+                      label: Text(
+                        subscribed
+                            ? size + ' · ' +
+                                (AppStrings.of(context).isArabic
+                                    ? 'تم التنبيه'
+                                    : 'NOTIFY ON')
+                            : size + ' · ' +
+                                (AppStrings.of(context).isArabic
+                                    ? 'نبّهني'
+                                    : 'NOTIFY ME'),
+                      ),
+                      onPressed: subscribed
+                          ? null
+                          : () async {
+                              final added = await context
+                                  .read<ProductDetailsCubit>()
+                                  .subscribeForSize(size);
+                              if (!context.mounted || !added) return;
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    AppStrings.of(context).isArabic
+                                        ? 'سننبهك عندما يتوفر المقاس ' + size
+                                        : 'We’ll notify you when size ' +
+                                            size +
+                                            ' is back.',
+                                  ),
+                                ),
+                              );
+                            },
+                    );
+                  }
+
                   return ChoiceChip(
                     label: Text(size),
                     selected: selected,

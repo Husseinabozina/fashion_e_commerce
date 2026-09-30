@@ -27,6 +27,7 @@ class DemoCatalogDataSource implements CatalogDataSource {
             'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=900&q=80',
         colors: <String>['Black', 'Grey', 'Sand'],
         sizes: <String>['40', '41', '42', '43', '44'],
+        outOfStockSizes: <String>['44'],
         fit: 'Regular fit',
         description:
             'A layered street runner with an oversized sole and everyday cushioning.',

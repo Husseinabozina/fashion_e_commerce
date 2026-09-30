@@ -107,10 +107,16 @@ class _TopBar extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         IconButton(
+          onPressed: () =>
+              Navigator.of(context).pushNamed(Routes.notifications),
+          icon: const Icon(Icons.notifications_none_rounded),
+        ),
+        const SizedBox(width: 4),
+        IconButton(
           onPressed: () => Navigator.of(context).pushNamed(Routes.wishlist),
           icon: const Icon(Icons.favorite_border_rounded),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 4),
         IconButton(
           onPressed: () => Navigator.of(context).pushNamed(Routes.cart),
           icon: const Icon(Icons.shopping_bag_outlined),

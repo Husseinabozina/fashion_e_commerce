@@ -86,6 +86,8 @@ class AccountPage extends StatelessWidget {
                   _AccountTile(
                     icon: Icons.notifications_none_rounded,
                     label: strings.notifications,
+                    onTap: () => Navigator.of(context)
+                        .pushNamed(Routes.notifications),
                   ),
                   _AccountTile(
                     icon: Icons.language_rounded,

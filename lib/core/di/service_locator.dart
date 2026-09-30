@@ -35,6 +35,14 @@ import 'package:fashion_e_commerce/features/catalog/presentation/cubit/catalog_b
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/search_cubit.dart';
+import 'package:fashion_e_commerce/features/notifications/data/datasources/in_memory_notifications_data_source.dart';
+import 'package:fashion_e_commerce/features/notifications/data/datasources/notifications_data_source.dart';
+import 'package:fashion_e_commerce/features/notifications/data/repositories/notifications_repository_impl.dart';
+import 'package:fashion_e_commerce/features/notifications/domain/repositories/notifications_repository.dart';
+import 'package:fashion_e_commerce/features/notifications/domain/usecases/get_notifications.dart';
+import 'package:fashion_e_commerce/features/notifications/domain/usecases/mark_notifications_read.dart';
+import 'package:fashion_e_commerce/features/notifications/domain/usecases/subscribe_back_in_stock.dart';
+import 'package:fashion_e_commerce/features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'package:fashion_e_commerce/features/orders/data/datasources/in_memory_orders_data_source.dart';
 import 'package:fashion_e_commerce/features/orders/data/datasources/orders_data_source.dart';
 import 'package:fashion_e_commerce/features/orders/data/repositories/orders_repository_impl.dart';
@@ -122,6 +130,27 @@ void configureDependencies() {
     ..registerLazySingleton<ToggleWishlist>(
       () => ToggleWishlist(serviceLocator<WishlistRepository>()),
     )
+    ..registerLazySingleton<NotificationsDataSource>(
+      InMemoryNotificationsDataSource.new,
+    )
+    ..registerLazySingleton<NotificationsRepository>(
+      () => NotificationsRepositoryImpl(
+        serviceLocator<NotificationsDataSource>(),
+      ),
+    )
+    ..registerLazySingleton<GetNotifications>(
+      () => GetNotifications(serviceLocator<NotificationsRepository>()),
+    )
+    ..registerLazySingleton<MarkNotificationsRead>(
+      () => MarkNotificationsRead(
+        serviceLocator<NotificationsRepository>(),
+      ),
+    )
+    ..registerLazySingleton<SubscribeBackInStock>(
+      () => SubscribeBackInStock(
+        serviceLocator<NotificationsRepository>(),
+      ),
+    )
     ..registerLazySingleton<OrdersDataSource>(
       InMemoryOrdersDataSource.new,
     )
@@ -176,6 +205,7 @@ void configureDependencies() {
       () => ProductDetailsCubit(
         serviceLocator<GetProductDetails>(),
         serviceLocator<AddToCart>(),
+        serviceLocator<SubscribeBackInStock>(),
       ),
     )
     ..registerFactory<SearchCubit>(
@@ -194,6 +224,12 @@ void configureDependencies() {
         serviceLocator<GetCheckoutOptions>(),
         serviceLocator<PlaceOrder>(),
         serviceLocator<ClearCart>(),
+      ),
+    )
+    ..registerFactory<NotificationsCubit>(
+      () => NotificationsCubit(
+        serviceLocator<GetNotifications>(),
+        serviceLocator<MarkNotificationsRead>(),
       ),
     )
     ..registerFactory<OrdersCubit>(
