@@ -1,6 +1,4 @@
-class Routes {
-  static const String onBoardingScreen = '/onBoardingScreen';
-  static const String loginScreen = '/loginScreen';
-  static const String signUpScreen = '/signUpScreen';
-  static const String homeScreen = '/homeScreen';
+abstract final class Routes {
+  static const String initialSplash = '/';
+  static const String brandRevealSplash = '/brand-reveal-splash';
 }
