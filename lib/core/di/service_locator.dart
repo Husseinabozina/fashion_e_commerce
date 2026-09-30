@@ -53,6 +53,13 @@ import 'package:fashion_e_commerce/features/orders/domain/usecases/get_orders.da
 import 'package:fashion_e_commerce/features/orders/domain/usecases/request_return.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/cubit/order_details_cubit.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/cubit/orders_cubit.dart';
+import 'package:fashion_e_commerce/features/recently_viewed/data/datasources/in_memory_recently_viewed_data_source.dart';
+import 'package:fashion_e_commerce/features/recently_viewed/data/datasources/recently_viewed_data_source.dart';
+import 'package:fashion_e_commerce/features/recently_viewed/data/repositories/recently_viewed_repository_impl.dart';
+import 'package:fashion_e_commerce/features/recently_viewed/domain/repositories/recently_viewed_repository.dart';
+import 'package:fashion_e_commerce/features/recently_viewed/domain/usecases/get_recently_viewed.dart';
+import 'package:fashion_e_commerce/features/recently_viewed/domain/usecases/track_recently_viewed.dart';
+import 'package:fashion_e_commerce/features/recently_viewed/presentation/cubit/recently_viewed_cubit.dart';
 import 'package:fashion_e_commerce/features/reviews/data/datasources/in_memory_reviews_data_source.dart';
 import 'package:fashion_e_commerce/features/reviews/data/datasources/reviews_data_source.dart';
 import 'package:fashion_e_commerce/features/reviews/data/repositories/reviews_repository_impl.dart';
@@ -127,6 +134,24 @@ void configureDependencies() {
     )
     ..registerLazySingleton<ClearCart>(
       () => ClearCart(serviceLocator<CartRepository>()),
+    )
+    ..registerLazySingleton<RecentlyViewedDataSource>(
+      InMemoryRecentlyViewedDataSource.new,
+    )
+    ..registerLazySingleton<RecentlyViewedRepository>(
+      () => RecentlyViewedRepositoryImpl(
+        serviceLocator<RecentlyViewedDataSource>(),
+      ),
+    )
+    ..registerLazySingleton<GetRecentlyViewed>(
+      () => GetRecentlyViewed(
+        serviceLocator<RecentlyViewedRepository>(),
+      ),
+    )
+    ..registerLazySingleton<TrackRecentlyViewed>(
+      () => TrackRecentlyViewed(
+        serviceLocator<RecentlyViewedRepository>(),
+      ),
     )
     ..registerLazySingleton<ReviewsDataSource>(
       InMemoryReviewsDataSource.new,
@@ -216,6 +241,12 @@ void configureDependencies() {
     )
     ..registerFactory<HomeCubit>(
       () => HomeCubit(serviceLocator<GetHomeCatalog>()),
+    )
+    ..registerFactory<RecentlyViewedCubit>(
+      () => RecentlyViewedCubit(
+        serviceLocator<GetRecentlyViewed>(),
+        serviceLocator<TrackRecentlyViewed>(),
+      ),
     )
     ..registerFactory<WishlistCubit>(
       () => WishlistCubit(

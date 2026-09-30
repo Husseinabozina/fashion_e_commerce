@@ -5,6 +5,7 @@ import 'package:fashion_e_commerce/features/catalog/domain/entities/home_catalog
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product_search_criteria.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/widgets/product_card.dart';
+import 'package:fashion_e_commerce/features/recently_viewed/presentation/cubit/recently_viewed_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -82,6 +83,7 @@ class _HomeContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 28),
+          const _RecentlyViewedSection(),
           const _EditorialBlock(),
         ],
       ),
@@ -321,6 +323,51 @@ class _CategoryRow extends StatelessWidget {
         ],
       ),
     ),
+    );
+  }
+}
+
+
+class _RecentlyViewedSection extends StatelessWidget {
+  const _RecentlyViewedSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<RecentlyViewedCubit, RecentlyViewedState>(
+      builder: (context, state) {
+        if (state is! RecentlyViewedLoaded || state.items.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        final strings = AppStrings.of(context);
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _SectionTitle(
+                index: '03/',
+                title: strings.isArabic
+                    ? 'شوفتها مؤخرًا'
+                    : 'RECENTLY VIEWED',
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 268,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: state.items.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (context, index) {
+                    return ProductCard(product: state.items[index]);
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

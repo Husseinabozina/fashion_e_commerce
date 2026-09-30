@@ -3,6 +3,7 @@ import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
+import 'package:fashion_e_commerce/features/recently_viewed/presentation/cubit/recently_viewed_cubit.dart';
 import 'package:fashion_e_commerce/features/reviews/domain/entities/product_review.dart';
 import 'package:fashion_e_commerce/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,18 @@ class ProductDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
+        child: BlocListener<ProductDetailsCubit, ProductDetailsState>(
+          listenWhen: (previous, current) {
+            if (current is! ProductDetailsReady) return false;
+            if (previous is! ProductDetailsReady) return true;
+            return previous.product.id != current.product.id;
+          },
+          listener: (context, state) {
+            if (state is ProductDetailsReady) {
+              context.read<RecentlyViewedCubit>().track(state.product);
+            }
+          },
+          child: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
           builder: (context, state) {
             return switch (state) {
               ProductDetailsLoading() => const Center(
@@ -29,6 +41,7 @@ class ProductDetailsPage extends StatelessWidget {
               ProductDetailsReady() => _ProductDetailsContent(state: state),
             };
           },
+        ),
         ),
       ),
     );
