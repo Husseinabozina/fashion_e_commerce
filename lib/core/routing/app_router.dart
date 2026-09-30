@@ -2,6 +2,8 @@ import 'package:fashion_e_commerce/core/di/service_locator.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:fashion_e_commerce/features/cart/presentation/pages/cart_page.dart';
+import 'package:fashion_e_commerce/features/checkout/presentation/cubit/checkout_cubit.dart';
+import 'package:fashion_e_commerce/features/checkout/presentation/pages/checkout_page.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/home_page.dart';
@@ -29,6 +31,13 @@ abstract final class AppRouter {
           BlocProvider<CartCubit>(
             create: (_) => serviceLocator<CartCubit>()..load(),
             child: const CartPage(),
+          ),
+          settings,
+        ),
+      Routes.checkout => _page(
+          BlocProvider<CheckoutCubit>(
+            create: (_) => serviceLocator<CheckoutCubit>()..load(),
+            child: const CheckoutPage(),
           ),
           settings,
         ),

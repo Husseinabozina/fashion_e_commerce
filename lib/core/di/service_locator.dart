@@ -4,9 +4,17 @@ import 'package:fashion_e_commerce/features/cart/data/repositories/cart_reposito
 import 'package:fashion_e_commerce/features/cart/domain/repositories/cart_repository.dart';
 import 'package:fashion_e_commerce/features/cart/domain/usecases/add_to_cart.dart';
 import 'package:fashion_e_commerce/features/cart/domain/usecases/change_cart_quantity.dart';
+import 'package:fashion_e_commerce/features/cart/domain/usecases/clear_cart.dart';
 import 'package:fashion_e_commerce/features/cart/domain/usecases/get_cart.dart';
 import 'package:fashion_e_commerce/features/cart/domain/usecases/remove_cart_item.dart';
 import 'package:fashion_e_commerce/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:fashion_e_commerce/features/checkout/data/datasources/checkout_data_source.dart';
+import 'package:fashion_e_commerce/features/checkout/data/datasources/demo_checkout_data_source.dart';
+import 'package:fashion_e_commerce/features/checkout/data/repositories/checkout_repository_impl.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/repositories/checkout_repository.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/usecases/get_checkout_options.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/usecases/place_order.dart';
+import 'package:fashion_e_commerce/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/data/datasources/catalog_data_source.dart';
 import 'package:fashion_e_commerce/features/catalog/data/datasources/demo_catalog_data_source.dart';
 import 'package:fashion_e_commerce/features/catalog/data/repositories/catalog_repository_impl.dart';
@@ -53,6 +61,21 @@ void configureDependencies() {
     ..registerLazySingleton<RemoveCartItem>(
       () => RemoveCartItem(serviceLocator<CartRepository>()),
     )
+    ..registerLazySingleton<ClearCart>(
+      () => ClearCart(serviceLocator<CartRepository>()),
+    )
+    ..registerLazySingleton<CheckoutDataSource>(
+      DemoCheckoutDataSource.new,
+    )
+    ..registerLazySingleton<CheckoutRepository>(
+      () => CheckoutRepositoryImpl(serviceLocator<CheckoutDataSource>()),
+    )
+    ..registerLazySingleton<GetCheckoutOptions>(
+      () => GetCheckoutOptions(serviceLocator<CheckoutRepository>()),
+    )
+    ..registerLazySingleton<PlaceOrder>(
+      () => PlaceOrder(serviceLocator<CheckoutRepository>()),
+    )
     ..registerFactory<HomeCubit>(
       () => HomeCubit(serviceLocator<GetHomeCatalog>()),
     )
@@ -67,6 +90,14 @@ void configureDependencies() {
         serviceLocator<GetCart>(),
         serviceLocator<ChangeCartQuantity>(),
         serviceLocator<RemoveCartItem>(),
+      ),
+    )
+    ..registerFactory<CheckoutCubit>(
+      () => CheckoutCubit(
+        serviceLocator<GetCart>(),
+        serviceLocator<GetCheckoutOptions>(),
+        serviceLocator<PlaceOrder>(),
+        serviceLocator<ClearCart>(),
       ),
     );
 }

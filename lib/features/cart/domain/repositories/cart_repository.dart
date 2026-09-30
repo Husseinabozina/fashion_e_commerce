@@ -8,4 +8,6 @@ abstract interface class CartRepository {
   Future<List<CartItem>> updateQuantity(String key, int quantity);
 
   Future<List<CartItem>> removeItem(String key);
+
+  Future<void> clear();
 }

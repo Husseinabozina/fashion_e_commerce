@@ -20,4 +20,7 @@ class CartRepositoryImpl implements CartRepository {
 
   @override
   Future<List<CartItem>> removeItem(String key) => _dataSource.remove(key);
+
+  @override
+  Future<void> clear() => _dataSource.clear();
 }

@@ -8,4 +8,6 @@ abstract interface class CartDataSource {
   Future<List<CartItem>> updateQuantity(String key, int quantity);
 
   Future<List<CartItem>> remove(String key);
+
+  Future<void> clear();
 }

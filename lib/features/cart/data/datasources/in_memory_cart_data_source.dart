@@ -44,4 +44,9 @@ class InMemoryCartDataSource implements CartDataSource {
     _items.removeWhere((item) => item.key == key);
     return read();
   }
+
+  @override
+  Future<void> clear() async {
+    _items.clear();
+  }
 }

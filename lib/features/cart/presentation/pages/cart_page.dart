@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/cart/domain/entities/cart_item.dart';
 import 'package:fashion_e_commerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
@@ -227,7 +228,7 @@ class _CartSummary extends StatelessWidget {
               width: double.infinity,
               height: 52,
               child: FilledButton(
-                onPressed: () {},
+                onPressed: () => Navigator.of(context).pushNamed(Routes.checkout),
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.acidLime,
                   foregroundColor: AppColors.nearBlack,

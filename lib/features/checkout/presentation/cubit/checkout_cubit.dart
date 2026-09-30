@@ -1,0 +1,195 @@
+import 'package:fashion_e_commerce/features/cart/domain/entities/cart_item.dart';
+import 'package:fashion_e_commerce/features/cart/domain/usecases/clear_cart.dart';
+import 'package:fashion_e_commerce/features/cart/domain/usecases/get_cart.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/entities/checkout_options.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/entities/delivery_option.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/entities/order_receipt.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/entities/payment_option.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/entities/place_order_request.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/entities/shipping_address.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/usecases/get_checkout_options.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/usecases/place_order.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+enum CheckoutStep { address, delivery, payment, review }
+
+sealed class CheckoutState {
+  const CheckoutState();
+}
+
+final class CheckoutLoading extends CheckoutState {
+  const CheckoutLoading();
+}
+
+final class CheckoutReady extends CheckoutState {
+  const CheckoutReady({
+    required this.items,
+    required this.options,
+    this.step = CheckoutStep.address,
+    this.address,
+    this.delivery,
+    this.payment,
+    this.isSubmitting = false,
+  });
+
+  final List<CartItem> items;
+  final CheckoutOptions options;
+  final CheckoutStep step;
+  final ShippingAddress? address;
+  final DeliveryOption? delivery;
+  final PaymentOption? payment;
+  final bool isSubmitting;
+
+  double get subtotal {
+    return items.fold<double>(
+      0,
+      (sum, item) => sum + item.lineTotal,
+    );
+  }
+
+  double get total => subtotal + (delivery?.price ?? 0);
+
+  CheckoutReady copyWith({
+    CheckoutStep? step,
+    ShippingAddress? address,
+    DeliveryOption? delivery,
+    PaymentOption? payment,
+    bool? isSubmitting,
+  }) {
+    return CheckoutReady(
+      items: items,
+      options: options,
+      step: step ?? this.step,
+      address: address ?? this.address,
+      delivery: delivery ?? this.delivery,
+      payment: payment ?? this.payment,
+      isSubmitting: isSubmitting ?? this.isSubmitting,
+    );
+  }
+}
+
+final class CheckoutCompleted extends CheckoutState {
+  const CheckoutCompleted(this.receipt);
+
+  final OrderReceipt receipt;
+}
+
+final class CheckoutFailure extends CheckoutState {
+  const CheckoutFailure(this.message);
+
+  final String message;
+}
+
+class CheckoutCubit extends Cubit<CheckoutState> {
+  CheckoutCubit(
+    this._getCart,
+    this._getCheckoutOptions,
+    this._placeOrder,
+    this._clearCart,
+  ) : super(const CheckoutLoading());
+
+  final GetCart _getCart;
+  final GetCheckoutOptions _getCheckoutOptions;
+  final PlaceOrder _placeOrder;
+  final ClearCart _clearCart;
+
+  Future<void> load() async {
+    emit(const CheckoutLoading());
+
+    try {
+      final items = await _getCart();
+      if (items.isEmpty) {
+        emit(const CheckoutFailure('Your bag is empty.'));
+        return;
+      }
+
+      final options = await _getCheckoutOptions();
+      emit(
+        CheckoutReady(
+          items: items,
+          options: options,
+        ),
+      );
+    } catch (_) {
+      emit(const CheckoutFailure('Checkout could not be loaded.'));
+    }
+  }
+
+  void saveAddress(ShippingAddress address) {
+    final current = state;
+    if (current is! CheckoutReady) return;
+
+    emit(
+      current.copyWith(
+        address: address,
+        step: CheckoutStep.delivery,
+      ),
+    );
+  }
+
+  void selectDelivery(DeliveryOption option) {
+    final current = state;
+    if (current is! CheckoutReady) return;
+
+    emit(
+      current.copyWith(
+        delivery: option,
+        step: CheckoutStep.payment,
+      ),
+    );
+  }
+
+  void selectPayment(PaymentOption option) {
+    final current = state;
+    if (current is! CheckoutReady) return;
+
+    emit(
+      current.copyWith(
+        payment: option,
+        step: CheckoutStep.review,
+      ),
+    );
+  }
+
+  void goBack() {
+    final current = state;
+    if (current is! CheckoutReady) return;
+
+    final previous = switch (current.step) {
+      CheckoutStep.address => CheckoutStep.address,
+      CheckoutStep.delivery => CheckoutStep.address,
+      CheckoutStep.payment => CheckoutStep.delivery,
+      CheckoutStep.review => CheckoutStep.payment,
+    };
+
+    emit(current.copyWith(step: previous));
+  }
+
+  Future<void> submitOrder() async {
+    final current = state;
+    if (current is! CheckoutReady ||
+        current.address == null ||
+        current.delivery == null ||
+        current.payment == null) {
+      return;
+    }
+
+    emit(current.copyWith(isSubmitting: true));
+
+    try {
+      final receipt = await _placeOrder(
+        PlaceOrderRequest(
+          items: current.items,
+          address: current.address!,
+          delivery: current.delivery!,
+          payment: current.payment!,
+        ),
+      );
+
+      await _clearCart();
+      emit(CheckoutCompleted(receipt));
+    } catch (_) {
+      emit(const CheckoutFailure('Order could not be placed.'));
+    }
+  }
+}
