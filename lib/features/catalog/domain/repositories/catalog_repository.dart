@@ -7,5 +7,7 @@ abstract interface class CatalogRepository {
 
   Future<Product> getProductById(String id);
 
+  Future<List<Product>> getCompleteLook(String productId);
+
   Future<List<Product>> searchProducts(ProductSearchCriteria criteria);
 }

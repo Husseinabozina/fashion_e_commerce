@@ -249,7 +249,9 @@ class _ProductDetailsContent extends StatelessWidget {
                       height: 1.5,
                     ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
+              _CompleteTheLookSection(state: state),
+              const SizedBox(height: 28),
               const _ServiceStrip(),
             ],
           ),
@@ -381,6 +383,247 @@ class _InfoRow extends StatelessWidget {
         const Spacer(),
         Text(value),
       ],
+    );
+  }
+}
+
+
+class _CompleteTheLookSection extends StatelessWidget {
+  const _CompleteTheLookSection({required this.state});
+
+  final ProductDetailsReady state;
+
+  @override
+  Widget build(BuildContext context) {
+    if (state.lookProducts.isEmpty) return const SizedBox.shrink();
+
+    final strings = AppStrings.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          strings.isArabic ? 'أكمل الإطلالة' : 'COMPLETE THE LOOK',
+          style: AppTheme.displayFor(context, fontSize: 28),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          strings.isArabic
+              ? 'اختر القطع والمقاسات ثم أضف المجموعة للحقيبة.'
+              : 'Pick the pieces and sizes, then add the selected look in one move.',
+          style: const TextStyle(
+            color: AppColors.midGray,
+            height: 1.4,
+          ),
+        ),
+        const SizedBox(height: 16),
+        ...state.lookProducts.map(
+          (product) => _LookPieceCard(
+            product: product,
+            selected: state.selectedLookIds.contains(product.id),
+            selectedSize: state.lookSizes[product.id],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Text(
+              strings.isArabic ? 'إجمالي المختار' : 'SELECTED TOTAL',
+              style: const TextStyle(
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              state.lookTotal.toStringAsFixed(0) + ' EGP',
+              style: const TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: FilledButton.icon(
+            onPressed: state.canAddLook
+                ? () async {
+                    final added = await context
+                        .read<ProductDetailsCubit>()
+                        .addSelectedLookToCart();
+
+                    if (!context.mounted || added == 0) return;
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          strings.isArabic
+                              ? 'تمت إضافة ' +
+                                  added.toString() +
+                                  ' قطع إلى الحقيبة.'
+                              : added.toString() +
+                                  ' pieces added to your bag.',
+                        ),
+                        action: SnackBarAction(
+                          label: strings.viewBag,
+                          onPressed: () {
+                            Navigator.of(context).pushNamed(Routes.cart);
+                          },
+                        ),
+                      ),
+                    );
+                  }
+                : null,
+            icon: const Icon(Icons.add_shopping_cart_rounded),
+            label: Text(
+              strings.isArabic
+                  ? 'أضف القطع المختارة'
+                  : 'ADD SELECTED TO BAG',
+              style: const TextStyle(fontWeight: FontWeight.w900),
+            ),
+          ),
+        ),
+        if (!state.canAddLook) ...[
+          const SizedBox(height: 8),
+          Text(
+            strings.isArabic
+                ? 'اختر مقاسًا لكل قطعة محددة.'
+                : 'Choose a size for every selected piece.',
+            style: const TextStyle(
+              color: AppColors.midGray,
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _LookPieceCard extends StatelessWidget {
+  const _LookPieceCard({
+    required this.product,
+    required this.selected,
+    required this.selectedSize,
+  });
+
+  final Product product;
+  final bool selected;
+  final String? selectedSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 180),
+      opacity: selected ? 1 : 0.55,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          border: Border.all(
+            color: selected ? AppColors.nearBlack : AppColors.concrete,
+          ),
+        ),
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Checkbox(
+                  value: selected,
+                  onChanged: (_) {
+                    context
+                        .read<ProductDetailsCubit>()
+                        .toggleLookProduct(product.id);
+                  },
+                ),
+                Container(
+                  width: 72,
+                  height: 78,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    color: AppColors.concrete.withValues(alpha: 0.35),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Image.network(
+                    product.imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) =>
+                        const Icon(Icons.checkroom_rounded),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.brand,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        product.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        product.price.toStringAsFixed(0) + ' EGP',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(
+                      Routes.productDetails,
+                      arguments: product.id,
+                    );
+                  },
+                  icon: const Icon(Icons.arrow_forward_rounded),
+                ),
+              ],
+            ),
+            if (selected) ...[
+              const SizedBox(height: 10),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Wrap(
+                  spacing: 7,
+                  runSpacing: 7,
+                  children: product.sizes
+                      .where(product.isSizeAvailable)
+                      .map(
+                        (size) => ChoiceChip(
+                          label: Text(size),
+                          selected: selectedSize == size,
+                          onSelected: (_) {
+                            context
+                                .read<ProductDetailsCubit>()
+                                .selectLookSize(product.id, size);
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }

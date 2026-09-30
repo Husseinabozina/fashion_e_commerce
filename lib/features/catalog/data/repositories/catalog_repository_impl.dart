@@ -36,6 +36,42 @@ class CatalogRepositoryImpl implements CatalogRepository {
   }
 
   @override
+  Future<List<Product>> getCompleteLook(String productId) async {
+    final products = await _dataSource.fetchProducts();
+    final anchor = products.firstWhere(
+      (product) => product.id == productId,
+      orElse: () => throw StateError('Product not found: $productId'),
+    );
+
+    final differentCategory = products
+        .where(
+          (product) =>
+              product.id != anchor.id &&
+              product.category != anchor.category,
+        )
+        .take(3)
+        .toList();
+
+    if (differentCategory.length >= 3) {
+      return differentCategory;
+    }
+
+    final usedIds = <String>{
+      anchor.id,
+      ...differentCategory.map((product) => product.id),
+    };
+
+    final fill = products
+        .where((product) => !usedIds.contains(product.id))
+        .take(3 - differentCategory.length);
+
+    return <Product>[
+      ...differentCategory,
+      ...fill,
+    ];
+  }
+
+  @override
   Future<List<Product>> searchProducts(ProductSearchCriteria criteria) async {
     final products = await _dataSource.fetchProducts();
     final normalizedQuery = criteria.query.trim().toLowerCase();
