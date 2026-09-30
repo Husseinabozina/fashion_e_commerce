@@ -59,7 +59,7 @@ class _SignInPageState extends State<SignInPage> {
                   if (!text.contains('@')) return 'Enter a valid email';
                   return null;
                 },
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: AppStrings.of(context).isArabic ? 'البريد الإلكتروني' : 'EMAIL',
                 ),
               ),
@@ -73,7 +73,7 @@ class _SignInPageState extends State<SignInPage> {
                   }
                   return null;
                 },
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: AppStrings.of(context).isArabic ? 'كلمة المرور' : 'PASSWORD',
                 ),
               ),
