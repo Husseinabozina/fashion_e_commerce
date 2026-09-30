@@ -1,7 +1,9 @@
 import 'package:fashion_e_commerce/core/di/service_locator.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
+import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/home_page.dart';
+import 'package:fashion_e_commerce/features/catalog/presentation/pages/product_details_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/pages/brand_reveal_splash_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/pages/initial_splash_page.dart';
 import 'package:flutter/material.dart';
@@ -20,8 +22,28 @@ abstract final class AppRouter {
           ),
           settings,
         ),
+      Routes.productDetails => _productDetailsRoute(settings),
       _ => _unknownRoute(settings),
     };
+  }
+
+  static MaterialPageRoute<dynamic> _productDetailsRoute(
+    RouteSettings settings,
+  ) {
+    final productId = settings.arguments;
+
+    if (productId is! String || productId.isEmpty) {
+      return _unknownRoute(settings);
+    }
+
+    return _page(
+      BlocProvider<ProductDetailsCubit>(
+        create: (_) =>
+            serviceLocator<ProductDetailsCubit>()..load(productId),
+        child: const ProductDetailsPage(),
+      ),
+      settings,
+    );
   }
 
   static MaterialPageRoute<dynamic> _page(

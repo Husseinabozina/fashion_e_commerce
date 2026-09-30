@@ -8,6 +8,9 @@ class ProductModel extends Product {
     required super.price,
     required super.imageUrl,
     required super.colors,
+    required super.sizes,
+    required super.fit,
+    required super.description,
     super.previousPrice,
     super.isNew,
   });
@@ -21,6 +24,9 @@ class ProductModel extends Product {
       previousPrice: (map['previousPrice'] as num?)?.toDouble(),
       imageUrl: map['imageUrl'] as String? ?? '',
       colors: List<String>.from(map['colors'] as List? ?? const <String>[]),
+      sizes: List<String>.from(map['sizes'] as List? ?? const <String>[]),
+      fit: map['fit'] as String? ?? '',
+      description: map['description'] as String? ?? '',
       isNew: map['isNew'] as bool? ?? false,
     );
   }

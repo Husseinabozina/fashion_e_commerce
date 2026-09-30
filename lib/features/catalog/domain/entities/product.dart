@@ -6,6 +6,9 @@ class Product {
     required this.price,
     required this.imageUrl,
     required this.colors,
+    required this.sizes,
+    required this.fit,
+    required this.description,
     this.previousPrice,
     this.isNew = false,
   });
@@ -17,5 +20,8 @@ class Product {
   final double? previousPrice;
   final String imageUrl;
   final List<String> colors;
+  final List<String> sizes;
+  final String fit;
+  final String description;
   final bool isNew;
 }

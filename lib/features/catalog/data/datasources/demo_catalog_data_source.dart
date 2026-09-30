@@ -25,6 +25,10 @@ class DemoCatalogDataSource implements CatalogDataSource {
         imageUrl:
             'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=900&q=80',
         colors: <String>['Black', 'Grey', 'Sand'],
+        sizes: <String>['40', '41', '42', '43', '44'],
+        fit: 'Regular fit',
+        description:
+            'A layered street runner with an oversized sole and everyday cushioning.',
         isNew: true,
       ),
       ProductModel(
@@ -35,6 +39,10 @@ class DemoCatalogDataSource implements CatalogDataSource {
         imageUrl:
             'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80',
         colors: <String>['Red', 'White'],
+        sizes: <String>['40', '41', '42', '43'],
+        fit: 'True to size',
+        description:
+            'A clean everyday sneaker with visible cushioning and a bold color story.',
         isNew: true,
       ),
       ProductModel(
@@ -45,6 +53,10 @@ class DemoCatalogDataSource implements CatalogDataSource {
         imageUrl:
             'https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=900&q=80',
         colors: <String>['Black', 'White'],
+        sizes: <String>['41', '42', '43', '44'],
+        fit: 'Regular fit',
+        description:
+            'Minimal street runner selected for daily rotation and clean styling.',
       ),
       ProductModel(
         id: 'street-02',
@@ -54,6 +66,10 @@ class DemoCatalogDataSource implements CatalogDataSource {
         imageUrl:
             'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=900&q=80',
         colors: <String>['White', 'Grey'],
+        sizes: <String>['39', '40', '41', '42', '43'],
+        fit: 'Slightly narrow',
+        description:
+            'Low-profile court styling with a clean upper and versatile neutral finish.',
       ),
     ];
   }

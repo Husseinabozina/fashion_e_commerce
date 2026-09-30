@@ -3,7 +3,9 @@ import 'package:fashion_e_commerce/features/catalog/data/datasources/demo_catalo
 import 'package:fashion_e_commerce/features/catalog/data/repositories/catalog_repository_impl.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/repositories/catalog_repository.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/usecases/get_home_catalog.dart';
+import 'package:fashion_e_commerce/features/catalog/domain/usecases/get_product_details.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
+import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
 import 'package:get_it/get_it.dart';
 
 final GetIt serviceLocator = GetIt.instance;
@@ -21,7 +23,13 @@ void configureDependencies() {
     ..registerLazySingleton<GetHomeCatalog>(
       () => GetHomeCatalog(serviceLocator<CatalogRepository>()),
     )
+    ..registerLazySingleton<GetProductDetails>(
+      () => GetProductDetails(serviceLocator<CatalogRepository>()),
+    )
     ..registerFactory<HomeCubit>(
       () => HomeCubit(serviceLocator<GetHomeCatalog>()),
+    )
+    ..registerFactory<ProductDetailsCubit>(
+      () => ProductDetailsCubit(serviceLocator<GetProductDetails>()),
     );
 }

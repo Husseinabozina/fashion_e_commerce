@@ -1,5 +1,6 @@
 import 'package:fashion_e_commerce/features/catalog/data/datasources/catalog_data_source.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/home_catalog.dart';
+import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/repositories/catalog_repository.dart';
 
 class CatalogRepositoryImpl implements CatalogRepository {
@@ -20,6 +21,16 @@ class CatalogRepositoryImpl implements CatalogRepository {
       heroProduct: products.first,
       newArrivals: products,
       categories: categories,
+    );
+  }
+
+  @override
+  Future<Product> getProductById(String id) async {
+    final products = await _dataSource.fetchProducts();
+
+    return products.firstWhere(
+      (product) => product.id == id,
+      orElse: () => throw StateError('Product not found: $id'),
     );
   }
 }
