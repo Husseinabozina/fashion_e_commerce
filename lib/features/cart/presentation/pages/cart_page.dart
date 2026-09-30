@@ -1,5 +1,6 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
+import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/cart/domain/entities/cart_item.dart';
 import 'package:fashion_e_commerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,9 @@ class CartPage extends StatelessWidget {
         title: BlocBuilder<CartCubit, CartState>(
           builder: (context, state) {
             final quantity = state is CartLoaded ? state.totalQuantity : 0;
-            return Text('YOUR BAG ($quantity)');
+            return Text(
+              AppStrings.of(context).yourBag.toUpperCase() + ' ($quantity)',
+            );
           },
         ),
       ),
@@ -209,17 +212,17 @@ class _CartSummary extends StatelessWidget {
         child: Column(
           children: [
             _SummaryRow(
-              label: 'SUBTOTAL',
+              label: AppStrings.of(context).subtotal.toUpperCase(),
               value: '${state.subtotal.toStringAsFixed(0)} EGP',
             ),
             const SizedBox(height: 8),
-            const _SummaryRow(
-              label: 'DELIVERY',
-              value: 'FREE',
+            _SummaryRow(
+              label: AppStrings.of(context).delivery.toUpperCase(),
+              value: AppStrings.of(context).isArabic ? 'مجاني' : 'FREE',
             ),
             const Divider(height: 28),
             _SummaryRow(
-              label: 'TOTAL',
+              label: AppStrings.of(context).total.toUpperCase(),
               value: '${state.subtotal.toStringAsFixed(0)} EGP',
               emphasized: true,
             ),
@@ -236,9 +239,9 @@ class _CartSummary extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
-                child: const Text(
-                  'CHECKOUT  →',
-                  style: TextStyle(fontWeight: FontWeight.w900),
+                child: Text(
+                  AppStrings.of(context).checkout.toUpperCase() + '  →',
+                  style: const TextStyle(fontWeight: FontWeight.w900),
                 ),
               ),
             ),
@@ -294,8 +297,8 @@ class _EmptyCart extends StatelessWidget {
             const Icon(Icons.shopping_bag_outlined, size: 54),
             const SizedBox(height: 18),
             Text(
-              'YOUR BAG IS EMPTY',
-              style: AppTheme.display(fontSize: 28),
+              AppStrings.of(context).emptyBag,
+              style: AppTheme.displayFor(context, fontSize: 28),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
@@ -306,7 +309,7 @@ class _EmptyCart extends StatelessWidget {
             const SizedBox(height: 18),
             FilledButton(
               onPressed: Navigator.of(context).pop,
-              child: const Text('KEEP SHOPPING'),
+              child: Text(AppStrings.of(context).keepShopping),
             ),
           ],
         ),

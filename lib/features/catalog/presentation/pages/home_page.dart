@@ -1,5 +1,6 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
+import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/home_catalog.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/widgets/product_card.dart';
@@ -48,7 +49,10 @@ class _HomeContent extends StatelessWidget {
           const SizedBox(height: 14),
           _HeroDrop(catalog: catalog),
           const SizedBox(height: 28),
-          const _SectionTitle(index: '01/', title: 'NEW ARRIVALS'),
+          _SectionTitle(
+            index: '01/',
+            title: AppStrings.of(context).newArrivals,
+          ),
           const SizedBox(height: 12),
           SizedBox(
             height: 268,
@@ -62,7 +66,10 @@ class _HomeContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
-          const _SectionTitle(index: '02/', title: 'SHOP BY CATEGORY'),
+          _SectionTitle(
+            index: '02/',
+            title: AppStrings.of(context).shopByCategory,
+          ),
           const SizedBox(height: 12),
           ...catalog.categories.map(
             (category) => _CategoryRow(category: category),
@@ -124,14 +131,14 @@ class _SearchField extends StatelessWidget {
           color: AppColors.nearBlack.withValues(alpha: 0.08),
         ),
       ),
-      child: const Row(
+      child: Row(
         children: [
-          Icon(Icons.search_rounded, size: 20),
-          SizedBox(width: 10),
+          const Icon(Icons.search_rounded, size: 20),
+          const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Search products, brands, drops...',
-              style: TextStyle(
+              AppStrings.of(context).searchHint,
+              style: const TextStyle(
                 color: AppColors.midGray,
                 fontSize: 13,
               ),
@@ -253,12 +260,12 @@ class _SectionTitle extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            style: AppTheme.display(fontSize: 27),
+            style: AppTheme.displayFor(context, fontSize: 27),
           ),
         ),
         TextButton(
           onPressed: () {},
-          child: const Text('VIEW →'),
+          child: Text(AppStrings.of(context).view + ' →'),
         ),
       ],
     );
@@ -309,9 +316,9 @@ class _EditorialBlock extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            '03/ STREET EDIT',
-            style: TextStyle(
+          Text(
+            '03/ ' + AppStrings.of(context).streetEdit,
+            style: const TextStyle(
               color: AppColors.acidLime,
               fontWeight: FontWeight.w900,
               letterSpacing: 1,
@@ -319,8 +326,9 @@ class _EditorialBlock extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            'NO RULES.\nJUST ROTATION.',
-            style: AppTheme.display(
+            AppStrings.of(context).noRules,
+            style: AppTheme.displayFor(
+              context,
               fontSize: 39,
               color: AppColors.white,
             ),
@@ -343,7 +351,7 @@ class _EditorialBlock extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
-            child: const Text('DISCOVER THE EDIT'),
+            child: Text(AppStrings.of(context).discoverEdit),
           ),
         ],
       ),
@@ -369,27 +377,27 @@ class _StreetBottomNavigation extends StatelessWidget {
       },
       indicatorColor: Colors.transparent,
       backgroundColor: AppColors.offWhite,
-      destinations: const [
+      destinations: [
         NavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home_rounded),
-          label: 'Home',
+          icon: const Icon(Icons.home_outlined),
+          selectedIcon: const Icon(Icons.home_rounded),
+          label: AppStrings.of(context).home,
         ),
         NavigationDestination(
-          icon: Icon(Icons.grid_view_outlined),
-          label: 'Shop',
+          icon: const Icon(Icons.grid_view_outlined),
+          label: AppStrings.of(context).shop,
         ),
         NavigationDestination(
-          icon: Icon(Icons.explore_outlined),
-          label: 'Discover',
+          icon: const Icon(Icons.explore_outlined),
+          label: AppStrings.of(context).discover,
         ),
         NavigationDestination(
-          icon: Icon(Icons.favorite_border_rounded),
-          label: 'Saved',
+          icon: const Icon(Icons.favorite_border_rounded),
+          label: AppStrings.of(context).saved,
         ),
         NavigationDestination(
-          icon: Icon(Icons.person_outline_rounded),
-          label: 'Account',
+          icon: const Icon(Icons.person_outline_rounded),
+          label: AppStrings.of(context).account,
         ),
       ],
     );

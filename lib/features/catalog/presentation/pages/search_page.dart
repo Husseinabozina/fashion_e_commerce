@@ -1,5 +1,6 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
+import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product_search_criteria.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/search_cubit.dart';
@@ -33,7 +34,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SEARCH'),
+        title: Text(AppStrings.of(context).search.toUpperCase()),
       ),
       body: SafeArea(
         top: false,
@@ -45,9 +46,9 @@ class _SearchPageState extends State<SearchPage> {
                 controller: _controller,
                 autofocus: true,
                 onChanged: context.read<SearchCubit>().updateQuery,
-                decoration: const InputDecoration(
-                  hintText: 'Search products, brands, categories...',
-                  prefixIcon: Icon(Icons.search_rounded),
+                decoration: InputDecoration(
+                  hintText: AppStrings.of(context).searchHint,
+                  prefixIcon: const Icon(Icons.search_rounded),
                 ),
               ),
             ),
@@ -104,14 +105,16 @@ class _SearchToolbar extends StatelessWidget {
             onPressed: () => _showFilters(context, state),
             icon: const Icon(Icons.tune_rounded, size: 17),
             label: Text(
-              state.criteria.hasFilters ? 'FILTERS •' : 'FILTERS',
+              state.criteria.hasFilters
+                  ? AppStrings.of(context).filters + ' •'
+                  : AppStrings.of(context).filters,
             ),
           ),
           const SizedBox(width: 8),
           OutlinedButton.icon(
             onPressed: () => _showSort(context, state.criteria.sort),
             icon: const Icon(Icons.swap_vert_rounded, size: 17),
-            label: const Text('SORT'),
+            label: Text(AppStrings.of(context).sort),
           ),
           if (state.criteria.category case final category?) ...[
             const SizedBox(width: 8),
@@ -182,14 +185,14 @@ class _FilterSheet extends StatelessWidget {
                     context.read<SearchCubit>().clearFilters();
                     Navigator.of(context).pop();
                   },
-                  child: const Text('CLEAR'),
+                  child: Text(AppStrings.of(context).clear),
                 ),
               ],
             ),
             const SizedBox(height: 14),
-            const Text(
-              'CATEGORY',
-              style: TextStyle(fontWeight: FontWeight.w900),
+            Text(
+              AppStrings.of(context).category,
+              style: const TextStyle(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -207,9 +210,9 @@ class _FilterSheet extends StatelessWidget {
               }).toList(),
             ),
             const SizedBox(height: 22),
-            const Text(
-              'BRAND',
-              style: TextStyle(fontWeight: FontWeight.w900),
+            Text(
+              AppStrings.of(context).brand,
+              style: const TextStyle(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -430,12 +433,12 @@ class _NoResults extends StatelessWidget {
             const Icon(Icons.search_off_rounded, size: 52),
             const SizedBox(height: 16),
             Text(
-              'NO MATCH.',
-              style: AppTheme.display(fontSize: 30),
+              AppStrings.of(context).noMatch,
+              style: AppTheme.displayFor(context, fontSize: 30),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Try another keyword or clear your filters.',
+            Text(
+              AppStrings.of(context).tryAnother,
               textAlign: TextAlign.center,
             ),
           ],

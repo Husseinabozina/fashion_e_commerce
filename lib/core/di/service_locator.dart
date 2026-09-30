@@ -1,3 +1,4 @@
+import 'package:fashion_e_commerce/core/localization/locale_cubit.dart';
 import 'package:fashion_e_commerce/features/auth/data/datasources/auth_data_source.dart';
 import 'package:fashion_e_commerce/features/auth/data/datasources/in_memory_auth_data_source.dart';
 import 'package:fashion_e_commerce/features/auth/data/repositories/auth_repository_impl.dart';
@@ -150,6 +151,7 @@ void configureDependencies() {
         serviceLocator<OrdersRepository>(),
       ),
     )
+    ..registerFactory<LocaleCubit>(LocaleCubit.new)
     ..registerFactory<AuthCubit>(
       () => AuthCubit(
         serviceLocator<GetCurrentUser>(),

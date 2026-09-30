@@ -1,5 +1,6 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
+import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/checkout/domain/entities/delivery_option.dart';
 import 'package:fashion_e_commerce/features/checkout/domain/entities/payment_option.dart';
 import 'package:fashion_e_commerce/features/checkout/domain/entities/order_receipt.dart';
@@ -51,7 +52,7 @@ class _CheckoutFlow extends StatelessWidget {
               : context.read<CheckoutCubit>().goBack,
           icon: const Icon(Icons.arrow_back_rounded),
         ),
-        title: const Text('CHECKOUT'),
+        title: Text(AppStrings.of(context).checkout.toUpperCase()),
       ),
       body: SafeArea(
         top: false,
@@ -95,7 +96,13 @@ class _CheckoutProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const labels = <String>['ADDRESS', 'DELIVERY', 'PAYMENT', 'REVIEW'];
+    final strings = AppStrings.of(context);
+    final labels = <String>[
+      strings.address,
+      strings.delivery,
+      strings.payment,
+      strings.review,
+    ];
     final current = step.index;
 
     return Padding(
@@ -165,17 +172,17 @@ class _AddressStepState extends State<_AddressStep> {
         padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
         children: [
           Text(
-            'WHERE SHOULD\nWE SEND IT?',
-            style: AppTheme.display(fontSize: 34),
+            AppStrings.of(context).isArabic ? 'إلى أين\nنرسل الطلب؟' : 'WHERE SHOULD\nWE SEND IT?',
+            style: AppTheme.displayFor(context, fontSize: 34),
           ),
           const SizedBox(height: 20),
           _CheckoutField(
             controller: _name,
-            label: 'FULL NAME',
+            label: AppStrings.of(context).isArabic ? 'الاسم الكامل' : 'FULL NAME',
           ),
           _CheckoutField(
             controller: _phone,
-            label: 'PHONE',
+            label: AppStrings.of(context).isArabic ? 'رقم الهاتف' : 'PHONE',
             keyboardType: TextInputType.phone,
           ),
           Row(
@@ -183,29 +190,29 @@ class _AddressStepState extends State<_AddressStep> {
               Expanded(
                 child: _CheckoutField(
                   controller: _city,
-                  label: 'CITY',
+                  label: AppStrings.of(context).isArabic ? 'المدينة' : 'CITY',
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: _CheckoutField(
                   controller: _area,
-                  label: 'AREA',
+                  label: AppStrings.of(context).isArabic ? 'المنطقة' : 'AREA',
                 ),
               ),
             ],
           ),
           _CheckoutField(
             controller: _street,
-            label: 'STREET',
+            label: AppStrings.of(context).isArabic ? 'الشارع' : 'STREET',
           ),
           _CheckoutField(
             controller: _building,
-            label: 'BUILDING',
+            label: AppStrings.of(context).isArabic ? 'المبنى' : 'BUILDING',
           ),
           const SizedBox(height: 8),
           _PrimaryCheckoutButton(
-            label: 'CONTINUE TO DELIVERY  →',
+            label: AppStrings.of(context).isArabic ? 'متابعة إلى التوصيل  ←' : 'CONTINUE TO DELIVERY  →',
             onPressed: () {
               if (!_formKey.currentState!.validate()) return;
 
@@ -247,7 +254,7 @@ class _CheckoutField extends StatelessWidget {
         keyboardType: keyboardType,
         validator: (value) {
           if (value == null || value.trim().isEmpty) {
-            return 'Required';
+            return AppStrings.of(context).isArabic ? 'مطلوب' : 'Required';
           }
           return null;
         },
@@ -277,7 +284,7 @@ class _DeliveryStep extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
       children: [
         Text(
-          'CHOOSE YOUR\nDELIVERY SPEED.',
+          AppStrings.of(context).isArabic ? 'اختر سرعة\nالتوصيل.' : 'CHOOSE YOUR\nDELIVERY SPEED.',
           style: AppTheme.display(fontSize: 34),
         ),
         const SizedBox(height: 20),
@@ -328,7 +335,7 @@ class _DeliveryCard extends StatelessWidget {
               ),
               Text(
                 option.price == 0
-                    ? 'FREE'
+                    ? (AppStrings.of(context).isArabic ? 'مجاني' : 'FREE')
                     : '${option.price.toStringAsFixed(0)} EGP',
                 style: const TextStyle(fontWeight: FontWeight.w900),
               ),
@@ -354,7 +361,7 @@ class _PaymentStep extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
       children: [
         Text(
-          'HOW DO YOU\nWANT TO PAY?',
+          AppStrings.of(context).isArabic ? 'كيف تريد\nالدفع؟' : 'HOW DO YOU\nWANT TO PAY?',
           style: AppTheme.display(fontSize: 34),
         ),
         const SizedBox(height: 20),
@@ -426,44 +433,46 @@ class _ReviewStep extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
       children: [
         Text(
-          'FINAL CHECK.',
+          AppStrings.of(context).isArabic ? 'المراجعة النهائية.' : 'FINAL CHECK.',
           style: AppTheme.display(fontSize: 34),
         ),
         const SizedBox(height: 18),
         _ReviewBlock(
-          title: 'SHIP TO',
+          title: AppStrings.of(context).isArabic ? 'التوصيل إلى' : 'SHIP TO',
           value:
               '${state.address!.fullName}\n${state.address!.compactLabel}\n${state.address!.phone}',
         ),
         _ReviewBlock(
-          title: 'DELIVERY',
+          title: AppStrings.of(context).delivery.toUpperCase(),
           value: '${state.delivery!.title}\n${state.delivery!.eta}',
         ),
         _ReviewBlock(
-          title: 'PAYMENT',
+          title: AppStrings.of(context).payment.toUpperCase(),
           value: state.payment!.title,
         ),
         const Divider(height: 32),
         _ReviewPriceRow(
-          label: 'SUBTOTAL',
+          label: AppStrings.of(context).subtotal.toUpperCase(),
           value: '${state.subtotal.toStringAsFixed(0)} EGP',
         ),
         const SizedBox(height: 8),
         _ReviewPriceRow(
-          label: 'DELIVERY',
+          label: AppStrings.of(context).delivery.toUpperCase(),
           value: state.delivery!.price == 0
               ? 'FREE'
               : '${state.delivery!.price.toStringAsFixed(0)} EGP',
         ),
         const Divider(height: 32),
         _ReviewPriceRow(
-          label: 'TOTAL',
+          label: AppStrings.of(context).total.toUpperCase(),
           value: '${state.total.toStringAsFixed(0)} EGP',
           emphasized: true,
         ),
         const SizedBox(height: 20),
         _PrimaryCheckoutButton(
-          label: state.isSubmitting ? 'PLACING ORDER...' : 'PLACE ORDER  →',
+          label: state.isSubmitting
+              ? (AppStrings.of(context).isArabic ? 'جارٍ تأكيد الطلب...' : 'PLACING ORDER...')
+              : AppStrings.of(context).placeOrder,
           onPressed: state.isSubmitting
               ? null
               : context.read<CheckoutCubit>().submitOrder,
@@ -612,7 +621,7 @@ class _OrderSuccessPage extends StatelessWidget {
               ),
               const SizedBox(height: 28),
               Text(
-                'ORDER\nPLACED.',
+                AppStrings.of(context).orderPlaced,
                 textAlign: TextAlign.center,
                 style: AppTheme.display(
                   fontSize: 48,
@@ -636,7 +645,7 @@ class _OrderSuccessPage extends StatelessWidget {
               ),
               const Spacer(),
               _PrimaryCheckoutButton(
-                label: 'VIEW ORDER  →',
+                label: AppStrings.of(context).viewOrder,
                 onPressed: () {
                   Navigator.of(context).pushNamed(
                     Routes.orderDetails,
@@ -656,7 +665,7 @@ class _OrderSuccessPage extends StatelessWidget {
                   foregroundColor: AppColors.white,
                   side: const BorderSide(color: AppColors.white),
                 ),
-                child: const Text('BACK TO HOME'),
+                child: Text(AppStrings.of(context).backHome),
               ),
             ],
           ),

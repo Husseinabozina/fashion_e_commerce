@@ -28,8 +28,31 @@ abstract final class AppTheme {
     );
   }
 
-  static ThemeData get lightTheme {
-    final textTheme = GoogleFonts.archivoTextTheme().apply(
+  static TextStyle displayFor(
+    BuildContext context, {
+    double fontSize = 48,
+    Color color = AppColors.nearBlack,
+  }) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
+    if (isArabic) {
+      return GoogleFonts.ibmPlexSansArabic(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w700,
+        height: 1.05,
+        color: color,
+      );
+    }
+
+    return display(fontSize: fontSize, color: color);
+  }
+
+  static ThemeData lightThemeFor(Locale locale) {
+    final isArabic = locale.languageCode == 'ar';
+    final textTheme = (isArabic
+            ? GoogleFonts.ibmPlexSansArabicTextTheme()
+            : GoogleFonts.archivoTextTheme())
+        .apply(
       bodyColor: AppColors.nearBlack,
       displayColor: AppColors.nearBlack,
     );
@@ -67,4 +90,6 @@ abstract final class AppTheme {
       ),
     );
   }
+
+  static ThemeData get lightTheme => lightThemeFor(const Locale('en'));
 }

@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,13 +37,15 @@ class _SignInPageState extends State<SignInPage> {
             padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
             children: [
               Text(
-                'SIGN IN.\nSYNC EVERYTHING.',
-                style: AppTheme.display(fontSize: 39),
+                AppStrings.of(context).isArabic ? 'سجل الدخول.\nوخلي كل شيء متزامن.' : 'SIGN IN.\nSYNC EVERYTHING.',
+                style: AppTheme.displayFor(context, fontSize: 39),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Keep saved items and orders connected to your account.',
-                style: TextStyle(
+              Text(
+                AppStrings.of(context).isArabic
+                    ? 'احتفظ بالمحفوظات والطلبات مرتبطة بحسابك.'
+                    : 'Keep saved items and orders connected to your account.',
+                style: const TextStyle(
                   color: AppColors.midGray,
                   height: 1.4,
                 ),
@@ -57,7 +60,7 @@ class _SignInPageState extends State<SignInPage> {
                   return null;
                 },
                 decoration: const InputDecoration(
-                  labelText: 'EMAIL',
+                  labelText: AppStrings.of(context).isArabic ? 'البريد الإلكتروني' : 'EMAIL',
                 ),
               ),
               const SizedBox(height: 12),
@@ -71,7 +74,7 @@ class _SignInPageState extends State<SignInPage> {
                   return null;
                 },
                 decoration: const InputDecoration(
-                  labelText: 'PASSWORD',
+                  labelText: AppStrings.of(context).isArabic ? 'كلمة المرور' : 'PASSWORD',
                 ),
               ),
               const SizedBox(height: 18),
@@ -96,7 +99,7 @@ class _SignInPageState extends State<SignInPage> {
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 180),
                     child: Text(
-                      loading ? 'SIGNING IN...' : 'SIGN IN  →',
+                      loading ? (AppStrings.of(context).isArabic ? 'جارٍ تسجيل الدخول...' : 'SIGNING IN...') : AppStrings.of(context).signIn + '  →',
                       key: ValueKey<bool>(loading),
                       style: const TextStyle(fontWeight: FontWeight.w900),
                     ),

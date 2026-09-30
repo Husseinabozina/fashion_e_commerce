@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/orders/domain/entities/order.dart';
 import 'package:fashion_e_commerce/features/orders/domain/entities/order_status.dart';
 import 'package:fashion_e_commerce/features/orders/domain/entities/return_request.dart';
@@ -12,14 +13,18 @@ class OrderDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('ORDER DETAILS')),
+      appBar: AppBar(title: Text(AppStrings.of(context).orderDetails.toUpperCase())),
       body: BlocConsumer<OrderDetailsCubit, OrderDetailsState>(
         listener: (context, state) {
           if (state is OrderDetailsReady &&
               state.submittedRequest != null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Return request submitted.'),
+              SnackBar(
+                content: Text(
+                  AppStrings.of(context).isArabic
+                      ? 'تم إرسال طلب الإرجاع.'
+                      : 'Return request submitted.',
+                ),
               ),
             );
           }
@@ -54,7 +59,7 @@ class _OrderDetailsContent extends StatelessWidget {
       children: [
         Text(
           '#${order.id}',
-          style: AppTheme.display(fontSize: 30),
+          style: AppTheme.displayFor(context, fontSize: 30),
         ),
         const SizedBox(height: 6),
         Text(
@@ -66,16 +71,16 @@ class _OrderDetailsContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
-          'TRACKING',
-          style: TextStyle(fontWeight: FontWeight.w900),
+        Text(
+          AppStrings.of(context).tracking,
+          style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 14),
         _TrackingTimeline(status: order.status),
         const SizedBox(height: 26),
-        const Text(
-          'ITEMS',
-          style: TextStyle(fontWeight: FontWeight.w900),
+        Text(
+          AppStrings.of(context).items,
+          style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 12),
         ...order.items.map(
@@ -135,7 +140,7 @@ class _OrderDetailsContent extends StatelessWidget {
                       item.key,
                       item.product.sizes,
                     ),
-                    child: const Text('RETURN'),
+                    child: Text(AppStrings.of(context).returnLabel),
                   ),
               ],
             ),
@@ -143,23 +148,23 @@ class _OrderDetailsContent extends StatelessWidget {
         ),
         const SizedBox(height: 18),
         _InfoCard(
-          title: 'DELIVERY',
+          title: AppStrings.of(context).delivery.toUpperCase(),
           value: '${order.deliveryTitle}\n${order.deliveryEta}',
         ),
         _InfoCard(
-          title: 'SHIP TO',
+          title: AppStrings.of(context).isArabic ? 'التوصيل إلى' : 'SHIP TO',
           value: order.shippingAddressLabel,
         ),
         _InfoCard(
-          title: 'PAYMENT',
+          title: AppStrings.of(context).payment.toUpperCase(),
           value: order.paymentTitle,
         ),
         const Divider(height: 34),
         Row(
           children: [
-            const Text(
-              'TOTAL',
-              style: TextStyle(
+            Text(
+              AppStrings.of(context).total.toUpperCase(),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
               ),
@@ -353,19 +358,19 @@ class _ReturnExchangeSheetState extends State<_ReturnExchangeSheet> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'RETURN /\nEXCHANGE',
-                style: AppTheme.display(fontSize: 34),
+                AppStrings.of(context).returnExchange,
+                style: AppTheme.displayFor(context, fontSize: 34),
               ),
               const SizedBox(height: 18),
               SegmentedButton<ReturnRequestType>(
-                segments: const [
+                segments: [
                   ButtonSegment(
                     value: ReturnRequestType.returnItem,
-                    label: Text('RETURN'),
+                    label: Text(AppStrings.of(context).returnLabel),
                   ),
                   ButtonSegment(
                     value: ReturnRequestType.exchangeSize,
-                    label: Text('EXCHANGE SIZE'),
+                    label: Text(AppStrings.of(context).exchangeSize),
                   ),
                 ],
                 selected: <ReturnRequestType>{_type},
@@ -376,7 +381,7 @@ class _ReturnExchangeSheetState extends State<_ReturnExchangeSheet> {
               const SizedBox(height: 20),
               DropdownButtonFormField<String>(
                 initialValue: _reason,
-                decoration: const InputDecoration(labelText: 'REASON'),
+                decoration: InputDecoration(labelText: AppStrings.of(context).reason),
                 items: reasons
                     .map(
                       (reason) => DropdownMenuItem(
@@ -393,9 +398,9 @@ class _ReturnExchangeSheetState extends State<_ReturnExchangeSheet> {
               ),
               if (_type == ReturnRequestType.exchangeSize) ...[
                 const SizedBox(height: 14),
-                const Text(
-                  'NEW SIZE',
-                  style: TextStyle(fontWeight: FontWeight.w900),
+                Text(
+                  AppStrings.of(context).newSize,
+                  style: const TextStyle(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
@@ -432,9 +437,9 @@ class _ReturnExchangeSheetState extends State<_ReturnExchangeSheet> {
                                 Navigator.of(context).pop();
                               }
                             },
-                  child: const Text(
-                    'SUBMIT REQUEST',
-                    style: TextStyle(fontWeight: FontWeight.w900),
+                  child: Text(
+                    AppStrings.of(context).submitRequest,
+                    style: const TextStyle(fontWeight: FontWeight.w900),
                   ),
                 ),
               ),

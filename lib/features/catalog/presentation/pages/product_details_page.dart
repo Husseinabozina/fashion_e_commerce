@@ -1,5 +1,6 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
+import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
 import 'package:fashion_e_commerce/features/wishlist/presentation/cubit/wishlist_cubit.dart';
@@ -86,7 +87,7 @@ class _ProductDetailsContent extends StatelessWidget {
                         const SizedBox(height: 5),
                         Text(
                           product.name,
-                          style: AppTheme.display(fontSize: 30),
+                          style: AppTheme.displayFor(context, fontSize: 30),
                         ),
                       ],
                     ),
@@ -114,7 +115,7 @@ class _ProductDetailsContent extends StatelessWidget {
               ),
               const SizedBox(height: 22),
               _LabelValue(
-                label: 'COLOR',
+                label: AppStrings.of(context).color,
                 value: state.selectedColor ?? 'Select',
               ),
               const SizedBox(height: 10),
@@ -150,9 +151,9 @@ class _ProductDetailsContent extends StatelessWidget {
               const SizedBox(height: 24),
               Row(
                 children: [
-                  const Text(
-                    'SELECT SIZE',
-                    style: TextStyle(
+                  Text(
+                    AppStrings.of(context).selectSize,
+                    style: const TextStyle(
                       fontWeight: FontWeight.w900,
                       letterSpacing: 0.6,
                     ),
@@ -160,7 +161,7 @@ class _ProductDetailsContent extends StatelessWidget {
                   const Spacer(),
                   TextButton(
                     onPressed: () => _showSizeGuide(context),
-                    child: const Text('SIZE GUIDE'),
+                    child: Text(AppStrings.of(context).sizeGuide),
                   ),
                 ],
               ),
@@ -195,7 +196,7 @@ class _ProductDetailsContent extends StatelessWidget {
                 }).toList(),
               ),
               const SizedBox(height: 24),
-              _InfoRow(title: 'FIT', value: product.fit),
+              _InfoRow(title: AppStrings.of(context).fit, value: product.fit),
               const Divider(height: 28),
               Text(
                 product.description,
@@ -218,25 +219,25 @@ class _ProductDetailsContent extends StatelessWidget {
       context: context,
       showDragHandle: true,
       builder: (context) {
-        return const Padding(
-          padding: EdgeInsets.fromLTRB(20, 4, 20, 30),
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 30),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'SIZE GUIDE',
-                style: TextStyle(
+                AppStrings.of(context).sizeGuide,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w900,
                 ),
               ),
-              SizedBox(height: 14),
-              Text('40  ·  25.5 cm'),
-              Text('41  ·  26.0 cm'),
-              Text('42  ·  26.5 cm'),
-              Text('43  ·  27.5 cm'),
-              Text('44  ·  28.0 cm'),
+              const SizedBox(height: 14),
+              const Text('40  ·  25.5 cm'),
+              const Text('41  ·  26.0 cm'),
+              const Text('42  ·  26.5 cm'),
+              const Text('43  ·  27.5 cm'),
+              const Text('44  ·  28.0 cm'),
             ],
           ),
         );
@@ -344,21 +345,25 @@ class _ServiceStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Row(
       children: [
         Expanded(
           child: _ServiceItem(
             icon: Icons.local_shipping_outlined,
-            title: 'FREE DELIVERY',
-            subtitle: '2–4 business days',
+            title: AppStrings.of(context).freeDelivery,
+            subtitle: AppStrings.of(context).isArabic
+                ? 'من 2 إلى 4 أيام عمل'
+                : '2–4 business days',
           ),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: _ServiceItem(
             icon: Icons.keyboard_return_rounded,
-            title: 'EASY RETURNS',
-            subtitle: 'Within 14 days',
+            title: AppStrings.of(context).easyReturns,
+            subtitle: AppStrings.of(context).isArabic
+                ? 'خلال 14 يومًا'
+                : 'Within 14 days',
           ),
         ),
       ],
@@ -451,7 +456,7 @@ class _AddToBagBar extends StatelessWidget {
                           style: const TextStyle(color: AppColors.white),
                         ),
                         action: SnackBarAction(
-                          label: 'VIEW BAG',
+                          label: AppStrings.of(context).viewBag,
                           textColor: AppColors.acidLime,
                           onPressed: () {
                             Navigator.of(context).pushNamed(Routes.cart);
@@ -473,7 +478,9 @@ class _AddToBagBar extends StatelessWidget {
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 180),
               child: Text(
-                canAdd ? 'ADD TO BAG  →' : 'SELECT A SIZE',
+                canAdd
+                    ? AppStrings.of(context).addToBag
+                    : AppStrings.of(context).selectASize,
                 key: ValueKey<bool>(canAdd),
                 style: const TextStyle(fontWeight: FontWeight.w900),
               ),

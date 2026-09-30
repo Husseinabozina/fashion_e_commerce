@@ -1,5 +1,6 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
+import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/orders/domain/entities/order.dart';
 import 'package:fashion_e_commerce/features/orders/domain/entities/order_status.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/cubit/orders_cubit.dart';
@@ -12,7 +13,7 @@ class OrdersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('ORDERS')),
+      appBar: AppBar(title: Text(AppStrings.of(context).orders.toUpperCase())),
       body: BlocBuilder<OrdersCubit, OrdersState>(
         builder: (context, state) {
           return switch (state) {
@@ -97,7 +98,7 @@ class _OrderCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${order.items.length} ITEM${order.items.length == 1 ? '' : 'S'}',
+                        AppStrings.of(context).isArabic ? '${order.items.length} منتج' : '${order.items.length} ITEM${order.items.length == 1 ? '' : 'S'}',
                         style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w900,
@@ -161,9 +162,9 @@ class _EmptyOrders extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Text(
-          'NO ORDERS\nYET.',
+          AppStrings.of(context).isArabic ? 'لا توجد\nطلبات بعد.' : 'NO ORDERS\nYET.',
           textAlign: TextAlign.center,
-          style: AppTheme.display(fontSize: 38),
+          style: AppTheme.displayFor(context, fontSize: 38),
         ),
       ),
     );
