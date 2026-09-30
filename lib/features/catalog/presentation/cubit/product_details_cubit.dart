@@ -5,6 +5,9 @@ import 'package:fashion_e_commerce/features/catalog/domain/usecases/get_complete
 import 'package:fashion_e_commerce/features/catalog/domain/usecases/get_product_details.dart';
 import 'package:fashion_e_commerce/features/notifications/domain/entities/back_in_stock_subscription.dart';
 import 'package:fashion_e_commerce/features/notifications/domain/usecases/subscribe_back_in_stock.dart';
+import 'package:fashion_e_commerce/features/reviews/domain/entities/product_review.dart';
+import 'package:fashion_e_commerce/features/reviews/domain/usecases/get_product_reviews.dart';
+import 'package:fashion_e_commerce/features/reviews/domain/usecases/submit_product_review.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 sealed class ProductDetailsState {
@@ -24,6 +27,7 @@ final class ProductDetailsReady extends ProductDetailsState {
     this.lookProducts = const <Product>[],
     this.selectedLookIds = const <String>{},
     this.lookSizes = const <String, String>{},
+    this.reviews = const <ProductReview>[],
   });
 
   final Product product;
@@ -33,6 +37,7 @@ final class ProductDetailsReady extends ProductDetailsState {
   final List<Product> lookProducts;
   final Set<String> selectedLookIds;
   final Map<String, String> lookSizes;
+  final List<ProductReview> reviews;
 
   double get lookTotal {
     return lookProducts
@@ -48,6 +53,27 @@ final class ProductDetailsReady extends ProductDetailsState {
     );
   }
 
+  double get averageRating {
+    if (reviews.isEmpty) return 0;
+    final sum = reviews.fold<int>(0, (total, review) => total + review.rating);
+    return sum / reviews.length;
+  }
+
+  FitFeedback? get dominantFit {
+    if (reviews.isEmpty) return null;
+
+    final counts = <FitFeedback, int>{
+      for (final fit in FitFeedback.values) fit: 0,
+    };
+    for (final review in reviews) {
+      counts[review.fit] = (counts[review.fit] ?? 0) + 1;
+    }
+
+    return counts.entries
+        .reduce((a, b) => a.value >= b.value ? a : b)
+        .key;
+  }
+
   ProductDetailsReady copyWith({
     String? selectedColor,
     String? selectedSize,
@@ -55,6 +81,7 @@ final class ProductDetailsReady extends ProductDetailsState {
     List<Product>? lookProducts,
     Set<String>? selectedLookIds,
     Map<String, String>? lookSizes,
+    List<ProductReview>? reviews,
   }) {
     return ProductDetailsReady(
       product: product,
@@ -64,6 +91,7 @@ final class ProductDetailsReady extends ProductDetailsState {
       lookProducts: lookProducts ?? this.lookProducts,
       selectedLookIds: selectedLookIds ?? this.selectedLookIds,
       lookSizes: lookSizes ?? this.lookSizes,
+      reviews: reviews ?? this.reviews,
     );
   }
 }
@@ -78,12 +106,16 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
   ProductDetailsCubit(
     this._getProductDetails,
     this._getCompleteLook,
+    this._getProductReviews,
+    this._submitProductReview,
     this._addToCart,
     this._subscribeBackInStock,
   ) : super(const ProductDetailsLoading());
 
   final GetProductDetails _getProductDetails;
   final GetCompleteLook _getCompleteLook;
+  final GetProductReviews _getProductReviews;
+  final SubmitProductReview _submitProductReview;
   final AddToCart _addToCart;
   final SubscribeBackInStock _subscribeBackInStock;
 
@@ -93,6 +125,7 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
     try {
       final product = await _getProductDetails(id);
       final lookProducts = await _getCompleteLook(id);
+      final reviews = await _getProductReviews(id);
 
       emit(
         ProductDetailsReady(
@@ -101,6 +134,7 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
           lookProducts: lookProducts,
           selectedLookIds:
               lookProducts.map((product) => product.id).toSet(),
+          reviews: reviews,
         ),
       );
     } catch (_) {
@@ -111,7 +145,6 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
   void selectColor(String color) {
     final current = state;
     if (current is! ProductDetailsReady) return;
-
     emit(current.copyWith(selectedColor: color));
   }
 
@@ -121,7 +154,6 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
         !current.product.isSizeAvailable(size)) {
       return;
     }
-
     emit(current.copyWith(selectedSize: size));
   }
 
@@ -130,10 +162,7 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
     if (current is! ProductDetailsReady) return;
 
     final next = Set<String>.from(current.selectedLookIds);
-    if (!next.add(productId)) {
-      next.remove(productId);
-    }
-
+    if (!next.add(productId)) next.remove(productId);
     emit(current.copyWith(selectedLookIds: next));
   }
 
@@ -161,27 +190,48 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
     if (current is! ProductDetailsReady || !current.canAddLook) return 0;
 
     var added = 0;
-
     for (final product in current.lookProducts) {
       if (!current.selectedLookIds.contains(product.id)) continue;
 
       final size = current.lookSizes[product.id];
-      if (size == null) continue;
-
       final color = product.colors.isEmpty ? null : product.colors.first;
-      if (color == null) continue;
+      if (size == null || color == null) continue;
 
       await _addToCart(
-        CartItem(
-          product: product,
-          color: color,
-          size: size,
-        ),
+        CartItem(product: product, color: color, size: size),
       );
       added++;
     }
-
     return added;
+  }
+
+  Future<bool> submitReview({
+    required int rating,
+    required FitFeedback fit,
+    required String comment,
+  }) async {
+    final current = state;
+    if (current is! ProductDetailsReady ||
+        rating < 1 ||
+        rating > 5 ||
+        comment.trim().isEmpty) {
+      return false;
+    }
+
+    final review = ProductReview(
+      id: 'review-${DateTime.now().millisecondsSinceEpoch}',
+      productId: current.product.id,
+      authorName: 'You',
+      rating: rating,
+      comment: comment.trim(),
+      fit: fit,
+      createdAt: DateTime.now(),
+    );
+
+    await _submitProductReview(review);
+    final reviews = await _getProductReviews(current.product.id);
+    emit(current.copyWith(reviews: reviews));
+    return true;
   }
 
   Future<bool> subscribeForSize(String size) async {
@@ -209,7 +259,6 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
         },
       ),
     );
-
     return true;
   }
 
@@ -232,7 +281,6 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
         size: size,
       ),
     );
-
     return true;
   }
 }

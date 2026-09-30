@@ -53,6 +53,12 @@ import 'package:fashion_e_commerce/features/orders/domain/usecases/get_orders.da
 import 'package:fashion_e_commerce/features/orders/domain/usecases/request_return.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/cubit/order_details_cubit.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/cubit/orders_cubit.dart';
+import 'package:fashion_e_commerce/features/reviews/data/datasources/in_memory_reviews_data_source.dart';
+import 'package:fashion_e_commerce/features/reviews/data/datasources/reviews_data_source.dart';
+import 'package:fashion_e_commerce/features/reviews/data/repositories/reviews_repository_impl.dart';
+import 'package:fashion_e_commerce/features/reviews/domain/repositories/reviews_repository.dart';
+import 'package:fashion_e_commerce/features/reviews/domain/usecases/get_product_reviews.dart';
+import 'package:fashion_e_commerce/features/reviews/domain/usecases/submit_product_review.dart';
 import 'package:fashion_e_commerce/features/wishlist/data/datasources/in_memory_wishlist_data_source.dart';
 import 'package:fashion_e_commerce/features/wishlist/data/datasources/wishlist_data_source.dart';
 import 'package:fashion_e_commerce/features/wishlist/data/repositories/wishlist_repository_impl.dart';
@@ -121,6 +127,18 @@ void configureDependencies() {
     )
     ..registerLazySingleton<ClearCart>(
       () => ClearCart(serviceLocator<CartRepository>()),
+    )
+    ..registerLazySingleton<ReviewsDataSource>(
+      InMemoryReviewsDataSource.new,
+    )
+    ..registerLazySingleton<ReviewsRepository>(
+      () => ReviewsRepositoryImpl(serviceLocator<ReviewsDataSource>()),
+    )
+    ..registerLazySingleton<GetProductReviews>(
+      () => GetProductReviews(serviceLocator<ReviewsRepository>()),
+    )
+    ..registerLazySingleton<SubmitProductReview>(
+      () => SubmitProductReview(serviceLocator<ReviewsRepository>()),
     )
     ..registerLazySingleton<WishlistDataSource>(
       InMemoryWishlistDataSource.new,
@@ -209,6 +227,8 @@ void configureDependencies() {
       () => ProductDetailsCubit(
         serviceLocator<GetProductDetails>(),
         serviceLocator<GetCompleteLook>(),
+        serviceLocator<GetProductReviews>(),
+        serviceLocator<SubmitProductReview>(),
         serviceLocator<AddToCart>(),
         serviceLocator<SubscribeBackInStock>(),
       ),

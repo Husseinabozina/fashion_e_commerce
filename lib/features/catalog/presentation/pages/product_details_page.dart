@@ -3,6 +3,7 @@ import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
+import 'package:fashion_e_commerce/features/reviews/domain/entities/product_review.dart';
 import 'package:fashion_e_commerce/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -251,6 +252,8 @@ class _ProductDetailsContent extends StatelessWidget {
               ),
               const SizedBox(height: 28),
               _CompleteTheLookSection(state: state),
+              const SizedBox(height: 28),
+              _ReviewsSection(state: state),
               const SizedBox(height: 28),
               const _ServiceStrip(),
             ],
@@ -626,6 +629,310 @@ class _LookPieceCard extends StatelessWidget {
       ),
     );
   }
+}
+
+
+class _ReviewsSection extends StatelessWidget {
+  const _ReviewsSection({required this.state});
+
+  final ProductDetailsReady state;
+
+  @override
+  Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+    final fit = state.dominantFit;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                strings.isArabic ? 'التقييمات' : 'REVIEWS',
+                style: AppTheme.displayFor(context, fontSize: 28),
+              ),
+            ),
+            OutlinedButton(
+              onPressed: () => _showReviewSheet(context),
+              child: Text(
+                strings.isArabic ? 'اكتب تقييمًا' : 'WRITE REVIEW',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        if (state.reviews.isEmpty)
+          Text(
+            strings.isArabic
+                ? 'لا توجد تقييمات بعد. كن أول من يقيّم المنتج.'
+                : 'No reviews yet. Be the first to review this product.',
+            style: const TextStyle(color: AppColors.midGray),
+          )
+        else ...[
+          Row(
+            children: [
+              Text(
+                state.averageRating.toStringAsFixed(1),
+                style: AppTheme.displayFor(context, fontSize: 34),
+              ),
+              const SizedBox(width: 10),
+              _Stars(rating: state.averageRating.round()),
+              const Spacer(),
+              Text(
+                strings.isArabic
+                    ? state.reviews.length.toString() + ' تقييم'
+                    : state.reviews.length.toString() + ' reviews',
+                style: const TextStyle(color: AppColors.midGray),
+              ),
+            ],
+          ),
+          if (fit != null) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 7,
+              ),
+              color: AppColors.concrete.withValues(alpha: 0.35),
+              child: Text(
+                strings.isArabic
+                    ? 'رأي الأغلبية في المقاس: ' + _fitLabel(fit, true)
+                    : 'Most shoppers say: ' + _fitLabel(fit, false),
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 14),
+          ...state.reviews.take(3).map(
+                (review) => _ReviewCard(review: review),
+              ),
+        ],
+      ],
+    );
+  }
+
+  void _showReviewSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => BlocProvider.value(
+        value: context.read<ProductDetailsCubit>(),
+        child: const _WriteReviewSheet(),
+      ),
+    );
+  }
+}
+
+class _ReviewCard extends StatelessWidget {
+  const _ReviewCard({required this.review});
+
+  final ProductReview review;
+
+  @override
+  Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        border: Border.all(color: AppColors.concrete),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _Stars(rating: review.rating),
+              const Spacer(),
+              if (review.verifiedPurchase)
+                Text(
+                  strings.isArabic ? 'شراء موثّق' : 'VERIFIED PURCHASE',
+                  style: const TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            review.authorName,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 5),
+          Text(review.comment),
+          const SizedBox(height: 8),
+          Text(
+            (strings.isArabic ? 'المقاس: ' : 'FIT: ') +
+                _fitLabel(review.fit, strings.isArabic),
+            style: const TextStyle(
+              color: AppColors.midGray,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Stars extends StatelessWidget {
+  const _Stars({required this.rating});
+
+  final int rating;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(
+        5,
+        (index) => Icon(
+          index < rating ? Icons.star_rounded : Icons.star_border_rounded,
+          size: 17,
+        ),
+      ),
+    );
+  }
+}
+
+class _WriteReviewSheet extends StatefulWidget {
+  const _WriteReviewSheet();
+
+  @override
+  State<_WriteReviewSheet> createState() => _WriteReviewSheetState();
+}
+
+class _WriteReviewSheetState extends State<_WriteReviewSheet> {
+  final _comment = TextEditingController();
+  int _rating = 5;
+  FitFeedback _fit = FitFeedback.trueToSize;
+
+  @override
+  void dispose() {
+    _comment.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          20,
+          0,
+          20,
+          24 + MediaQuery.viewInsetsOf(context).bottom,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                strings.isArabic ? 'اكتب تقييمك' : 'WRITE YOUR REVIEW',
+                style: AppTheme.displayFor(context, fontSize: 32),
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: List.generate(
+                  5,
+                  (index) => IconButton(
+                    onPressed: () => setState(() => _rating = index + 1),
+                    icon: Icon(
+                      index < _rating
+                          ? Icons.star_rounded
+                          : Icons.star_border_rounded,
+                      size: 30,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                strings.isArabic ? 'كيف كان المقاس؟' : 'HOW DID IT FIT?',
+                style: const TextStyle(fontWeight: FontWeight.w900),
+              ),
+              const SizedBox(height: 8),
+              SegmentedButton<FitFeedback>(
+                segments: [
+                  ButtonSegment(
+                    value: FitFeedback.runsSmall,
+                    label: Text(_fitLabel(FitFeedback.runsSmall, strings.isArabic)),
+                  ),
+                  ButtonSegment(
+                    value: FitFeedback.trueToSize,
+                    label: Text(_fitLabel(FitFeedback.trueToSize, strings.isArabic)),
+                  ),
+                  ButtonSegment(
+                    value: FitFeedback.runsLarge,
+                    label: Text(_fitLabel(FitFeedback.runsLarge, strings.isArabic)),
+                  ),
+                ],
+                selected: <FitFeedback>{_fit},
+                onSelectionChanged: (value) {
+                  setState(() => _fit = value.first);
+                },
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _comment,
+                minLines: 3,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  labelText: strings.isArabic ? 'رأيك' : 'YOUR REVIEW',
+                  alignLabelWithHint: true,
+                ),
+              ),
+              const SizedBox(height: 18),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: FilledButton(
+                  onPressed: () async {
+                    final submitted = await context
+                        .read<ProductDetailsCubit>()
+                        .submitReview(
+                          rating: _rating,
+                          fit: _fit,
+                          comment: _comment.text,
+                        );
+                    if (submitted && context.mounted) {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: Text(
+                    strings.isArabic ? 'إرسال التقييم' : 'SUBMIT REVIEW',
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+String _fitLabel(FitFeedback fit, bool isArabic) {
+  if (!isArabic) return fit.label;
+
+  return switch (fit) {
+    FitFeedback.runsSmall => 'أصغر من المعتاد',
+    FitFeedback.trueToSize => 'مظبوط',
+    FitFeedback.runsLarge => 'أكبر من المعتاد',
+  };
 }
 
 class _ServiceStrip extends StatelessWidget {
