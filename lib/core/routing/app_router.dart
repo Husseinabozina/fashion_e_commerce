@@ -12,6 +12,7 @@ import 'package:fashion_e_commerce/features/catalog/presentation/pages/product_d
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/search_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/pages/brand_reveal_splash_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/pages/initial_splash_page.dart';
+import 'package:fashion_e_commerce/features/wishlist/presentation/pages/wishlist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -50,6 +51,7 @@ abstract final class AppRouter {
           ),
           settings,
         ),
+      Routes.wishlist => _page(const WishlistPage(), settings),
       _ => _unknownRoute(settings),
     };
   }

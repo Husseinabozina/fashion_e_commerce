@@ -91,9 +91,12 @@ class _TopBar extends StatelessWidget {
           onPressed: () => Navigator.of(context).pushNamed(Routes.search),
           icon: const Icon(Icons.search_rounded),
         ),
-        const SizedBox(width: 16),
-        const Icon(Icons.favorite_border_rounded),
-        const SizedBox(width: 16),
+        const SizedBox(width: 8),
+        IconButton(
+          onPressed: () => Navigator.of(context).pushNamed(Routes.wishlist),
+          icon: const Icon(Icons.favorite_border_rounded),
+        ),
+        const SizedBox(width: 8),
         IconButton(
           onPressed: () => Navigator.of(context).pushNamed(Routes.cart),
           icon: const Icon(Icons.shopping_bag_outlined),
@@ -355,6 +358,13 @@ class _StreetBottomNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     return NavigationBar(
       selectedIndex: 0,
+      onDestinationSelected: (index) {
+        if (index == 1) {
+          Navigator.of(context).pushNamed(Routes.search);
+        } else if (index == 3) {
+          Navigator.of(context).pushNamed(Routes.wishlist);
+        }
+      },
       indicatorColor: Colors.transparent,
       backgroundColor: AppColors.offWhite,
       destinations: const [

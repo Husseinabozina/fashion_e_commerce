@@ -3,6 +3,7 @@ import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product_search_criteria.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/search_cubit.dart';
+import 'package:fashion_e_commerce/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -359,10 +360,29 @@ class _SearchProductTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                const Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Icon(Icons.favorite_border_rounded),
+                Positioned(
+                  right: 4,
+                  top: 4,
+                  child: BlocBuilder<WishlistCubit, WishlistState>(
+                    builder: (context, state) {
+                      final saved =
+                          state is WishlistLoaded && state.contains(product.id);
+                      return IconButton(
+                        onPressed: () {
+                          context.read<WishlistCubit>().toggle(product);
+                        },
+                        icon: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 180),
+                          child: Icon(
+                            saved
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border_rounded,
+                            key: ValueKey<bool>(saved),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),

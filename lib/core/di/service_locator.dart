@@ -25,6 +25,13 @@ import 'package:fashion_e_commerce/features/catalog/domain/usecases/search_produ
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/search_cubit.dart';
+import 'package:fashion_e_commerce/features/wishlist/data/datasources/in_memory_wishlist_data_source.dart';
+import 'package:fashion_e_commerce/features/wishlist/data/datasources/wishlist_data_source.dart';
+import 'package:fashion_e_commerce/features/wishlist/data/repositories/wishlist_repository_impl.dart';
+import 'package:fashion_e_commerce/features/wishlist/domain/repositories/wishlist_repository.dart';
+import 'package:fashion_e_commerce/features/wishlist/domain/usecases/get_wishlist.dart';
+import 'package:fashion_e_commerce/features/wishlist/domain/usecases/toggle_wishlist.dart';
+import 'package:fashion_e_commerce/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:get_it/get_it.dart';
 
 final GetIt serviceLocator = GetIt.instance;
@@ -69,6 +76,18 @@ void configureDependencies() {
     ..registerLazySingleton<ClearCart>(
       () => ClearCart(serviceLocator<CartRepository>()),
     )
+    ..registerLazySingleton<WishlistDataSource>(
+      InMemoryWishlistDataSource.new,
+    )
+    ..registerLazySingleton<WishlistRepository>(
+      () => WishlistRepositoryImpl(serviceLocator<WishlistDataSource>()),
+    )
+    ..registerLazySingleton<GetWishlist>(
+      () => GetWishlist(serviceLocator<WishlistRepository>()),
+    )
+    ..registerLazySingleton<ToggleWishlist>(
+      () => ToggleWishlist(serviceLocator<WishlistRepository>()),
+    )
     ..registerLazySingleton<CheckoutDataSource>(
       DemoCheckoutDataSource.new,
     )
@@ -83,6 +102,12 @@ void configureDependencies() {
     )
     ..registerFactory<HomeCubit>(
       () => HomeCubit(serviceLocator<GetHomeCatalog>()),
+    )
+    ..registerFactory<WishlistCubit>(
+      () => WishlistCubit(
+        serviceLocator<GetWishlist>(),
+        serviceLocator<ToggleWishlist>(),
+      ),
     )
     ..registerFactory<ProductDetailsCubit>(
       () => ProductDetailsCubit(

@@ -2,6 +2,7 @@ import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
+import 'package:fashion_e_commerce/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -47,7 +48,7 @@ class _ProductDetailsContent extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             children: [
-              const _DetailsTopBar(),
+              _DetailsTopBar(product: product),
               const SizedBox(height: 10),
               Hero(
                 tag: 'product-${product.id}',
@@ -245,7 +246,9 @@ class _ProductDetailsContent extends StatelessWidget {
 }
 
 class _DetailsTopBar extends StatelessWidget {
-  const _DetailsTopBar();
+  const _DetailsTopBar({required this.product});
+
+  final Product product;
 
   @override
   Widget build(BuildContext context) {
@@ -258,8 +261,25 @@ class _DetailsTopBar extends StatelessWidget {
         const Spacer(),
         const Icon(Icons.share_outlined),
         const SizedBox(width: 18),
-        const Icon(Icons.favorite_border_rounded),
-        const SizedBox(width: 14),
+        BlocBuilder<WishlistCubit, WishlistState>(
+          builder: (context, state) {
+            final saved =
+                state is WishlistLoaded && state.contains(product.id);
+            return IconButton(
+              onPressed: () {
+                context.read<WishlistCubit>().toggle(product);
+              },
+              icon: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                child: Icon(
+                  saved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  key: ValueKey<bool>(saved),
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 4),
         IconButton(
           onPressed: () => Navigator.of(context).pushNamed(Routes.cart),
           icon: const Icon(Icons.shopping_bag_outlined),
