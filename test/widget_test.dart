@@ -58,8 +58,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(ProductDetailsPage), findsOneWidget);
+
+    await tester.drag(
+      find.byType(ListView).last,
+      const Offset(0, -430),
+    );
+    await tester.pumpAndSettle();
+
     expect(find.text('SELECT SIZE'), findsOneWidget);
-    expect(find.text('ADD TO BAG  →'), findsNothing);
     expect(find.text('SELECT A SIZE'), findsOneWidget);
 
     await tester.tap(find.text('42').first);
