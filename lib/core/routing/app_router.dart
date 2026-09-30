@@ -6,12 +6,16 @@ import 'package:fashion_e_commerce/features/cart/presentation/cubit/cart_cubit.d
 import 'package:fashion_e_commerce/features/cart/presentation/pages/cart_page.dart';
 import 'package:fashion_e_commerce/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:fashion_e_commerce/features/checkout/presentation/pages/checkout_page.dart';
+import 'package:fashion_e_commerce/features/catalog/domain/entities/product_search_criteria.dart';
+import 'package:fashion_e_commerce/features/catalog/presentation/cubit/catalog_browse_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/search_cubit.dart';
+import 'package:fashion_e_commerce/features/catalog/presentation/pages/discover_page.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/home_page.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/product_details_page.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/search_page.dart';
+import 'package:fashion_e_commerce/features/catalog/presentation/pages/shop_page.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/cubit/order_details_cubit.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/pages/order_details_page.dart';
@@ -50,10 +54,18 @@ abstract final class AppRouter {
           ),
           settings,
         ),
-      Routes.search => _page(
-          BlocProvider<SearchCubit>(
-            create: (_) => serviceLocator<SearchCubit>()..load(),
-            child: const SearchPage(),
+      Routes.search => _searchRoute(settings),
+      Routes.shop => _page(
+          BlocProvider<CatalogBrowseCubit>(
+            create: (_) => serviceLocator<CatalogBrowseCubit>()..load(),
+            child: const ShopPage(),
+          ),
+          settings,
+        ),
+      Routes.discover => _page(
+          BlocProvider<CatalogBrowseCubit>(
+            create: (_) => serviceLocator<CatalogBrowseCubit>()..load(),
+            child: const DiscoverPage(),
           ),
           settings,
         ),
@@ -70,6 +82,22 @@ abstract final class AppRouter {
       Routes.signIn => _page(const SignInPage(), settings),
       _ => _unknownRoute(settings),
     };
+  }
+
+  static MaterialPageRoute<dynamic> _searchRoute(
+    RouteSettings settings,
+  ) {
+    final criteria = settings.arguments is ProductSearchCriteria
+        ? settings.arguments! as ProductSearchCriteria
+        : const ProductSearchCriteria();
+
+    return _page(
+      BlocProvider<SearchCubit>(
+        create: (_) => serviceLocator<SearchCubit>()..load(criteria),
+        child: const SearchPage(),
+      ),
+      settings,
+    );
   }
 
   static MaterialPageRoute<dynamic> _orderDetailsRoute(

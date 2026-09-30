@@ -42,15 +42,21 @@ class SearchCubit extends Cubit<SearchState> {
   List<String> _brands = const <String>[];
   ProductSearchCriteria _criteria = const ProductSearchCriteria();
 
-  Future<void> load() async {
+  Future<void> load([
+    ProductSearchCriteria initialCriteria = const ProductSearchCriteria(),
+  ]) async {
     emit(const SearchLoading());
+    _criteria = initialCriteria;
 
     try {
-      final products = await _searchProducts(const ProductSearchCriteria());
-      _categories = products.map((product) => product.category).toSet().toList()
+      final allProducts =
+          await _searchProducts(const ProductSearchCriteria());
+      _categories =
+          allProducts.map((product) => product.category).toSet().toList()
+            ..sort();
+      _brands = allProducts.map((product) => product.brand).toSet().toList()
         ..sort();
-      _brands = products.map((product) => product.brand).toSet().toList()
-        ..sort();
+      final products = await _searchProducts(initialCriteria);
 
       emit(
         SearchReady(

@@ -2,6 +2,7 @@ import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/home_catalog.dart';
+import 'package:fashion_e_commerce/features/catalog/domain/entities/product_search_criteria.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/widgets/product_card.dart';
 import 'package:flutter/material.dart';
@@ -72,7 +73,13 @@ class _HomeContent extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           ...catalog.categories.map(
-            (category) => _CategoryRow(category: category),
+            (category) => _CategoryRow(
+              category: category,
+              onTap: () => Navigator.of(context).pushNamed(
+                Routes.search,
+                arguments: ProductSearchCriteria(category: category),
+              ),
+            ),
           ),
           const SizedBox(height: 28),
           const _EditorialBlock(),
@@ -273,13 +280,19 @@ class _SectionTitle extends StatelessWidget {
 }
 
 class _CategoryRow extends StatelessWidget {
-  const _CategoryRow({required this.category});
+  const _CategoryRow({
+    required this.category,
+    required this.onTap,
+  });
 
   final String category;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return InkWell(
+      onTap: onTap,
+      child: Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       decoration: BoxDecoration(
@@ -301,6 +314,7 @@ class _CategoryRow extends StatelessWidget {
           const Icon(Icons.arrow_forward_rounded),
         ],
       ),
+    ),
     );
   }
 }
@@ -368,7 +382,9 @@ class _StreetBottomNavigation extends StatelessWidget {
       selectedIndex: 0,
       onDestinationSelected: (index) {
         if (index == 1) {
-          Navigator.of(context).pushNamed(Routes.search);
+          Navigator.of(context).pushNamed(Routes.shop);
+        } else if (index == 2) {
+          Navigator.of(context).pushNamed(Routes.discover);
         } else if (index == 3) {
           Navigator.of(context).pushNamed(Routes.wishlist);
         } else if (index == 4) {

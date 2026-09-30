@@ -31,6 +31,7 @@ import 'package:fashion_e_commerce/features/catalog/domain/repositories/catalog_
 import 'package:fashion_e_commerce/features/catalog/domain/usecases/get_home_catalog.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/usecases/get_product_details.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/usecases/search_products.dart';
+import 'package:fashion_e_commerce/features/catalog/presentation/cubit/catalog_browse_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/search_cubit.dart';
@@ -158,6 +159,9 @@ void configureDependencies() {
         serviceLocator<SignIn>(),
         serviceLocator<SignOut>(),
       ),
+    )
+    ..registerFactory<CatalogBrowseCubit>(
+      () => CatalogBrowseCubit(serviceLocator<SearchProducts>()),
     )
     ..registerFactory<HomeCubit>(
       () => HomeCubit(serviceLocator<GetHomeCatalog>()),
