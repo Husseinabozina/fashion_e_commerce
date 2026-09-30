@@ -1,7 +1,11 @@
+import 'package:fashion_e_commerce/core/di/service_locator.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
+import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
+import 'package:fashion_e_commerce/features/catalog/presentation/pages/home_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/pages/brand_reveal_splash_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/pages/initial_splash_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract final class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -9,6 +13,13 @@ abstract final class AppRouter {
       Routes.initialSplash => _page(const InitialSplashPage(), settings),
       Routes.brandRevealSplash =>
         _page(const BrandRevealSplashPage(), settings),
+      Routes.home => _page(
+          BlocProvider<HomeCubit>(
+            create: (_) => serviceLocator<HomeCubit>()..load(),
+            child: const HomePage(),
+          ),
+          settings,
+        ),
       _ => _unknownRoute(settings),
     };
   }
