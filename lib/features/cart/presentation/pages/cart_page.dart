@@ -3,6 +3,7 @@ import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/cart/domain/entities/cart_item.dart';
 import 'package:fashion_e_commerce/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:fashion_e_commerce/features/promotions/presentation/cubit/promotions_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -209,12 +210,34 @@ class _CartSummary extends StatelessWidget {
             top: BorderSide(color: AppColors.concrete),
           ),
         ),
-        child: Column(
+        child: BlocBuilder<PromotionsCubit, PromotionsState>(
+          builder: (context, promotionState) {
+            final ready = promotionState is PromotionsReady
+                ? promotionState
+                : const PromotionsReady();
+            final discount = ready.discountFor(state.subtotal);
+            final total = state.subtotal - discount;
+
+            return Column(
           children: [
+            _PromoCodeSection(
+              subtotal: state.subtotal,
+              state: ready,
+            ),
+            const SizedBox(height: 16),
             _SummaryRow(
               label: AppStrings.of(context).subtotal.toUpperCase(),
               value: '${state.subtotal.toStringAsFixed(0)} EGP',
             ),
+            if (discount > 0) ...[
+              const SizedBox(height: 8),
+              _SummaryRow(
+                label: AppStrings.of(context).isArabic
+                    ? 'الخصم'
+                    : 'DISCOUNT',
+                value: '-${discount.toStringAsFixed(0)} EGP',
+              ),
+            ],
             const SizedBox(height: 8),
             _SummaryRow(
               label: AppStrings.of(context).delivery.toUpperCase(),
@@ -223,7 +246,7 @@ class _CartSummary extends StatelessWidget {
             const Divider(height: 28),
             _SummaryRow(
               label: AppStrings.of(context).total.toUpperCase(),
-              value: '${state.subtotal.toStringAsFixed(0)} EGP',
+              value: '${total.toStringAsFixed(0)} EGP',
               emphasized: true,
             ),
             const SizedBox(height: 14),
@@ -246,8 +269,137 @@ class _CartSummary extends StatelessWidget {
               ),
             ),
           ],
+        );
+          },
         ),
       ),
+    );
+  }
+}
+
+
+class _PromoCodeSection extends StatefulWidget {
+  const _PromoCodeSection({
+    required this.subtotal,
+    required this.state,
+  });
+
+  final double subtotal;
+  final PromotionsReady state;
+
+  @override
+  State<_PromoCodeSection> createState() => _PromoCodeSectionState();
+}
+
+class _PromoCodeSectionState extends State<_PromoCodeSection> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+    final applied = widget.state.applied;
+
+    if (applied != null) {
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.acidLime.withValues(alpha: 0.22),
+          border: Border.all(color: AppColors.nearBlack),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.local_offer_outlined),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    applied.code,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  Text(
+                    applied.title,
+                    style: const TextStyle(
+                      color: AppColors.midGray,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            TextButton(
+              onPressed: context.read<PromotionsCubit>().clear,
+              child: Text(strings.isArabic ? 'إزالة' : 'REMOVE'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                textCapitalization: TextCapitalization.characters,
+                decoration: InputDecoration(
+                  hintText: strings.isArabic
+                      ? 'كود الخصم'
+                      : 'PROMO CODE',
+                  prefixIcon: const Icon(Icons.local_offer_outlined),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              height: 48,
+              child: FilledButton(
+                onPressed: () {
+                  context.read<PromotionsCubit>().apply(
+                        code: _controller.text,
+                        subtotal: widget.subtotal,
+                      );
+                },
+                child: Text(strings.isArabic ? 'تطبيق' : 'APPLY'),
+              ),
+            ),
+          ],
+        ),
+        if (widget.state.message != null) ...[
+          const SizedBox(height: 7),
+          Text(
+            widget.state.message!,
+            style: TextStyle(
+              fontSize: 11,
+              color: widget.state.hasError
+                  ? Colors.red.shade700
+                  : AppColors.midGray,
+            ),
+          ),
+        ],
+        const SizedBox(height: 5),
+        Text(
+          strings.isArabic
+              ? 'جرّب STREET10 أو NOVA500'
+              : 'Try STREET10 or NOVA500',
+          style: const TextStyle(
+            fontSize: 10,
+            color: AppColors.midGray,
+          ),
+        ),
+      ],
     );
   }
 }

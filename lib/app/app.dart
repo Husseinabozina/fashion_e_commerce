@@ -4,6 +4,7 @@ import 'package:fashion_e_commerce/core/localization/locale_cubit.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/core/di/service_locator.dart';
 import 'package:fashion_e_commerce/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:fashion_e_commerce/features/promotions/presentation/cubit/promotions_cubit.dart';
 import 'package:fashion_e_commerce/features/recently_viewed/presentation/cubit/recently_viewed_cubit.dart';
 import 'package:fashion_e_commerce/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,9 @@ class FashionApp extends StatelessWidget {
             ),
             BlocProvider<RecentlyViewedCubit>(
               create: (_) => serviceLocator<RecentlyViewedCubit>()..load(),
+            ),
+            BlocProvider<PromotionsCubit>(
+              create: (_) => serviceLocator<PromotionsCubit>()..load(),
             ),
             BlocProvider<AuthCubit>(
               create: (_) => serviceLocator<AuthCubit>()..load(),

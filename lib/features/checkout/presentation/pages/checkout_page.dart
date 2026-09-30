@@ -455,6 +455,15 @@ class _ReviewStep extends StatelessWidget {
           label: AppStrings.of(context).subtotal.toUpperCase(),
           value: '${state.subtotal.toStringAsFixed(0)} EGP',
         ),
+        if (state.discount > 0) ...[
+          const SizedBox(height: 8),
+          _ReviewPriceRow(
+            label: AppStrings.of(context).isArabic
+                ? 'الخصم · ${state.promotion!.code}'
+                : 'DISCOUNT · ${state.promotion!.code}',
+            value: '-${state.discount.toStringAsFixed(0)} EGP',
+          ),
+        ],
         const SizedBox(height: 8),
         _ReviewPriceRow(
           label: AppStrings.of(context).delivery.toUpperCase(),

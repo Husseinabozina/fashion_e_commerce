@@ -53,6 +53,14 @@ import 'package:fashion_e_commerce/features/orders/domain/usecases/get_orders.da
 import 'package:fashion_e_commerce/features/orders/domain/usecases/request_return.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/cubit/order_details_cubit.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/cubit/orders_cubit.dart';
+import 'package:fashion_e_commerce/features/promotions/data/datasources/in_memory_promotions_data_source.dart';
+import 'package:fashion_e_commerce/features/promotions/data/datasources/promotions_data_source.dart';
+import 'package:fashion_e_commerce/features/promotions/data/repositories/promotions_repository_impl.dart';
+import 'package:fashion_e_commerce/features/promotions/domain/repositories/promotions_repository.dart';
+import 'package:fashion_e_commerce/features/promotions/domain/usecases/apply_promotion_code.dart';
+import 'package:fashion_e_commerce/features/promotions/domain/usecases/clear_promotion.dart';
+import 'package:fashion_e_commerce/features/promotions/domain/usecases/get_applied_promotion.dart';
+import 'package:fashion_e_commerce/features/promotions/presentation/cubit/promotions_cubit.dart';
 import 'package:fashion_e_commerce/features/recently_viewed/data/datasources/in_memory_recently_viewed_data_source.dart';
 import 'package:fashion_e_commerce/features/recently_viewed/data/datasources/recently_viewed_data_source.dart';
 import 'package:fashion_e_commerce/features/recently_viewed/data/repositories/recently_viewed_repository_impl.dart';
@@ -134,6 +142,21 @@ void configureDependencies() {
     )
     ..registerLazySingleton<ClearCart>(
       () => ClearCart(serviceLocator<CartRepository>()),
+    )
+    ..registerLazySingleton<PromotionsDataSource>(
+      InMemoryPromotionsDataSource.new,
+    )
+    ..registerLazySingleton<PromotionsRepository>(
+      () => PromotionsRepositoryImpl(serviceLocator<PromotionsDataSource>()),
+    )
+    ..registerLazySingleton<GetAppliedPromotion>(
+      () => GetAppliedPromotion(serviceLocator<PromotionsRepository>()),
+    )
+    ..registerLazySingleton<ApplyPromotionCode>(
+      () => ApplyPromotionCode(serviceLocator<PromotionsRepository>()),
+    )
+    ..registerLazySingleton<ClearPromotion>(
+      () => ClearPromotion(serviceLocator<PromotionsRepository>()),
     )
     ..registerLazySingleton<RecentlyViewedDataSource>(
       InMemoryRecentlyViewedDataSource.new,
@@ -242,6 +265,13 @@ void configureDependencies() {
     ..registerFactory<HomeCubit>(
       () => HomeCubit(serviceLocator<GetHomeCatalog>()),
     )
+    ..registerFactory<PromotionsCubit>(
+      () => PromotionsCubit(
+        serviceLocator<GetAppliedPromotion>(),
+        serviceLocator<ApplyPromotionCode>(),
+        serviceLocator<ClearPromotion>(),
+      ),
+    )
     ..registerFactory<RecentlyViewedCubit>(
       () => RecentlyViewedCubit(
         serviceLocator<GetRecentlyViewed>(),
@@ -278,6 +308,7 @@ void configureDependencies() {
       () => CheckoutCubit(
         serviceLocator<GetCart>(),
         serviceLocator<GetCheckoutOptions>(),
+        serviceLocator<GetAppliedPromotion>(),
         serviceLocator<PlaceOrder>(),
         serviceLocator<ClearCart>(),
       ),

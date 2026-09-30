@@ -9,6 +9,8 @@ import 'package:fashion_e_commerce/features/checkout/domain/entities/place_order
 import 'package:fashion_e_commerce/features/checkout/domain/entities/shipping_address.dart';
 import 'package:fashion_e_commerce/features/checkout/domain/usecases/get_checkout_options.dart';
 import 'package:fashion_e_commerce/features/checkout/domain/usecases/place_order.dart';
+import 'package:fashion_e_commerce/features/promotions/domain/entities/promotion.dart';
+import 'package:fashion_e_commerce/features/promotions/domain/usecases/get_applied_promotion.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum CheckoutStep { address, delivery, payment, review }
@@ -25,6 +27,7 @@ final class CheckoutReady extends CheckoutState {
   const CheckoutReady({
     required this.items,
     required this.options,
+    this.promotion,
     this.step = CheckoutStep.address,
     this.address,
     this.delivery,
@@ -34,6 +37,7 @@ final class CheckoutReady extends CheckoutState {
 
   final List<CartItem> items;
   final CheckoutOptions options;
+  final Promotion? promotion;
   final CheckoutStep step;
   final ShippingAddress? address;
   final DeliveryOption? delivery;
@@ -47,7 +51,9 @@ final class CheckoutReady extends CheckoutState {
     );
   }
 
-  double get total => subtotal + (delivery?.price ?? 0);
+  double get discount => promotion?.discountFor(subtotal) ?? 0;
+
+  double get total => subtotal - discount + (delivery?.price ?? 0);
 
   CheckoutReady copyWith({
     CheckoutStep? step,
@@ -59,6 +65,7 @@ final class CheckoutReady extends CheckoutState {
     return CheckoutReady(
       items: items,
       options: options,
+      promotion: promotion,
       step: step ?? this.step,
       address: address ?? this.address,
       delivery: delivery ?? this.delivery,
@@ -84,12 +91,14 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   CheckoutCubit(
     this._getCart,
     this._getCheckoutOptions,
+    this._getAppliedPromotion,
     this._placeOrder,
     this._clearCart,
   ) : super(const CheckoutLoading());
 
   final GetCart _getCart;
   final GetCheckoutOptions _getCheckoutOptions;
+  final GetAppliedPromotion _getAppliedPromotion;
   final PlaceOrder _placeOrder;
   final ClearCart _clearCart;
 
@@ -104,10 +113,13 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       }
 
       final options = await _getCheckoutOptions();
+      final promotion = await _getAppliedPromotion();
+
       emit(
         CheckoutReady(
           items: items,
           options: options,
+          promotion: promotion,
         ),
       );
     } catch (_) {
@@ -183,6 +195,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
           address: current.address!,
           delivery: current.delivery!,
           payment: current.payment!,
+          promotion: current.promotion,
         ),
       );
 
