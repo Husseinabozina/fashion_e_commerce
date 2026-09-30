@@ -87,7 +87,10 @@ class _TopBar extends StatelessWidget {
           style: AppTheme.display(fontSize: 26),
         ),
         const Spacer(),
-        const Icon(Icons.search_rounded),
+        IconButton(
+          onPressed: () => Navigator.of(context).pushNamed(Routes.search),
+          icon: const Icon(Icons.search_rounded),
+        ),
         const SizedBox(width: 16),
         const Icon(Icons.favorite_border_rounded),
         const SizedBox(width: 16),
@@ -105,7 +108,10 @@ class _SearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return InkWell(
+      onTap: () => Navigator.of(context).pushNamed(Routes.search),
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
       height: 46,
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
@@ -130,6 +136,7 @@ class _SearchField extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }

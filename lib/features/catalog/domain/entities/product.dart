@@ -3,6 +3,7 @@ class Product {
     required this.id,
     required this.brand,
     required this.name,
+    required this.category,
     required this.price,
     required this.imageUrl,
     required this.colors,
@@ -16,6 +17,7 @@ class Product {
   final String id;
   final String brand;
   final String name;
+  final String category;
   final double price;
   final double? previousPrice;
   final String imageUrl;

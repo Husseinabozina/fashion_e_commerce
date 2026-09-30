@@ -6,8 +6,10 @@ import 'package:fashion_e_commerce/features/checkout/presentation/cubit/checkout
 import 'package:fashion_e_commerce/features/checkout/presentation/pages/checkout_page.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
+import 'package:fashion_e_commerce/features/catalog/presentation/cubit/search_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/home_page.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/product_details_page.dart';
+import 'package:fashion_e_commerce/features/catalog/presentation/pages/search_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/pages/brand_reveal_splash_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/pages/initial_splash_page.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +40,13 @@ abstract final class AppRouter {
           BlocProvider<CheckoutCubit>(
             create: (_) => serviceLocator<CheckoutCubit>()..load(),
             child: const CheckoutPage(),
+          ),
+          settings,
+        ),
+      Routes.search => _page(
+          BlocProvider<SearchCubit>(
+            create: (_) => serviceLocator<SearchCubit>()..load(),
+            child: const SearchPage(),
           ),
           settings,
         ),

@@ -21,8 +21,10 @@ import 'package:fashion_e_commerce/features/catalog/data/repositories/catalog_re
 import 'package:fashion_e_commerce/features/catalog/domain/repositories/catalog_repository.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/usecases/get_home_catalog.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/usecases/get_product_details.dart';
+import 'package:fashion_e_commerce/features/catalog/domain/usecases/search_products.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/home_cubit.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/cubit/product_details_cubit.dart';
+import 'package:fashion_e_commerce/features/catalog/presentation/cubit/search_cubit.dart';
 import 'package:get_it/get_it.dart';
 
 final GetIt serviceLocator = GetIt.instance;
@@ -42,6 +44,9 @@ void configureDependencies() {
     )
     ..registerLazySingleton<GetProductDetails>(
       () => GetProductDetails(serviceLocator<CatalogRepository>()),
+    )
+    ..registerLazySingleton<SearchProducts>(
+      () => SearchProducts(serviceLocator<CatalogRepository>()),
     )
     ..registerLazySingleton<CartDataSource>(
       InMemoryCartDataSource.new,
@@ -84,6 +89,9 @@ void configureDependencies() {
         serviceLocator<GetProductDetails>(),
         serviceLocator<AddToCart>(),
       ),
+    )
+    ..registerFactory<SearchCubit>(
+      () => SearchCubit(serviceLocator<SearchProducts>()),
     )
     ..registerFactory<CartCubit>(
       () => CartCubit(

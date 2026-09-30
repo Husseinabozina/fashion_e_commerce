@@ -9,6 +9,7 @@ void main() {
     id: 'shoe-1',
     brand: 'NOVA',
     name: 'Runner',
+    category: 'Sneakers',
     price: 1000,
     imageUrl: '',
     colors: <String>['Black'],

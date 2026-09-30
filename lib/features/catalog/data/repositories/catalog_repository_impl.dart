@@ -1,6 +1,7 @@
 import 'package:fashion_e_commerce/features/catalog/data/datasources/catalog_data_source.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/home_catalog.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
+import 'package:fashion_e_commerce/features/catalog/domain/entities/product_search_criteria.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/repositories/catalog_repository.dart';
 
 class CatalogRepositoryImpl implements CatalogRepository {
@@ -32,5 +33,42 @@ class CatalogRepositoryImpl implements CatalogRepository {
       (product) => product.id == id,
       orElse: () => throw StateError('Product not found: $id'),
     );
+  }
+
+  @override
+  Future<List<Product>> searchProducts(ProductSearchCriteria criteria) async {
+    final products = await _dataSource.fetchProducts();
+    final normalizedQuery = criteria.query.trim().toLowerCase();
+
+    final filtered = products.where((product) {
+      final matchesQuery = normalizedQuery.isEmpty ||
+          product.name.toLowerCase().contains(normalizedQuery) ||
+          product.brand.toLowerCase().contains(normalizedQuery) ||
+          product.category.toLowerCase().contains(normalizedQuery);
+
+      final matchesCategory = criteria.category == null ||
+          product.category == criteria.category;
+
+      final matchesBrand =
+          criteria.brand == null || product.brand == criteria.brand;
+
+      return matchesQuery && matchesCategory && matchesBrand;
+    }).toList();
+
+    switch (criteria.sort) {
+      case ProductSort.recommended:
+        break;
+      case ProductSort.newest:
+        filtered.sort((a, b) {
+          if (a.isNew == b.isNew) return 0;
+          return a.isNew ? -1 : 1;
+        });
+      case ProductSort.priceLowToHigh:
+        filtered.sort((a, b) => a.price.compareTo(b.price));
+      case ProductSort.priceHighToLow:
+        filtered.sort((a, b) => b.price.compareTo(a.price));
+    }
+
+    return filtered;
   }
 }
