@@ -364,7 +364,7 @@ class _StreetBottomNavigation extends StatelessWidget {
         } else if (index == 3) {
           Navigator.of(context).pushNamed(Routes.wishlist);
         } else if (index == 4) {
-          Navigator.of(context).pushNamed(Routes.orders);
+          Navigator.of(context).pushNamed(Routes.account);
         }
       },
       indicatorColor: Colors.transparent,
@@ -388,8 +388,8 @@ class _StreetBottomNavigation extends StatelessWidget {
           label: 'Saved',
         ),
         NavigationDestination(
-          icon: Icon(Icons.receipt_long_outlined),
-          label: 'Orders',
+          icon: Icon(Icons.person_outline_rounded),
+          label: 'Account',
         ),
       ],
     );

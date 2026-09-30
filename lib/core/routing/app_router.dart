@@ -1,5 +1,7 @@
 import 'package:fashion_e_commerce/core/di/service_locator.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
+import 'package:fashion_e_commerce/features/auth/presentation/pages/account_page.dart';
+import 'package:fashion_e_commerce/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:fashion_e_commerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:fashion_e_commerce/features/cart/presentation/pages/cart_page.dart';
 import 'package:fashion_e_commerce/features/checkout/presentation/cubit/checkout_cubit.dart';
@@ -64,6 +66,8 @@ abstract final class AppRouter {
           settings,
         ),
       Routes.orderDetails => _orderDetailsRoute(settings),
+      Routes.account => _page(const AccountPage(), settings),
+      Routes.signIn => _page(const SignInPage(), settings),
       _ => _unknownRoute(settings),
     };
   }

@@ -1,3 +1,11 @@
+import 'package:fashion_e_commerce/features/auth/data/datasources/auth_data_source.dart';
+import 'package:fashion_e_commerce/features/auth/data/datasources/in_memory_auth_data_source.dart';
+import 'package:fashion_e_commerce/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:fashion_e_commerce/features/auth/domain/repositories/auth_repository.dart';
+import 'package:fashion_e_commerce/features/auth/domain/usecases/get_current_user.dart';
+import 'package:fashion_e_commerce/features/auth/domain/usecases/sign_in.dart';
+import 'package:fashion_e_commerce/features/auth/domain/usecases/sign_out.dart';
+import 'package:fashion_e_commerce/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:fashion_e_commerce/features/cart/data/datasources/cart_data_source.dart';
 import 'package:fashion_e_commerce/features/cart/data/datasources/in_memory_cart_data_source.dart';
 import 'package:fashion_e_commerce/features/cart/data/repositories/cart_repository_impl.dart';
@@ -49,6 +57,21 @@ void configureDependencies() {
   if (serviceLocator.isRegistered<HomeCubit>()) return;
 
   serviceLocator
+    ..registerLazySingleton<AuthDataSource>(
+      InMemoryAuthDataSource.new,
+    )
+    ..registerLazySingleton<AuthRepository>(
+      () => AuthRepositoryImpl(serviceLocator<AuthDataSource>()),
+    )
+    ..registerLazySingleton<GetCurrentUser>(
+      () => GetCurrentUser(serviceLocator<AuthRepository>()),
+    )
+    ..registerLazySingleton<SignIn>(
+      () => SignIn(serviceLocator<AuthRepository>()),
+    )
+    ..registerLazySingleton<SignOut>(
+      () => SignOut(serviceLocator<AuthRepository>()),
+    )
     ..registerLazySingleton<CatalogDataSource>(
       DemoCatalogDataSource.new,
     )
@@ -125,6 +148,13 @@ void configureDependencies() {
       () => PlaceOrder(
         serviceLocator<CheckoutRepository>(),
         serviceLocator<OrdersRepository>(),
+      ),
+    )
+    ..registerFactory<AuthCubit>(
+      () => AuthCubit(
+        serviceLocator<GetCurrentUser>(),
+        serviceLocator<SignIn>(),
+        serviceLocator<SignOut>(),
       ),
     )
     ..registerFactory<HomeCubit>(

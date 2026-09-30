@@ -9,4 +9,6 @@ abstract final class Routes {
   static const String wishlist = '/wishlist';
   static const String orders = '/orders';
   static const String orderDetails = '/order-details';
+  static const String account = '/account';
+  static const String signIn = '/sign-in';
 }

@@ -2,6 +2,7 @@ import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/routing/app_router.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/core/di/service_locator.dart';
+import 'package:fashion_e_commerce/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:fashion_e_commerce/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,8 +18,15 @@ class FashionApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return BlocProvider<WishlistCubit>(
-          create: (_) => serviceLocator<WishlistCubit>()..load(),
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider<WishlistCubit>(
+              create: (_) => serviceLocator<WishlistCubit>()..load(),
+            ),
+            BlocProvider<AuthCubit>(
+              create: (_) => serviceLocator<AuthCubit>()..load(),
+            ),
+          ],
           child: MaterialApp(
             title: 'Fashion E-Commerce',
             debugShowCheckedModeBanner: false,
