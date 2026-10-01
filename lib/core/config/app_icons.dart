@@ -26,9 +26,10 @@ abstract final class AppIcons {
   static final IconData bagOpen = PhosphorIcons.shoppingBagOpen();
   static final IconData arrowRight = PhosphorIcons.arrowRight();
   static final IconData arrowLeft = PhosphorIcons.arrowLeft();
+  static final IconData close = PhosphorIcons.x();
+
   static final IconData wifiOff = PhosphorIcons.wifiSlash();
-  static final IconData check =
-      PhosphorIcons.check(PhosphorIconsStyle.bold);
+  static final IconData check = PhosphorIcons.check(PhosphorIconsStyle.bold);
   static final IconData share = PhosphorIcons.shareNetwork();
   static final IconData plus = PhosphorIcons.plus();
   static final IconData minus = PhosphorIcons.minus();

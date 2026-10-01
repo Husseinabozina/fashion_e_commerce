@@ -29,20 +29,20 @@ class ProductDetailsPage extends StatelessWidget {
             }
           },
           child: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
-          builder: (context, state) {
-            return switch (state) {
-              ProductDetailsLoading() => const Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.nearBlack,
+            builder: (context, state) {
+              return switch (state) {
+                ProductDetailsLoading() => const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.nearBlack,
+                    ),
                   ),
-                ),
-              ProductDetailsFailure(:final message) => Center(
-                  child: Text(message),
-                ),
-              ProductDetailsReady() => _ProductDetailsContent(state: state),
-            };
-          },
-        ),
+                ProductDetailsFailure(:final message) => Center(
+                    child: Text(message),
+                  ),
+                ProductDetailsReady() => _ProductDetailsContent(state: state),
+              };
+            },
+          ),
         ),
       ),
     );
@@ -166,14 +166,12 @@ class _ProductDetailsContent extends StatelessWidget {
                     selectedColor: AppColors.nearBlack,
                     backgroundColor: AppColors.white,
                     labelStyle: TextStyle(
-                      color:
-                          selected ? AppColors.white : AppColors.nearBlack,
+                      color: selected ? AppColors.white : AppColors.nearBlack,
                       fontWeight: FontWeight.w700,
                     ),
                     side: BorderSide(
-                      color: selected
-                          ? AppColors.nearBlack
-                          : AppColors.concrete,
+                      color:
+                          selected ? AppColors.nearBlack : AppColors.concrete,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
@@ -220,11 +218,13 @@ class _ProductDetailsContent extends StatelessWidget {
                       ),
                       label: Text(
                         subscribed
-                            ? size + ' · ' +
+                            ? size +
+                                ' · ' +
                                 (AppStrings.of(context).isArabic
                                     ? 'تم التنبيه'
                                     : 'NOTIFY ON')
-                            : size + ' · ' +
+                            : size +
+                                ' · ' +
                                 (AppStrings.of(context).isArabic
                                     ? 'نبّهني'
                                     : 'NOTIFY ME'),
@@ -263,9 +263,8 @@ class _ProductDetailsContent extends StatelessWidget {
                       fontWeight: FontWeight.w900,
                     ),
                     side: BorderSide(
-                      color: selected
-                          ? AppColors.nearBlack
-                          : AppColors.concrete,
+                      color:
+                          selected ? AppColors.nearBlack : AppColors.concrete,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
@@ -349,8 +348,7 @@ class _DetailsTopBar extends StatelessWidget {
         const SizedBox(width: 18),
         BlocBuilder<WishlistCubit, WishlistState>(
           builder: (context, state) {
-            final saved =
-                state is WishlistLoaded && state.contains(product.id);
+            final saved = state is WishlistLoaded && state.contains(product.id);
             return IconButton(
               onPressed: () {
                 context.read<WishlistCubit>().toggle(product);
@@ -425,7 +423,6 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
-
 class _CompleteTheLookSection extends StatelessWidget {
   const _CompleteTheLookSection({required this.state});
 
@@ -494,6 +491,7 @@ class _CompleteTheLookSection extends StatelessWidget {
 
                     if (!context.mounted || added == 0) return;
 
+                    final navigator = Navigator.of(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -501,13 +499,12 @@ class _CompleteTheLookSection extends StatelessWidget {
                               ? 'تمت إضافة ' +
                                   added.toString() +
                                   ' قطع إلى الحقيبة.'
-                              : added.toString() +
-                                  ' pieces added to your bag.',
+                              : added.toString() + ' pieces added to your bag.',
                         ),
                         action: SnackBarAction(
                           label: strings.viewBag,
                           onPressed: () {
-                            Navigator.of(context).pushNamed(Routes.cart);
+                            navigator.pushNamed(Routes.cart);
                           },
                         ),
                       ),
@@ -516,9 +513,7 @@ class _CompleteTheLookSection extends StatelessWidget {
                 : null,
             icon: Icon(AppIcons.bagOpen),
             label: Text(
-              strings.isArabic
-                  ? 'أضف القطع المختارة'
-                  : 'ADD SELECTED TO BAG',
+              strings.isArabic ? 'أضف القطع المختارة' : 'ADD SELECTED TO BAG',
               style: const TextStyle(fontWeight: FontWeight.w900),
             ),
           ),
@@ -571,6 +566,7 @@ class _LookPieceCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _LookSelectionBox(
+                  label: product.name,
                   selected: selected,
                   onTap: () {
                     context
@@ -590,8 +586,7 @@ class _LookPieceCard extends StatelessWidget {
                   child: Image.network(
                     product.imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) =>
-                        Icon(AppIcons.product),
+                    errorBuilder: (_, __, ___) => Icon(AppIcons.product),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -668,50 +663,60 @@ class _LookPieceCard extends StatelessWidget {
   }
 }
 
-
 class _LookSelectionBox extends StatelessWidget {
   const _LookSelectionBox({
+    required this.label,
     required this.selected,
     required this.onTap,
   });
 
+  final String label;
   final bool selected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
+      label: label,
       checked: selected,
-      button: true,
+      enabled: true,
+      onTap: onTap,
       child: InkWell(
+        excludeFromSemantics: true,
         onTap: onTap,
         borderRadius: BorderRadius.circular(4),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
-          curve: Curves.easeOut,
-          width: 24,
-          height: 24,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: selected ? AppColors.nearBlack : AppColors.white,
-            borderRadius: BorderRadius.circular(4),
-            border: Border.all(
-              color: AppColors.nearBlack,
-              width: 1.5,
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: Center(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 160),
+              curve: Curves.easeOut,
+              width: 24,
+              height: 24,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: selected ? AppColors.nearBlack : AppColors.white,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(
+                  color: AppColors.nearBlack,
+                  width: 1.5,
+                ),
+              ),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 140),
+                child: selected
+                    ? Icon(
+                        AppIcons.check,
+                        key: const ValueKey<String>('selected'),
+                        color: AppColors.white,
+                        size: 16,
+                      )
+                    : const SizedBox.shrink(
+                        key: ValueKey<String>('unselected'),
+                      ),
+              ),
             ),
-          ),
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 140),
-            child: selected
-                ? Icon(
-                    AppIcons.check,
-                    key: const ValueKey<String>('selected'),
-                    color: AppColors.white,
-                    size: 16,
-                  )
-                : const SizedBox.shrink(
-                    key: ValueKey<String>('unselected'),
-                  ),
           ),
         ),
       ),
@@ -937,9 +942,7 @@ class _WriteReviewSheetState extends State<_WriteReviewSheet> {
                   (index) => IconButton(
                     onPressed: () => setState(() => _rating = index + 1),
                     icon: Icon(
-                      index < _rating
-                          ? AppIcons.starFilled
-                          : AppIcons.star,
+                      index < _rating ? AppIcons.starFilled : AppIcons.star,
                       size: 30,
                     ),
                   ),
@@ -955,15 +958,18 @@ class _WriteReviewSheetState extends State<_WriteReviewSheet> {
                 segments: [
                   ButtonSegment(
                     value: FitFeedback.runsSmall,
-                    label: Text(_fitLabel(FitFeedback.runsSmall, strings.isArabic)),
+                    label: Text(
+                        _fitLabel(FitFeedback.runsSmall, strings.isArabic)),
                   ),
                   ButtonSegment(
                     value: FitFeedback.trueToSize,
-                    label: Text(_fitLabel(FitFeedback.trueToSize, strings.isArabic)),
+                    label: Text(
+                        _fitLabel(FitFeedback.trueToSize, strings.isArabic)),
                   ),
                   ButtonSegment(
                     value: FitFeedback.runsLarge,
-                    label: Text(_fitLabel(FitFeedback.runsLarge, strings.isArabic)),
+                    label: Text(
+                        _fitLabel(FitFeedback.runsLarge, strings.isArabic)),
                   ),
                 ],
                 selected: <FitFeedback>{_fit},
@@ -987,13 +993,12 @@ class _WriteReviewSheetState extends State<_WriteReviewSheet> {
                 height: 50,
                 child: FilledButton(
                   onPressed: () async {
-                    final submitted = await context
-                        .read<ProductDetailsCubit>()
-                        .submitReview(
-                          rating: _rating,
-                          fit: _fit,
-                          comment: _comment.text,
-                        );
+                    final submitted =
+                        await context.read<ProductDetailsCubit>().submitReview(
+                              rating: _rating,
+                              fit: _fit,
+                              comment: _comment.text,
+                            );
                     if (submitted && context.mounted) {
                       Navigator.of(context).pop();
                     }
@@ -1130,6 +1135,7 @@ class _AddToBagBar extends StatelessWidget {
                         .addSelectedToCart();
                     if (!context.mounted || !added) return;
 
+                    final navigator = Navigator.of(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         backgroundColor: AppColors.nearBlack,
@@ -1141,7 +1147,7 @@ class _AddToBagBar extends StatelessWidget {
                           label: AppStrings.of(context).viewBag,
                           textColor: AppColors.white,
                           onPressed: () {
-                            Navigator.of(context).pushNamed(Routes.cart);
+                            navigator.pushNamed(Routes.cart);
                           },
                         ),
                       ),

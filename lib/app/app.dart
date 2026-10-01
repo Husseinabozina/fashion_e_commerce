@@ -8,6 +8,7 @@ import 'package:fashion_e_commerce/features/promotions/presentation/cubit/promot
 import 'package:fashion_e_commerce/features/recently_viewed/presentation/cubit/recently_viewed_cubit.dart';
 import 'package:fashion_e_commerce/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,6 +46,10 @@ class FashionApp extends StatelessWidget {
               return MaterialApp(
                 title: 'Fashion E-Commerce',
                 debugShowCheckedModeBanner: false,
+                builder: (_, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+                  value: SystemUiOverlayStyle.dark,
+                  child: child!,
+                ),
                 locale: locale,
                 supportedLocales: const [
                   Locale('en'),

@@ -17,7 +17,10 @@ class DiscoverPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.nearBlack,
         foregroundColor: AppColors.white,
-        title: Text(AppStrings.of(context).discover.toUpperCase()),
+        title: Text(
+          AppStrings.of(context).discover.toUpperCase(),
+          style: const TextStyle(color: AppColors.white),
+        ),
       ),
       body: BlocBuilder<CatalogBrowseCubit, CatalogBrowseState>(
         builder: (context, state) {

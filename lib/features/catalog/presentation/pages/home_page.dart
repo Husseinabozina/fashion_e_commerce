@@ -55,6 +55,10 @@ class _HomeContent extends StatelessWidget {
           _SectionTitle(
             index: '01/',
             title: AppStrings.of(context).newArrivals,
+            onView: () => Navigator.of(context).pushNamed(
+              Routes.search,
+              arguments: const ProductSearchCriteria(sort: ProductSort.newest),
+            ),
           ),
           const SizedBox(height: 12),
           SizedBox(
@@ -72,6 +76,7 @@ class _HomeContent extends StatelessWidget {
           _SectionTitle(
             index: '02/',
             title: AppStrings.of(context).shopByCategory,
+            onView: () => Navigator.of(context).pushNamed(Routes.shop),
           ),
           const SizedBox(height: 12),
           ...catalog.categories.map(
@@ -101,26 +106,25 @@ class _TopBar extends StatelessWidget {
       children: [
         Text(
           'NOVA_',
+          textDirection: TextDirection.ltr,
           style: AppTheme.display(fontSize: 26),
         ),
         const Spacer(),
         IconButton(
-          onPressed: () => Navigator.of(context).pushNamed(Routes.search),
-          icon: Icon(AppIcons.search),
-        ),
-        const SizedBox(width: 8),
-        IconButton(
+          tooltip: AppStrings.of(context).notifications,
           onPressed: () =>
               Navigator.of(context).pushNamed(Routes.notifications),
           icon: Icon(AppIcons.notifications),
         ),
         const SizedBox(width: 4),
         IconButton(
+          tooltip: AppStrings.of(context).saved,
           onPressed: () => Navigator.of(context).pushNamed(Routes.wishlist),
           icon: Icon(AppIcons.saved),
         ),
         const SizedBox(width: 4),
         IconButton(
+          tooltip: AppStrings.of(context).viewBag,
           onPressed: () => Navigator.of(context).pushNamed(Routes.cart),
           icon: Icon(AppIcons.bag),
         ),
@@ -138,31 +142,31 @@ class _SearchField extends StatelessWidget {
       onTap: () => Navigator.of(context).pushNamed(Routes.search),
       borderRadius: BorderRadius.circular(8),
       child: Container(
-      height: 46,
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: AppColors.nearBlack.withValues(alpha: 0.08),
+        height: 46,
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: AppColors.nearBlack.withValues(alpha: 0.08),
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          Icon(AppIcons.search, size: 20),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              AppStrings.of(context).searchHint,
-              style: const TextStyle(
-                color: AppColors.midGray,
-                fontSize: 13,
+        child: Row(
+          children: [
+            Icon(AppIcons.search, size: 20),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                AppStrings.of(context).searchHint,
+                style: const TextStyle(
+                  color: AppColors.midGray,
+                  fontSize: 13,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 }
@@ -260,10 +264,12 @@ class _SectionTitle extends StatelessWidget {
   const _SectionTitle({
     required this.index,
     required this.title,
+    this.onView,
   });
 
   final String index;
   final String title;
+  final VoidCallback? onView;
 
   @override
   Widget build(BuildContext context) {
@@ -284,10 +290,13 @@ class _SectionTitle extends StatelessWidget {
             style: AppTheme.displayFor(context, fontSize: 27),
           ),
         ),
-        TextButton(
-          onPressed: () {},
-          child: Text(AppStrings.of(context).view + ' →'),
-        ),
+        if (onView != null)
+          TextButton.icon(
+            onPressed: onView,
+            iconAlignment: IconAlignment.end,
+            icon: Icon(AppIcons.arrowRight, size: 16),
+            label: Text(AppStrings.of(context).view),
+          ),
       ],
     );
   }
@@ -307,32 +316,31 @@ class _CategoryRow extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        border: Border.all(
-          color: AppColors.nearBlack.withValues(alpha: 0.08),
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          border: Border.all(
+            color: AppColors.nearBlack.withValues(alpha: 0.08),
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                category.toUpperCase(),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+              ),
+            ),
+            Icon(AppIcons.arrowRight),
+          ],
         ),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              category.toUpperCase(),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
-            ),
-          ),
-          Icon(AppIcons.arrowRight),
-        ],
-      ),
-    ),
     );
   }
 }
-
 
 class _RecentlyViewedSection extends StatelessWidget {
   const _RecentlyViewedSection();
@@ -354,9 +362,7 @@ class _RecentlyViewedSection extends StatelessWidget {
             children: [
               _SectionTitle(
                 index: '03/',
-                title: strings.isArabic
-                    ? 'شوفتها مؤخرًا'
-                    : 'RECENTLY VIEWED',
+                title: strings.isArabic ? 'شوفتها مؤخرًا' : 'RECENTLY VIEWED',
               ),
               const SizedBox(height: 12),
               SizedBox(

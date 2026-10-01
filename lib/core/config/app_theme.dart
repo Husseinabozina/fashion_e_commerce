@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 abstract final class AppColors {
@@ -61,14 +62,29 @@ abstract final class AppTheme {
       useMaterial3: true,
       scaffoldBackgroundColor: AppColors.offWhite,
       colorScheme: const ColorScheme.light(
-        primary: AppColors.acidLime,
-        onPrimary: AppColors.nearBlack,
+        primary: AppColors.nearBlack,
+        onPrimary: AppColors.white,
+        primaryContainer: AppColors.acidLime,
+        onPrimaryContainer: AppColors.nearBlack,
         secondary: AppColors.nearBlack,
         onSecondary: AppColors.white,
+        secondaryContainer: AppColors.acidLime,
+        onSecondaryContainer: AppColors.nearBlack,
         surface: AppColors.offWhite,
         onSurface: AppColors.nearBlack,
       ),
       textTheme: textTheme,
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.acidLime,
+          foregroundColor: AppColors.nearBlack,
+        ),
+      ),
+      actionIconTheme: ActionIconThemeData(
+        // Phosphor arrows mirror automatically in RTL.
+        backButtonIconBuilder: (_) => Icon(AppIcons.arrowLeft),
+        closeButtonIconBuilder: (_) => Icon(AppIcons.close),
+      ),
       appBarTheme: AppBarTheme(
         elevation: 0,
         scrolledUnderElevation: 0,

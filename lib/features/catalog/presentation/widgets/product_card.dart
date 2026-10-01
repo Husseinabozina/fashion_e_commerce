@@ -64,6 +64,10 @@ class ProductCard extends StatelessWidget {
                         final saved =
                             state is WishlistLoaded && state.contains(product.id);
                         return IconButton(
+                          style: IconButton.styleFrom(
+                            backgroundColor: AppColors.white,
+                            foregroundColor: AppColors.nearBlack,
+                          ),
                           onPressed: () {
                             context.read<WishlistCubit>().toggle(product);
                           },

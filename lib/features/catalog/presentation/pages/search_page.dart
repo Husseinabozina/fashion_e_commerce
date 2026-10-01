@@ -10,7 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
+  const SearchPage({super.key, this.autofocus = true});
+
+  final bool autofocus;
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -45,7 +47,7 @@ class _SearchPageState extends State<SearchPage> {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
               child: TextField(
                 controller: _controller,
-                autofocus: true,
+                autofocus: widget.autofocus,
                 onChanged: context.read<SearchCubit>().updateQuery,
                 decoration: InputDecoration(
                   hintText: AppStrings.of(context).searchHint,
@@ -374,15 +376,17 @@ class _SearchProductTile extends StatelessWidget {
                       final saved =
                           state is WishlistLoaded && state.contains(product.id);
                       return IconButton(
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.white,
+                          foregroundColor: AppColors.nearBlack,
+                        ),
                         onPressed: () {
                           context.read<WishlistCubit>().toggle(product);
                         },
                         icon: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 180),
                           child: Icon(
-                            saved
-                                ? AppIcons.savedActive
-                                : AppIcons.saved,
+                            saved ? AppIcons.savedActive : AppIcons.saved,
                             key: ValueKey<bool>(saved),
                           ),
                         ),

@@ -151,7 +151,8 @@ abstract final class AppRouter {
     return _page(
       BlocProvider<SearchCubit>(
         create: (_) => serviceLocator<SearchCubit>()..load(criteria),
-        child: const SearchPage(),
+        child:
+            SearchPage(autofocus: settings.arguments is! ProductSearchCriteria),
       ),
       settings,
     );
@@ -186,8 +187,7 @@ abstract final class AppRouter {
 
     return _page(
       BlocProvider<ProductDetailsCubit>(
-        create: (_) =>
-            serviceLocator<ProductDetailsCubit>()..load(productId),
+        create: (_) => serviceLocator<ProductDetailsCubit>()..load(productId),
         child: const ProductDetailsPage(),
       ),
       settings,
