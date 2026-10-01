@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/core/localization/locale_cubit.dart';
@@ -69,18 +70,18 @@ class AccountPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 22),
                   _AccountTile(
-                    icon: Icons.receipt_long_outlined,
+                    icon: AppIcons.receipt,
                     label: strings.ordersReturns,
                     onTap: () => Navigator.of(context).pushNamed(Routes.orders),
                   ),
                   _AccountTile(
-                    icon: Icons.favorite_border_rounded,
+                    icon: AppIcons.saved,
                     label: strings.savedItems,
                     onTap: () =>
                         Navigator.of(context).pushNamed(Routes.wishlist),
                   ),
                   _AccountTile(
-                    icon: Icons.storefront_outlined,
+                    icon: AppIcons.storefront,
                     label: strings.isArabic
                         ? 'العلامات المتابَعة'
                         : 'FOLLOWING BRANDS',
@@ -88,19 +89,19 @@ class AccountPage extends StatelessWidget {
                         .pushNamed(Routes.followingBrands),
                   ),
                   _AccountTile(
-                    icon: Icons.location_on_outlined,
+                    icon: AppIcons.location,
                     label: strings.addresses,
                     onTap: () =>
                         Navigator.of(context).pushNamed(Routes.addresses),
                   ),
                   _AccountTile(
-                    icon: Icons.notifications_none_rounded,
+                    icon: AppIcons.notifications,
                     label: strings.notifications,
                     onTap: () => Navigator.of(context)
                         .pushNamed(Routes.notifications),
                   ),
                   _AccountTile(
-                    icon: Icons.language_rounded,
+                    icon: AppIcons.language,
                     label: strings.languageRegion,
                     onTap: () => _showLanguageSheet(context),
                   ),
@@ -192,7 +193,7 @@ class _AccountTile extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.w900),
               ),
             ),
-            const Icon(Icons.arrow_forward_rounded, size: 19),
+            Icon(AppIcons.arrowRight, size: 19),
           ],
         ),
       ),

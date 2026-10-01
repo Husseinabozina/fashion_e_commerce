@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/wishlist/presentation/cubit/wishlist_cubit.dart';
@@ -85,8 +86,8 @@ class _WishlistTile extends StatelessWidget {
                     child: Image.network(
                       product.imageUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Center(
-                        child: Icon(Icons.checkroom_rounded, size: 42),
+                      errorBuilder: (_, __, ___) => Center(
+                        child: Icon(AppIcons.product, size: 42),
                       ),
                     ),
                   ),
@@ -102,7 +103,7 @@ class _WishlistTile extends StatelessWidget {
                     onPressed: () {
                       context.read<WishlistCubit>().toggle(product);
                     },
-                    icon: const Icon(Icons.favorite_rounded),
+                    icon: Icon(AppIcons.savedActive),
                   ),
                 ),
               ],
@@ -148,7 +149,7 @@ class _EmptyWishlist extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.favorite_border_rounded, size: 56),
+            Icon(AppIcons.saved, size: 56),
             const SizedBox(height: 18),
             Text(
               'SAVE YOUR\nROTATION.',

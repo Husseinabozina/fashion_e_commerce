@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/brands/presentation/cubit/brand_cubit.dart';
@@ -54,7 +55,7 @@ class _BrandContent extends StatelessWidget {
                   style: IconButton.styleFrom(
                     foregroundColor: AppColors.white,
                   ),
-                  icon: const Icon(Icons.arrow_back_rounded),
+                  icon: Icon(AppIcons.arrowLeft),
                 ),
                 const SizedBox(height: 28),
                 Text(
@@ -69,7 +70,7 @@ class _BrandContent extends StatelessWidget {
                 Text(
                   state.brand.tagline,
                   style: const TextStyle(
-                    color: AppColors.acidLime,
+                    color: AppColors.concrete,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1,
                   ),
@@ -92,14 +93,14 @@ class _BrandContent extends StatelessWidget {
                             foregroundColor: AppColors.white,
                             side: const BorderSide(color: AppColors.white),
                           ),
-                          icon: const Icon(Icons.check_rounded),
+                          icon: Icon(AppIcons.check),
                           label: Text(
                             strings.isArabic ? 'تتابع العلامة' : 'FOLLOWING',
                           ),
                         )
                       : FilledButton.icon(
                           onPressed: context.read<BrandCubit>().toggleFollow,
-                          icon: const Icon(Icons.add_rounded),
+                          icon: Icon(AppIcons.plus),
                           label: Text(
                             strings.isArabic ? 'تابع العلامة' : 'FOLLOW BRAND',
                           ),
@@ -176,7 +177,7 @@ class _BrandProductRow extends StatelessWidget {
                 product.imageUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) =>
-                    const Icon(Icons.checkroom_rounded),
+                    Icon(AppIcons.product),
               ),
             ),
             const SizedBox(width: 14),
@@ -209,7 +210,7 @@ class _BrandProductRow extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_rounded),
+            Icon(AppIcons.arrowRight),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
@@ -78,7 +79,7 @@ class _ProductDetailsContent extends StatelessWidget {
                     product.imageUrl,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => const Center(
-                      child: Icon(Icons.checkroom_rounded, size: 72),
+                      child: Icon(AppIcons.product, size: 72),
                     ),
                   ),
                 ),
@@ -112,8 +113,8 @@ class _ProductDetailsContent extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(
-                                Icons.arrow_forward_rounded,
+                              Icon(
+                                AppIcons.arrowRight,
                                 size: 14,
                               ),
                             ],
@@ -213,8 +214,8 @@ class _ProductDetailsContent extends StatelessWidget {
                     return ActionChip(
                       avatar: Icon(
                         subscribed
-                            ? Icons.notifications_active_rounded
-                            : Icons.notifications_none_rounded,
+                            ? AppIcons.notificationsActive
+                            : AppIcons.notifications,
                         size: 17,
                       ),
                       label: Text(
@@ -341,10 +342,10 @@ class _DetailsTopBar extends StatelessWidget {
       children: [
         IconButton(
           onPressed: Navigator.of(context).pop,
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: Icon(AppIcons.arrowLeft),
         ),
         const Spacer(),
-        const Icon(Icons.share_outlined),
+        Icon(AppIcons.share),
         const SizedBox(width: 18),
         BlocBuilder<WishlistCubit, WishlistState>(
           builder: (context, state) {
@@ -357,7 +358,7 @@ class _DetailsTopBar extends StatelessWidget {
               icon: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 180),
                 child: Icon(
-                  saved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  saved ? AppIcons.savedActive : AppIcons.saved,
                   key: ValueKey<bool>(saved),
                 ),
               ),
@@ -367,7 +368,7 @@ class _DetailsTopBar extends StatelessWidget {
         const SizedBox(width: 4),
         IconButton(
           onPressed: () => Navigator.of(context).pushNamed(Routes.cart),
-          icon: const Icon(Icons.shopping_bag_outlined),
+          icon: Icon(AppIcons.bag),
         ),
       ],
     );
@@ -513,7 +514,7 @@ class _CompleteTheLookSection extends StatelessWidget {
                     );
                   }
                 : null,
-            icon: const Icon(Icons.add_shopping_cart_rounded),
+            icon: Icon(AppIcons.bagOpen),
             label: Text(
               strings.isArabic
                   ? 'أضف القطع المختارة'
@@ -569,14 +570,15 @@ class _LookPieceCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Checkbox(
-                  value: selected,
-                  onChanged: (_) {
+                _LookSelectionBox(
+                  selected: selected,
+                  onTap: () {
                     context
                         .read<ProductDetailsCubit>()
                         .toggleLookProduct(product.id);
                   },
                 ),
+                const SizedBox(width: 10),
                 Container(
                   width: 72,
                   height: 78,
@@ -589,7 +591,7 @@ class _LookPieceCard extends StatelessWidget {
                     product.imageUrl,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) =>
-                        const Icon(Icons.checkroom_rounded),
+                        Icon(AppIcons.product),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -630,7 +632,7 @@ class _LookPieceCard extends StatelessWidget {
                       arguments: product.id,
                     );
                   },
-                  icon: const Icon(Icons.arrow_forward_rounded),
+                  icon: Icon(AppIcons.arrowRight),
                 ),
               ],
             ),
@@ -647,6 +649,7 @@ class _LookPieceCard extends StatelessWidget {
                         (size) => ChoiceChip(
                           label: Text(size),
                           selected: selectedSize == size,
+                          showCheckmark: false,
                           onSelected: (_) {
                             context
                                 .read<ProductDetailsCubit>()
@@ -665,6 +668,56 @@ class _LookPieceCard extends StatelessWidget {
   }
 }
 
+
+class _LookSelectionBox extends StatelessWidget {
+  const _LookSelectionBox({
+    required this.selected,
+    required this.onTap,
+  });
+
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      checked: selected,
+      button: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(4),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          curve: Curves.easeOut,
+          width: 24,
+          height: 24,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: selected ? AppColors.nearBlack : AppColors.white,
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(
+              color: AppColors.nearBlack,
+              width: 1.5,
+            ),
+          ),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 140),
+            child: selected
+                ? Icon(
+                    AppIcons.check,
+                    key: const ValueKey<String>('selected'),
+                    color: AppColors.white,
+                    size: 16,
+                  )
+                : const SizedBox.shrink(
+                    key: ValueKey<String>('unselected'),
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _ReviewsSection extends StatelessWidget {
   const _ReviewsSection({required this.state});
@@ -831,7 +884,7 @@ class _Stars extends StatelessWidget {
       children: List.generate(
         5,
         (index) => Icon(
-          index < rating ? Icons.star_rounded : Icons.star_border_rounded,
+          index < rating ? AppIcons.starFilled : AppIcons.star,
           size: 17,
         ),
       ),
@@ -885,8 +938,8 @@ class _WriteReviewSheetState extends State<_WriteReviewSheet> {
                     onPressed: () => setState(() => _rating = index + 1),
                     icon: Icon(
                       index < _rating
-                          ? Icons.star_rounded
-                          : Icons.star_border_rounded,
+                          ? AppIcons.starFilled
+                          : AppIcons.star,
                       size: 30,
                     ),
                   ),
@@ -978,7 +1031,7 @@ class _ServiceStrip extends StatelessWidget {
       children: [
         Expanded(
           child: _ServiceItem(
-            icon: Icons.local_shipping_outlined,
+            icon: AppIcons.delivery,
             title: AppStrings.of(context).freeDelivery,
             subtitle: AppStrings.of(context).isArabic
                 ? 'من 2 إلى 4 أيام عمل'
@@ -988,7 +1041,7 @@ class _ServiceStrip extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: _ServiceItem(
-            icon: Icons.keyboard_return_rounded,
+            icon: AppIcons.returns,
             title: AppStrings.of(context).easyReturns,
             subtitle: AppStrings.of(context).isArabic
                 ? 'خلال 14 يومًا'
@@ -1086,7 +1139,7 @@ class _AddToBagBar extends StatelessWidget {
                         ),
                         action: SnackBarAction(
                           label: AppStrings.of(context).viewBag,
-                          textColor: AppColors.acidLime,
+                          textColor: AppColors.white,
                           onPressed: () {
                             Navigator.of(context).pushNamed(Routes.cart);
                           },

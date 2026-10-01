@@ -68,7 +68,7 @@ class OnboardingPage extends StatelessWidget {
                 Text(
                   isArabic ? 'اللغة' : 'LANGUAGE',
                   style: const TextStyle(
-                    color: AppColors.acidLime,
+                    color: AppColors.concrete,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -79,6 +79,7 @@ class OnboardingPage extends StatelessWidget {
                       child: ChoiceChip(
                         label: const Text('English'),
                         selected: !isArabic,
+                        showCheckmark: false,
                         onSelected: (_) {
                           context.read<LocaleCubit>().useEnglish();
                         },
@@ -89,6 +90,7 @@ class OnboardingPage extends StatelessWidget {
                       child: ChoiceChip(
                         label: const Text('العربية'),
                         selected: isArabic,
+                        showCheckmark: false,
                         onSelected: (_) {
                           context.read<LocaleCubit>().useArabic();
                         },
@@ -100,7 +102,7 @@ class OnboardingPage extends StatelessWidget {
                 Text(
                   isArabic ? 'إيه اللي بتهتم بيه؟' : 'WHAT ARE YOU INTO?',
                   style: const TextStyle(
-                    color: AppColors.acidLime,
+                    color: AppColors.concrete,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -113,6 +115,7 @@ class OnboardingPage extends StatelessWidget {
                     return FilterChip(
                       label: Text(interest),
                       selected: selected,
+                      showCheckmark: false,
                       onSelected: (_) {
                         context
                             .read<OnboardingCubit>()

@@ -24,6 +24,7 @@ dependencies:
   google_fonts: ^8.2.1
   json_annotation: ^4.8.1
   json_serializable: ^6.7.1
+  phosphor_flutter: ^2.1.0
   retrofit: ^4.1.0
   retrofit_generator: ^8.1.0
 

@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/orders/domain/entities/order.dart';
 import 'package:fashion_e_commerce/features/orders/domain/entities/order_status.dart';
@@ -102,7 +103,7 @@ class _OrderDetailsContent extends StatelessWidget {
                     item.product.imageUrl,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) =>
-                        const Icon(Icons.checkroom_rounded),
+                        Icon(AppIcons.product),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -410,6 +411,7 @@ class _ReturnExchangeSheetState extends State<_ReturnExchangeSheet> {
                         (size) => ChoiceChip(
                           label: Text(size),
                           selected: _size == size,
+                          showCheckmark: false,
                           onSelected: (_) => setState(() => _size = size),
                         ),
                       )

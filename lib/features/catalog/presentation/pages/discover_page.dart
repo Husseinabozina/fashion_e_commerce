@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
@@ -76,7 +77,7 @@ class _DiscoverContent extends StatelessWidget {
                   ? 'اختيارات الأسبوع'
                   : 'THIS WEEK'),
           style: const TextStyle(
-            color: AppColors.acidLime,
+            color: AppColors.concrete,
             fontWeight: FontWeight.w900,
             letterSpacing: 1,
           ),
@@ -115,7 +116,7 @@ class _DiscoverContent extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () => Navigator.of(context).pushNamed(Routes.search),
-                icon: const Icon(Icons.arrow_forward_rounded),
+                icon: Icon(AppIcons.arrowRight),
               ),
             ],
           ),
@@ -197,7 +198,7 @@ class _DropRadar extends StatelessWidget {
                       Text(
                         product.brand,
                         style: const TextStyle(
-                          color: AppColors.acidLime,
+                          color: AppColors.white,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -224,7 +225,7 @@ class _DropRadar extends StatelessWidget {
                     backgroundColor: AppColors.acidLime,
                     foregroundColor: AppColors.nearBlack,
                   ),
-                  icon: const Icon(Icons.arrow_forward_rounded),
+                  icon: Icon(AppIcons.arrowRight),
                 ),
               ],
             ),
@@ -267,8 +268,8 @@ class _DiscoverProduct extends StatelessWidget {
               child: Image.network(
                 product.imageUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(
-                  Icons.checkroom_rounded,
+                errorBuilder: (_, __, ___) => Icon(
+                  AppIcons.product,
                   color: AppColors.white,
                 ),
               ),
@@ -281,7 +282,7 @@ class _DiscoverProduct extends StatelessWidget {
                   Text(
                     product.brand,
                     style: const TextStyle(
-                      color: AppColors.acidLime,
+                      color: AppColors.concrete,
                       fontSize: 10,
                       fontWeight: FontWeight.w900,
                     ),
@@ -304,8 +305,8 @@ class _DiscoverProduct extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(
-              Icons.arrow_forward_rounded,
+            Icon(
+              AppIcons.arrowRight,
               color: AppColors.white,
             ),
           ],

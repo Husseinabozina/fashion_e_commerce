@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/addresses/domain/entities/saved_address.dart';
 import 'package:fashion_e_commerce/features/addresses/presentation/cubit/addresses_cubit.dart';
@@ -19,7 +20,7 @@ class AddressesPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddAddress(context),
-        icon: const Icon(Icons.add_rounded),
+        icon: Icon(AppIcons.plus),
         label: Text(strings.isArabic ? 'إضافة عنوان' : 'ADD ADDRESS'),
       ),
       body: BlocBuilder<AddressesCubit, AddressesState>(
@@ -119,7 +120,7 @@ class _AddressList extends StatelessWidget {
                     onPressed: () {
                       context.read<AddressesCubit>().remove(item.id);
                     },
-                    icon: const Icon(Icons.delete_outline_rounded),
+                    icon: Icon(AppIcons.trash),
                   ),
                 ],
               ),

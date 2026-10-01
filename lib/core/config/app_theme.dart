@@ -79,6 +79,31 @@ abstract final class AppTheme {
           color: AppColors.nearBlack,
         ),
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        elevation: 0,
+        height: 68,
+        backgroundColor: AppColors.white,
+        indicatorColor: Colors.transparent,
+        iconTheme: WidgetStateProperty.resolveWith<IconThemeData>(
+          (states) => IconThemeData(
+            color: states.contains(WidgetState.selected)
+                ? AppColors.nearBlack
+                : AppColors.midGray,
+            size: 22,
+          ),
+        ),
+        labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>(
+          (states) => TextStyle(
+            color: states.contains(WidgetState.selected)
+                ? AppColors.nearBlack
+                : AppColors.midGray,
+            fontSize: 11,
+            fontWeight: states.contains(WidgetState.selected)
+                ? FontWeight.w800
+                : FontWeight.w600,
+          ),
+        ),
+      ),
       dividerColor: AppColors.nearBlack.withValues(alpha: 0.12),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,

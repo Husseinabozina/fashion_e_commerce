@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/cart/domain/entities/cart_item.dart';
@@ -87,8 +88,8 @@ class _CartItemTile extends StatelessWidget {
           child: Image.network(
             item.product.imageUrl,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(
-              Icons.checkroom_rounded,
+            errorBuilder: (_, __, ___) => Icon(
+              AppIcons.product,
               size: 42,
             ),
           ),
@@ -123,7 +124,7 @@ class _CartItemTile extends StatelessWidget {
               Row(
                 children: [
                   _QuantityButton(
-                    icon: Icons.remove,
+                    icon: AppIcons.minus,
                     onPressed: () => context.read<CartCubit>().decrement(item),
                   ),
                   Padding(
@@ -138,13 +139,13 @@ class _CartItemTile extends StatelessWidget {
                     ),
                   ),
                   _QuantityButton(
-                    icon: Icons.add,
+                    icon: AppIcons.plus,
                     onPressed: () => context.read<CartCubit>().increment(item),
                   ),
                   const Spacer(),
                   IconButton(
                     onPressed: () => context.read<CartCubit>().remove(item),
-                    icon: const Icon(Icons.delete_outline_rounded, size: 21),
+                    icon: Icon(AppIcons.trash, size: 21),
                   ),
                 ],
               ),
@@ -314,7 +315,7 @@ class _PromoCodeSectionState extends State<_PromoCodeSection> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.local_offer_outlined),
+            Icon(AppIcons.tag),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -358,7 +359,7 @@ class _PromoCodeSectionState extends State<_PromoCodeSection> {
                   hintText: strings.isArabic
                       ? 'كود الخصم'
                       : 'PROMO CODE',
-                  prefixIcon: const Icon(Icons.local_offer_outlined),
+                  prefixIcon: Icon(AppIcons.tag),
                 ),
               ),
             ),
@@ -446,7 +447,7 @@ class _EmptyCart extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.shopping_bag_outlined, size: 54),
+            Icon(AppIcons.bag, size: 54),
             const SizedBox(height: 18),
             Text(
               AppStrings.of(context).emptyBag,

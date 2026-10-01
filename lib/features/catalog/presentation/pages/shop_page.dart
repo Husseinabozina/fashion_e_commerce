@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product_search_criteria.dart';
@@ -20,11 +21,11 @@ class ShopPage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () => Navigator.of(context).pushNamed(Routes.search),
-            icon: const Icon(Icons.search_rounded),
+            icon: Icon(AppIcons.search),
           ),
           IconButton(
             onPressed: () => Navigator.of(context).pushNamed(Routes.cart),
-            icon: const Icon(Icons.shopping_bag_outlined),
+            icon: Icon(AppIcons.bag),
           ),
         ],
       ),
@@ -188,7 +189,7 @@ class _BrowseRow extends StatelessWidget {
                 ),
               ),
             ),
-            const Icon(Icons.arrow_forward_rounded),
+            Icon(AppIcons.arrowRight),
           ],
         ),
       ),

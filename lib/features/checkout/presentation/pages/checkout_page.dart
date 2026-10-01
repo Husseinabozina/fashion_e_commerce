@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/checkout/domain/entities/delivery_option.dart';
@@ -50,7 +51,7 @@ class _CheckoutFlow extends StatelessWidget {
           onPressed: state.step == CheckoutStep.address
               ? Navigator.of(context).pop
               : context.read<CheckoutCubit>().goBack,
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: Icon(AppIcons.arrowLeft),
         ),
         title: Text(AppStrings.of(context).checkout.toUpperCase()),
       ),
@@ -333,7 +334,7 @@ class _DeliveryCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const Icon(Icons.local_shipping_outlined),
+              Icon(AppIcons.delivery),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -410,7 +411,7 @@ class _PaymentCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const Icon(Icons.payments_outlined),
+              Icon(AppIcons.payment),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -428,7 +429,7 @@ class _PaymentCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.arrow_forward_rounded),
+              Icon(AppIcons.arrowRight),
             ],
           ),
         ),
@@ -640,7 +641,7 @@ class _OrderSuccessPage extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
-                    Icons.check_rounded,
+                    AppIcons.check,
                     size: 44,
                     color: AppColors.nearBlack,
                   ),
@@ -659,7 +660,7 @@ class _OrderSuccessPage extends StatelessWidget {
               Text(
                 '#${receipt.orderId}',
                 style: const TextStyle(
-                  color: AppColors.acidLime,
+                  color: AppColors.concrete,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1,
                 ),

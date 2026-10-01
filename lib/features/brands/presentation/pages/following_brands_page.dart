@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/brands/domain/entities/brand.dart';
@@ -99,7 +100,7 @@ class _FollowingList extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.arrow_forward_rounded),
+                Icon(AppIcons.arrowRight),
               ],
             ),
           ),
@@ -122,7 +123,7 @@ class _EmptyFollowing extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.add_circle_outline_rounded, size: 54),
+            Icon(AppIcons.plus, size: 54),
             const SizedBox(height: 16),
             Text(
               isArabic

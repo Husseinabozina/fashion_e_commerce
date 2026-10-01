@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/wishlist/presentation/cubit/wishlist_cubit.dart';
@@ -41,8 +42,8 @@ class ProductCard extends StatelessWidget {
                           child: Image.network(
                             product.imageUrl,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Center(
-                              child: Icon(Icons.checkroom_rounded, size: 48),
+                            errorBuilder: (_, __, ___) => Center(
+                              child: Icon(AppIcons.product, size: 48),
                             ),
                           ),
                         ),
@@ -70,8 +71,8 @@ class ProductCard extends StatelessWidget {
                             duration: const Duration(milliseconds: 180),
                             child: Icon(
                               saved
-                                  ? Icons.favorite_rounded
-                                  : Icons.favorite_border_rounded,
+                                  ? AppIcons.savedActive
+                                  : AppIcons.saved,
                               key: ValueKey<bool>(saved),
                               size: 22,
                             ),

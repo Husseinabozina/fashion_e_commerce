@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/home_catalog.dart';
@@ -105,23 +106,23 @@ class _TopBar extends StatelessWidget {
         const Spacer(),
         IconButton(
           onPressed: () => Navigator.of(context).pushNamed(Routes.search),
-          icon: const Icon(Icons.search_rounded),
+          icon: Icon(AppIcons.search),
         ),
         const SizedBox(width: 8),
         IconButton(
           onPressed: () =>
               Navigator.of(context).pushNamed(Routes.notifications),
-          icon: const Icon(Icons.notifications_none_rounded),
+          icon: Icon(AppIcons.notifications),
         ),
         const SizedBox(width: 4),
         IconButton(
           onPressed: () => Navigator.of(context).pushNamed(Routes.wishlist),
-          icon: const Icon(Icons.favorite_border_rounded),
+          icon: Icon(AppIcons.saved),
         ),
         const SizedBox(width: 4),
         IconButton(
           onPressed: () => Navigator.of(context).pushNamed(Routes.cart),
-          icon: const Icon(Icons.shopping_bag_outlined),
+          icon: Icon(AppIcons.bag),
         ),
       ],
     );
@@ -148,7 +149,7 @@ class _SearchField extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.search_rounded, size: 20),
+          Icon(AppIcons.search, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -224,7 +225,12 @@ class _HeroDrop extends StatelessWidget {
             left: 16,
             bottom: 20,
             child: FilledButton.icon(
-              onPressed: () {},
+              onPressed: () => Navigator.of(context).pushNamed(
+                Routes.search,
+                arguments: const ProductSearchCriteria(
+                  sort: ProductSort.newest,
+                ),
+              ),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.acidLime,
                 foregroundColor: AppColors.nearBlack,
@@ -237,7 +243,7 @@ class _HeroDrop extends StatelessWidget {
                 ),
               ),
               iconAlignment: IconAlignment.end,
-              icon: const Icon(Icons.arrow_forward_rounded, size: 18),
+              icon: Icon(AppIcons.arrowRight, size: 18),
               label: const Text(
                 'SHOP THE DROP',
                 style: TextStyle(fontWeight: FontWeight.w900),
@@ -319,7 +325,7 @@ class _CategoryRow extends StatelessWidget {
                   ),
             ),
           ),
-          const Icon(Icons.arrow_forward_rounded),
+          Icon(AppIcons.arrowRight),
         ],
       ),
     ),
@@ -386,7 +392,7 @@ class _EditorialBlock extends StatelessWidget {
           Text(
             '03/ ' + AppStrings.of(context).streetEdit,
             style: const TextStyle(
-              color: AppColors.acidLime,
+              color: AppColors.concrete,
               fontWeight: FontWeight.w900,
               letterSpacing: 1,
             ),
@@ -410,7 +416,7 @@ class _EditorialBlock extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           OutlinedButton(
-            onPressed: () {},
+            onPressed: () => Navigator.of(context).pushNamed(Routes.discover),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.white,
               side: const BorderSide(color: AppColors.white),
@@ -448,25 +454,51 @@ class _StreetBottomNavigation extends StatelessWidget {
       backgroundColor: AppColors.offWhite,
       destinations: [
         NavigationDestination(
-          icon: const Icon(Icons.home_outlined),
-          selectedIcon: const Icon(Icons.home_rounded),
+          icon: Icon(AppIcons.home),
+          selectedIcon: _SelectedNavIcon(icon: AppIcons.homeActive),
           label: AppStrings.of(context).home,
         ),
         NavigationDestination(
-          icon: const Icon(Icons.grid_view_outlined),
+          icon: Icon(AppIcons.shop),
+          selectedIcon: _SelectedNavIcon(icon: AppIcons.shopActive),
           label: AppStrings.of(context).shop,
         ),
         NavigationDestination(
-          icon: const Icon(Icons.explore_outlined),
+          icon: Icon(AppIcons.discover),
+          selectedIcon: _SelectedNavIcon(icon: AppIcons.discoverActive),
           label: AppStrings.of(context).discover,
         ),
         NavigationDestination(
-          icon: const Icon(Icons.favorite_border_rounded),
+          icon: Icon(AppIcons.saved),
+          selectedIcon: _SelectedNavIcon(icon: AppIcons.savedActive),
           label: AppStrings.of(context).saved,
         ),
         NavigationDestination(
-          icon: const Icon(Icons.person_outline_rounded),
+          icon: Icon(AppIcons.account),
+          selectedIcon: _SelectedNavIcon(icon: AppIcons.accountActive),
           label: AppStrings.of(context).account,
+        ),
+      ],
+    );
+  }
+}
+
+class _SelectedNavIcon extends StatelessWidget {
+  const _SelectedNavIcon({required this.icon});
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: AppColors.nearBlack, size: 22),
+        const SizedBox(height: 3),
+        Container(
+          width: 16,
+          height: 2,
+          color: AppColors.acidLime,
         ),
       ],
     );
@@ -507,7 +539,7 @@ class _HomeError extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.wifi_off_rounded, size: 40),
+            Icon(AppIcons.wifiOff, size: 40),
             const SizedBox(height: 16),
             Text(
               message,

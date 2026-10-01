@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/notifications/domain/entities/app_notification.dart';
@@ -125,10 +126,10 @@ class _NotificationIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final icon = switch (type) {
-      AppNotificationType.order => Icons.local_shipping_outlined,
-      AppNotificationType.backInStock => Icons.inventory_2_outlined,
-      AppNotificationType.priceDrop => Icons.trending_down_rounded,
-      AppNotificationType.promotion => Icons.local_offer_outlined,
+      AppNotificationType.order => AppIcons.delivery,
+      AppNotificationType.backInStock => AppIcons.inventory,
+      AppNotificationType.priceDrop => AppIcons.priceDrop,
+      AppNotificationType.promotion => AppIcons.tag,
     };
 
     return Icon(icon, size: 23);

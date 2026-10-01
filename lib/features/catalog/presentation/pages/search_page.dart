@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
@@ -48,7 +49,7 @@ class _SearchPageState extends State<SearchPage> {
                 onChanged: context.read<SearchCubit>().updateQuery,
                 decoration: InputDecoration(
                   hintText: AppStrings.of(context).searchHint,
-                  prefixIcon: const Icon(Icons.search_rounded),
+                  prefixIcon: Icon(AppIcons.search),
                 ),
               ),
             ),
@@ -103,7 +104,7 @@ class _SearchToolbar extends StatelessWidget {
         children: [
           OutlinedButton.icon(
             onPressed: () => _showFilters(context, state),
-            icon: const Icon(Icons.tune_rounded, size: 17),
+            icon: Icon(AppIcons.filter, size: 17),
             label: Text(
               state.criteria.hasFilters
                   ? AppStrings.of(context).filters + ' •'
@@ -113,7 +114,7 @@ class _SearchToolbar extends StatelessWidget {
           const SizedBox(width: 8),
           OutlinedButton.icon(
             onPressed: () => _showSort(context, state.criteria.sort),
-            icon: const Icon(Icons.swap_vert_rounded, size: 17),
+            icon: Icon(AppIcons.sort, size: 17),
             label: Text(AppStrings.of(context).sort),
           ),
           if (state.criteria.category case final category?) ...[
@@ -202,6 +203,7 @@ class _FilterSheet extends StatelessWidget {
                 return ChoiceChip(
                   label: Text(category),
                   selected: state.criteria.category == category,
+                  showCheckmark: false,
                   onSelected: (_) {
                     context.read<SearchCubit>().setCategory(category);
                     Navigator.of(context).pop();
@@ -222,6 +224,7 @@ class _FilterSheet extends StatelessWidget {
                 return ChoiceChip(
                   label: Text(brand),
                   selected: state.criteria.brand == brand,
+                  showCheckmark: false,
                   onSelected: (_) {
                     context.read<SearchCubit>().setBrand(brand);
                     Navigator.of(context).pop();
@@ -338,7 +341,7 @@ class _SearchProductTile extends StatelessWidget {
                         product.imageUrl,
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => const Center(
-                          child: Icon(Icons.checkroom_rounded, size: 42),
+                          child: Icon(AppIcons.product, size: 42),
                         ),
                       ),
                     ),
@@ -378,8 +381,8 @@ class _SearchProductTile extends StatelessWidget {
                           duration: const Duration(milliseconds: 180),
                           child: Icon(
                             saved
-                                ? Icons.favorite_rounded
-                                : Icons.favorite_border_rounded,
+                                ? AppIcons.savedActive
+                                : AppIcons.saved,
                             key: ValueKey<bool>(saved),
                           ),
                         ),
@@ -430,7 +433,7 @@ class _NoResults extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.search_off_rounded, size: 52),
+            Icon(AppIcons.search, size: 52),
             const SizedBox(height: 16),
             Text(
               AppStrings.of(context).noMatch,

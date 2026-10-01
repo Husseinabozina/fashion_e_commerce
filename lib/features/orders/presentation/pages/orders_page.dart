@@ -1,4 +1,5 @@
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:fashion_e_commerce/features/orders/domain/entities/order.dart';
@@ -89,7 +90,7 @@ class _OrderCard extends StatelessWidget {
                     order.items.first.product.imageUrl,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) =>
-                        const Icon(Icons.checkroom_rounded),
+                        Icon(AppIcons.product),
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -118,7 +119,7 @@ class _OrderCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.arrow_forward_rounded),
+                Icon(AppIcons.arrowRight),
               ],
             ),
           ],
