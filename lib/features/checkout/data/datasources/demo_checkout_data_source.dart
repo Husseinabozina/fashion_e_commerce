@@ -6,6 +6,8 @@ import 'package:fashion_e_commerce/features/checkout/domain/entities/payment_opt
 import 'package:fashion_e_commerce/features/checkout/domain/entities/place_order_request.dart';
 
 class DemoCheckoutDataSource implements CheckoutDataSource {
+  int _nextOrderNumber = 26001;
+
   @override
   Future<CheckoutOptions> fetchOptions() async {
     return const CheckoutOptions(
@@ -46,7 +48,7 @@ class DemoCheckoutDataSource implements CheckoutDataSource {
   @override
   Future<OrderReceipt> submitOrder(PlaceOrderRequest request) async {
     return OrderReceipt(
-      orderId: 'NOVA-026001',
+      orderId: 'NOVA-${(_nextOrderNumber++).toString().padLeft(6, '0')}',
       total: request.total,
       deliveryEta: request.delivery.eta,
     );

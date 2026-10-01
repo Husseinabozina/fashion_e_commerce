@@ -14,11 +14,11 @@ class OrderDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(AppStrings.of(context).orderDetails.toUpperCase())),
+      appBar: AppBar(
+          title: Text(AppStrings.of(context).orderDetails.toUpperCase())),
       body: BlocConsumer<OrderDetailsCubit, OrderDetailsState>(
         listener: (context, state) {
-          if (state is OrderDetailsReady &&
-              state.submittedRequest != null) {
+          if (state is OrderDetailsReady && state.submittedRequest != null) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -37,8 +37,7 @@ class OrderDetailsPage extends StatelessWidget {
                   color: AppColors.nearBlack,
                 ),
               ),
-            OrderDetailsFailure(:final message) =>
-              Center(child: Text(message)),
+            OrderDetailsFailure(:final message) => Center(child: Text(message)),
             OrderDetailsReady(:final order) =>
               _OrderDetailsContent(order: order),
           };
@@ -60,11 +59,14 @@ class _OrderDetailsContent extends StatelessWidget {
       children: [
         Text(
           '#${order.id}',
-          style: AppTheme.displayFor(context, fontSize: 30),
+          textDirection: TextDirection.ltr,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
         ),
         const SizedBox(height: 6),
         Text(
-          order.status.label.toUpperCase(),
+          AppStrings.of(context).orderStatus(order.status.label).toUpperCase(),
           style: const TextStyle(
             color: AppColors.midGray,
             fontWeight: FontWeight.w900,
@@ -102,8 +104,7 @@ class _OrderDetailsContent extends StatelessWidget {
                   child: Image.network(
                     item.product.imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) =>
-                        Icon(AppIcons.product),
+                    errorBuilder: (_, __, ___) => Icon(AppIcons.product),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -124,7 +125,7 @@ class _OrderDetailsContent extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${item.color} · SIZE ${item.size}',
+                        '${item.color} · ${AppStrings.of(context).size} ${item.size} · ×${item.quantity}',
                         style: const TextStyle(
                           color: AppColors.midGray,
                           fontSize: 12,
@@ -150,7 +151,8 @@ class _OrderDetailsContent extends StatelessWidget {
         const SizedBox(height: 18),
         _InfoCard(
           title: AppStrings.of(context).delivery.toUpperCase(),
-          value: '${order.deliveryTitle}\n${order.deliveryEta}',
+          value:
+              '${AppStrings.of(context).deliveryTitle(order.deliveryTitle)}\n${AppStrings.of(context).deliveryEta(order.deliveryEta)}',
         ),
         _InfoCard(
           title: AppStrings.of(context).isArabic ? 'التوصيل إلى' : 'SHIP TO',
@@ -158,7 +160,7 @@ class _OrderDetailsContent extends StatelessWidget {
         ),
         _InfoCard(
           title: AppStrings.of(context).payment.toUpperCase(),
-          value: order.paymentTitle,
+          value: AppStrings.of(context).paymentTitle(order.paymentTitle),
         ),
         const Divider(height: 34),
         Row(
@@ -239,9 +241,7 @@ class _TrackingTimeline extends StatelessWidget {
                   width: 18,
                   height: 18,
                   decoration: BoxDecoration(
-                    color: active
-                        ? AppColors.acidLime
-                        : AppColors.offWhite,
+                    color: active ? AppColors.acidLime : AppColors.offWhite,
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: AppColors.nearBlack,
@@ -253,9 +253,7 @@ class _TrackingTimeline extends StatelessWidget {
                   Container(
                     width: 2,
                     height: 32,
-                    color: active
-                        ? AppColors.nearBlack
-                        : AppColors.concrete,
+                    color: active ? AppColors.nearBlack : AppColors.concrete,
                   ),
               ],
             ),
@@ -263,12 +261,10 @@ class _TrackingTimeline extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 1),
               child: Text(
-                stage.label,
+                AppStrings.of(context).orderStatus(stage.label),
                 style: TextStyle(
                   fontWeight: active ? FontWeight.w800 : FontWeight.w500,
-                  color: active
-                      ? AppColors.nearBlack
-                      : AppColors.midGray,
+                  color: active ? AppColors.nearBlack : AppColors.midGray,
                 ),
               ),
             ),
@@ -326,8 +322,7 @@ class _ReturnExchangeSheet extends StatefulWidget {
   final List<String> sizes;
 
   @override
-  State<_ReturnExchangeSheet> createState() =>
-      _ReturnExchangeSheetState();
+  State<_ReturnExchangeSheet> createState() => _ReturnExchangeSheetState();
 }
 
 class _ReturnExchangeSheetState extends State<_ReturnExchangeSheet> {
@@ -382,7 +377,8 @@ class _ReturnExchangeSheetState extends State<_ReturnExchangeSheet> {
               const SizedBox(height: 20),
               DropdownButtonFormField<String>(
                 initialValue: _reason,
-                decoration: InputDecoration(labelText: AppStrings.of(context).reason),
+                decoration:
+                    InputDecoration(labelText: AppStrings.of(context).reason),
                 items: reasons
                     .map(
                       (reason) => DropdownMenuItem(
@@ -423,22 +419,20 @@ class _ReturnExchangeSheetState extends State<_ReturnExchangeSheet> {
                 width: double.infinity,
                 height: 52,
                 child: FilledButton(
-                  onPressed:
-                      _type == ReturnRequestType.exchangeSize && _size == null
-                          ? null
-                          : () async {
-                              await context
-                                  .read<OrderDetailsCubit>()
-                                  .submitReturn(
-                                    itemKey: widget.itemKey,
-                                    type: _type,
-                                    reason: _reason,
-                                    requestedSize: _size,
-                                  );
-                              if (context.mounted) {
-                                Navigator.of(context).pop();
-                              }
-                            },
+                  onPressed: _type == ReturnRequestType.exchangeSize &&
+                          _size == null
+                      ? null
+                      : () async {
+                          await context.read<OrderDetailsCubit>().submitReturn(
+                                itemKey: widget.itemKey,
+                                type: _type,
+                                reason: _reason,
+                                requestedSize: _size,
+                              );
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        },
                   child: Text(
                     AppStrings.of(context).submitRequest,
                     style: const TextStyle(fontWeight: FontWeight.w900),

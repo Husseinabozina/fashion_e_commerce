@@ -32,8 +32,7 @@ class CartPage extends StatelessWidget {
                   color: AppColors.nearBlack,
                 ),
               ),
-            CartLoaded(:final items) when items.isEmpty =>
-              const _EmptyCart(),
+            CartLoaded(:final items) when items.isEmpty => const _EmptyCart(),
             CartLoaded() => _CartContent(state: state),
           };
         },
@@ -49,19 +48,24 @@ class _CartContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+          sliver: SliverList.separated(
             itemCount: state.items.length,
             separatorBuilder: (_, __) => const Divider(height: 28),
-            itemBuilder: (context, index) {
-              return _CartItemTile(item: state.items[index]);
-            },
+            itemBuilder: (context, index) =>
+                _CartItemTile(item: state.items[index]),
           ),
         ),
-        _CartSummary(state: state),
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: _CartSummary(state: state),
+          ),
+        ),
       ],
     );
   }
@@ -115,7 +119,7 @@ class _CartItemTile extends StatelessWidget {
               ),
               const SizedBox(height: 5),
               Text(
-                '${item.color} · SIZE ${item.size}',
+                '${item.color} · ${AppStrings.of(context).size} ${item.size}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.midGray,
                     ),
@@ -220,64 +224,69 @@ class _CartSummary extends StatelessWidget {
             final total = state.subtotal - discount;
 
             return Column(
-          children: [
-            _PromoCodeSection(
-              subtotal: state.subtotal,
-              state: ready,
-            ),
-            const SizedBox(height: 16),
-            _SummaryRow(
-              label: AppStrings.of(context).subtotal.toUpperCase(),
-              value: '${state.subtotal.toStringAsFixed(0)} EGP',
-            ),
-            if (discount > 0) ...[
-              const SizedBox(height: 8),
-              _SummaryRow(
-                label: AppStrings.of(context).isArabic
-                    ? 'الخصم'
-                    : 'DISCOUNT',
-                value: '-${discount.toStringAsFixed(0)} EGP',
-              ),
-            ],
-            const SizedBox(height: 8),
-            _SummaryRow(
-              label: AppStrings.of(context).delivery.toUpperCase(),
-              value: AppStrings.of(context).isArabic ? 'مجاني' : 'FREE',
-            ),
-            const Divider(height: 28),
-            _SummaryRow(
-              label: AppStrings.of(context).total.toUpperCase(),
-              value: '${total.toStringAsFixed(0)} EGP',
-              emphasized: true,
-            ),
-            const SizedBox(height: 14),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: FilledButton(
-                onPressed: () => Navigator.of(context).pushNamed(Routes.checkout),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.acidLime,
-                  foregroundColor: AppColors.nearBlack,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
+              children: [
+                _PromoCodeSection(
+                  subtotal: state.subtotal,
+                  state: ready,
+                ),
+                const SizedBox(height: 16),
+                _SummaryRow(
+                  label: AppStrings.of(context).subtotal.toUpperCase(),
+                  value: '${state.subtotal.toStringAsFixed(0)} EGP',
+                ),
+                if (discount > 0) ...[
+                  const SizedBox(height: 8),
+                  _SummaryRow(
+                    label:
+                        AppStrings.of(context).isArabic ? 'الخصم' : 'DISCOUNT',
+                    value: '-${discount.toStringAsFixed(0)} EGP',
+                  ),
+                ],
+                const SizedBox(height: 8),
+                _SummaryRow(
+                  label: AppStrings.of(context)
+                      .deliveryTitle('Standard Delivery')
+                      .toUpperCase(),
+                  value: AppStrings.of(context).isArabic ? 'مجاني' : 'FREE',
+                ),
+                const Divider(height: 28),
+                _SummaryRow(
+                  label: AppStrings.of(context).total.toUpperCase(),
+                  value: '${total.toStringAsFixed(0)} EGP',
+                  emphasized: true,
+                ),
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: FilledButton(
+                    onPressed: () async {
+                      await Navigator.of(context).pushNamed(Routes.checkout);
+                      if (context.mounted) {
+                        await context.read<CartCubit>().load();
+                      }
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.acidLime,
+                      foregroundColor: AppColors.nearBlack,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    child: Text(
+                      AppStrings.of(context).checkout.toUpperCase() + '  →',
+                      style: const TextStyle(fontWeight: FontWeight.w900),
+                    ),
                   ),
                 ),
-                child: Text(
-                  AppStrings.of(context).checkout.toUpperCase() + '  →',
-                  style: const TextStyle(fontWeight: FontWeight.w900),
-                ),
-              ),
-            ),
-          ],
-        );
+              ],
+            );
           },
         ),
       ),
     );
   }
 }
-
 
 class _PromoCodeSection extends StatefulWidget {
   const _PromoCodeSection({
@@ -328,7 +337,7 @@ class _PromoCodeSectionState extends State<_PromoCodeSection> {
                     ),
                   ),
                   Text(
-                    applied.title,
+                    strings.promotionTitle(applied.title),
                     style: const TextStyle(
                       color: AppColors.midGray,
                       fontSize: 11,
@@ -356,9 +365,7 @@ class _PromoCodeSectionState extends State<_PromoCodeSection> {
                 controller: _controller,
                 textCapitalization: TextCapitalization.characters,
                 decoration: InputDecoration(
-                  hintText: strings.isArabic
-                      ? 'كود الخصم'
-                      : 'PROMO CODE',
+                  hintText: strings.isArabic ? 'كود الخصم' : 'PROMO CODE',
                   prefixIcon: Icon(AppIcons.tag),
                 ),
               ),
@@ -368,6 +375,7 @@ class _PromoCodeSectionState extends State<_PromoCodeSection> {
               height: 48,
               child: FilledButton(
                 onPressed: () {
+                  FocusScope.of(context).unfocus();
                   context.read<PromotionsCubit>().apply(
                         code: _controller.text,
                         subtotal: widget.subtotal,
@@ -381,7 +389,7 @@ class _PromoCodeSectionState extends State<_PromoCodeSection> {
         if (widget.state.message != null) ...[
           const SizedBox(height: 7),
           Text(
-            widget.state.message!,
+            strings.promotionMessage(widget.state.message!),
             style: TextStyle(
               fontSize: 11,
               color: widget.state.hasError
@@ -428,9 +436,11 @@ class _SummaryRow extends StatelessWidget {
 
     return Row(
       children: [
-        Text(label, style: style),
-        const Spacer(),
-        Text(value, style: style),
+        Expanded(child: Text(label, style: style)),
+        const SizedBox(width: 12),
+        Text(value,
+            style: style,
+            textDirection: value.contains('EGP') ? TextDirection.ltr : null),
       ],
     );
   }

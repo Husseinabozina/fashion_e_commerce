@@ -17,5 +17,5 @@ class ShippingAddress {
   final String building;
   final String notes;
 
-  String get compactLabel => '$street, $area, $city';
+  String get compactLabel => '$building, $street, $area, $city';
 }

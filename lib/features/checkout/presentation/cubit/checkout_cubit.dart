@@ -34,6 +34,7 @@ final class CheckoutReady extends CheckoutState {
     this.delivery,
     this.payment,
     this.isSubmitting = false,
+    this.hasSubmissionError = false,
   });
 
   final List<CartItem> items;
@@ -44,6 +45,7 @@ final class CheckoutReady extends CheckoutState {
   final DeliveryOption? delivery;
   final PaymentOption? payment;
   final bool isSubmitting;
+  final bool hasSubmissionError;
 
   double get subtotal {
     return items.fold<double>(
@@ -62,6 +64,7 @@ final class CheckoutReady extends CheckoutState {
     DeliveryOption? delivery,
     PaymentOption? payment,
     bool? isSubmitting,
+    bool? hasSubmissionError,
   }) {
     return CheckoutReady(
       items: items,
@@ -72,14 +75,16 @@ final class CheckoutReady extends CheckoutState {
       delivery: delivery ?? this.delivery,
       payment: payment ?? this.payment,
       isSubmitting: isSubmitting ?? this.isSubmitting,
+      hasSubmissionError: hasSubmissionError ?? this.hasSubmissionError,
     );
   }
 }
 
 final class CheckoutCompleted extends CheckoutState {
-  const CheckoutCompleted(this.receipt);
+  const CheckoutCompleted(this.receipt, {this.cartCleared = true});
 
   final OrderReceipt receipt;
+  final bool cartCleared;
 }
 
 final class CheckoutFailure extends CheckoutState {
@@ -110,6 +115,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
     try {
       final items = await _getCart();
+      if (isClosed) return;
       if (items.isEmpty) {
         emit(const CheckoutFailure('Your bag is empty.'));
         return;
@@ -119,6 +125,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       final promotion = await _getAppliedPromotion();
       final defaultAddress = await _getDefaultAddress();
 
+      if (isClosed) return;
       emit(
         CheckoutReady(
           items: items,
@@ -128,13 +135,15 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         ),
       );
     } catch (_) {
-      emit(const CheckoutFailure('Checkout could not be loaded.'));
+      if (!isClosed) {
+        emit(const CheckoutFailure('Checkout could not be loaded.'));
+      }
     }
   }
 
   void saveAddress(ShippingAddress address) {
     final current = state;
-    if (current is! CheckoutReady) return;
+    if (current is! CheckoutReady || current.isSubmitting) return;
 
     emit(
       current.copyWith(
@@ -146,7 +155,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   void selectDelivery(DeliveryOption option) {
     final current = state;
-    if (current is! CheckoutReady) return;
+    if (current is! CheckoutReady || current.isSubmitting) return;
 
     emit(
       current.copyWith(
@@ -158,7 +167,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   void selectPayment(PaymentOption option) {
     final current = state;
-    if (current is! CheckoutReady) return;
+    if (current is! CheckoutReady || current.isSubmitting) return;
 
     emit(
       current.copyWith(
@@ -170,7 +179,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   void goBack() {
     final current = state;
-    if (current is! CheckoutReady) return;
+    if (current is! CheckoutReady || current.isSubmitting) return;
 
     final previous = switch (current.step) {
       CheckoutStep.address => CheckoutStep.address,
@@ -185,16 +194,19 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   Future<void> submitOrder() async {
     final current = state;
     if (current is! CheckoutReady ||
+        current.isSubmitting ||
+        current.step != CheckoutStep.review ||
         current.address == null ||
         current.delivery == null ||
         current.payment == null) {
       return;
     }
 
-    emit(current.copyWith(isSubmitting: true));
+    emit(current.copyWith(isSubmitting: true, hasSubmissionError: false));
 
+    final OrderReceipt receipt;
     try {
-      final receipt = await _placeOrder(
+      receipt = await _placeOrder(
         PlaceOrderRequest(
           items: current.items,
           address: current.address!,
@@ -203,11 +215,20 @@ class CheckoutCubit extends Cubit<CheckoutState> {
           promotion: current.promotion,
         ),
       );
-
-      await _clearCart();
-      emit(CheckoutCompleted(receipt));
     } catch (_) {
-      emit(const CheckoutFailure('Order could not be placed.'));
+      if (!isClosed) {
+        emit(current.copyWith(isSubmitting: false, hasSubmissionError: true));
+      }
+      return;
     }
+
+    // Placement has succeeded: cleanup failure must never offer order retry.
+    var cartCleared = true;
+    try {
+      await _clearCart();
+    } catch (_) {
+      cartCleared = false;
+    }
+    if (!isClosed) emit(CheckoutCompleted(receipt, cartCleared: cartCleared));
   }
 }

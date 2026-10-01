@@ -8,6 +8,7 @@ import 'package:fashion_e_commerce/features/checkout/domain/entities/order_recei
 import 'package:fashion_e_commerce/features/checkout/domain/entities/shipping_address.dart';
 import 'package:fashion_e_commerce/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CheckoutPage extends StatelessWidget {
@@ -27,10 +28,11 @@ class CheckoutPage extends StatelessWidget {
             ),
           CheckoutFailure(:final message) => Scaffold(
               appBar: AppBar(),
-              body: Center(child: Text(message)),
+              body: Center(
+                  child: Text(AppStrings.of(context).checkoutFailure(message))),
             ),
-          CheckoutCompleted(:final receipt) =>
-            _OrderSuccessPage(receipt: receipt),
+          CheckoutCompleted(:final receipt, :final cartCleared) =>
+            _OrderSuccessPage(receipt: receipt, cartCleared: cartCleared),
           CheckoutReady() => _CheckoutFlow(state: state),
         };
       },
@@ -45,46 +47,57 @@ class _CheckoutFlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: state.step == CheckoutStep.address
-              ? Navigator.of(context).pop
-              : context.read<CheckoutCubit>().goBack,
-          icon: Icon(AppIcons.arrowLeft),
+    return PopScope<Object?>(
+      canPop: !state.isSubmitting && state.step == CheckoutStep.address,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && !state.isSubmitting) {
+          context.read<CheckoutCubit>().goBack();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            onPressed: state.isSubmitting
+                ? null
+                : state.step == CheckoutStep.address
+                    ? Navigator.of(context).pop
+                    : context.read<CheckoutCubit>().goBack,
+            icon: Icon(AppIcons.arrowLeft),
+          ),
+          title: Text(AppStrings.of(context).checkout.toUpperCase()),
         ),
-        title: Text(AppStrings.of(context).checkout.toUpperCase()),
-      ),
-      body: SafeArea(
-        top: false,
-        child: Column(
-          children: [
-            _CheckoutProgress(step: state.step),
-            const Divider(height: 1),
-            Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                child: switch (state.step) {
-                  CheckoutStep.address => _AddressStep(
-                      key: const ValueKey<String>('address'),
-                      initialAddress: state.address,
-                    ),
-                  CheckoutStep.delivery => _DeliveryStep(
-                      key: const ValueKey<String>('delivery'),
-                      state: state,
-                    ),
-                  CheckoutStep.payment => _PaymentStep(
-                      key: const ValueKey<String>('payment'),
-                      state: state,
-                    ),
-                  CheckoutStep.review => _ReviewStep(
-                      key: const ValueKey<String>('review'),
-                      state: state,
-                    ),
-                },
+        body: SafeArea(
+          top: false,
+          child: Column(
+            children: [
+              _CheckoutProgress(step: state.step),
+              const Divider(height: 1),
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 220),
+                  child: switch (state.step) {
+                    CheckoutStep.address => _AddressStep(
+                        key: const ValueKey<String>('address'),
+                        initialAddress: state.address,
+                      ),
+                    CheckoutStep.delivery => _DeliveryStep(
+                        key: const ValueKey<String>('delivery'),
+                        state: state,
+                      ),
+                    CheckoutStep.payment => _PaymentStep(
+                        key: const ValueKey<String>('payment'),
+                        state: state,
+                      ),
+                    CheckoutStep.review => _ReviewStep(
+                        key: const ValueKey<String>('review'),
+                        state: state,
+                      ),
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -191,13 +204,16 @@ class _AddressStepState extends State<_AddressStep> {
         padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
         children: [
           Text(
-            AppStrings.of(context).isArabic ? 'إلى أين\nنرسل الطلب؟' : 'WHERE SHOULD\nWE SEND IT?',
+            AppStrings.of(context).isArabic
+                ? 'إلى أين\nنرسل الطلب؟'
+                : 'WHERE SHOULD\nWE SEND IT?',
             style: AppTheme.displayFor(context, fontSize: 34),
           ),
           const SizedBox(height: 20),
           _CheckoutField(
             controller: _name,
-            label: AppStrings.of(context).isArabic ? 'الاسم الكامل' : 'FULL NAME',
+            label:
+                AppStrings.of(context).isArabic ? 'الاسم الكامل' : 'FULL NAME',
           ),
           _CheckoutField(
             controller: _phone,
@@ -231,9 +247,12 @@ class _AddressStepState extends State<_AddressStep> {
           ),
           const SizedBox(height: 8),
           _PrimaryCheckoutButton(
-            label: AppStrings.of(context).isArabic ? 'متابعة إلى التوصيل  ←' : 'CONTINUE TO DELIVERY  →',
+            label: AppStrings.of(context).isArabic
+                ? 'متابعة إلى التوصيل  ←'
+                : 'CONTINUE TO DELIVERY  →',
             onPressed: () {
               if (!_formKey.currentState!.validate()) return;
+              FocusScope.of(context).unfocus();
 
               context.read<CheckoutCubit>().saveAddress(
                     ShippingAddress(
@@ -269,6 +288,7 @@ class _CheckoutField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
+        key: ValueKey<String>(label),
         controller: controller,
         keyboardType: keyboardType,
         validator: (value) {
@@ -303,8 +323,10 @@ class _DeliveryStep extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
       children: [
         Text(
-          AppStrings.of(context).isArabic ? 'اختر سرعة\nالتوصيل.' : 'CHOOSE YOUR\nDELIVERY SPEED.',
-          style: AppTheme.display(fontSize: 34),
+          AppStrings.of(context).isArabic
+              ? 'اختر سرعة\nالتوصيل.'
+              : 'CHOOSE YOUR\nDELIVERY SPEED.',
+          style: AppTheme.displayFor(context, fontSize: 34),
         ),
         const SizedBox(height: 20),
         ...state.options.deliveryOptions.map(
@@ -341,12 +363,14 @@ class _DeliveryCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      option.title.toUpperCase(),
+                      AppStrings.of(context)
+                          .deliveryTitle(option.title)
+                          .toUpperCase(),
                       style: const TextStyle(fontWeight: FontWeight.w900),
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      option.eta,
+                      AppStrings.of(context).deliveryEta(option.eta),
                       style: const TextStyle(color: AppColors.midGray),
                     ),
                   ],
@@ -380,8 +404,10 @@ class _PaymentStep extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
       children: [
         Text(
-          AppStrings.of(context).isArabic ? 'كيف تريد\nالدفع؟' : 'HOW DO YOU\nWANT TO PAY?',
-          style: AppTheme.display(fontSize: 34),
+          AppStrings.of(context).isArabic
+              ? 'كيف تريد\nالدفع؟'
+              : 'HOW DO YOU\nWANT TO PAY?',
+          style: AppTheme.displayFor(context, fontSize: 34),
         ),
         const SizedBox(height: 20),
         ...state.options.paymentOptions.map(
@@ -418,12 +444,14 @@ class _PaymentCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      option.title.toUpperCase(),
+                      AppStrings.of(context)
+                          .paymentTitle(option.title)
+                          .toUpperCase(),
                       style: const TextStyle(fontWeight: FontWeight.w900),
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      option.subtitle,
+                      AppStrings.of(context).paymentSubtitle(option.subtitle),
                       style: const TextStyle(color: AppColors.midGray),
                     ),
                   ],
@@ -452,8 +480,10 @@ class _ReviewStep extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
       children: [
         Text(
-          AppStrings.of(context).isArabic ? 'المراجعة النهائية.' : 'FINAL CHECK.',
-          style: AppTheme.display(fontSize: 34),
+          AppStrings.of(context).isArabic
+              ? 'المراجعة النهائية.'
+              : 'FINAL CHECK.',
+          style: AppTheme.displayFor(context, fontSize: 34),
         ),
         const SizedBox(height: 18),
         _ReviewBlock(
@@ -463,11 +493,12 @@ class _ReviewStep extends StatelessWidget {
         ),
         _ReviewBlock(
           title: AppStrings.of(context).delivery.toUpperCase(),
-          value: '${state.delivery!.title}\n${state.delivery!.eta}',
+          value:
+              '${AppStrings.of(context).deliveryTitle(state.delivery!.title)}\n${AppStrings.of(context).deliveryEta(state.delivery!.eta)}',
         ),
         _ReviewBlock(
           title: AppStrings.of(context).payment.toUpperCase(),
-          value: state.payment!.title,
+          value: AppStrings.of(context).paymentTitle(state.payment!.title),
         ),
         const Divider(height: 32),
         _ReviewPriceRow(
@@ -487,7 +518,7 @@ class _ReviewStep extends StatelessWidget {
         _ReviewPriceRow(
           label: AppStrings.of(context).delivery.toUpperCase(),
           value: state.delivery!.price == 0
-              ? 'FREE'
+              ? AppStrings.of(context).free
               : '${state.delivery!.price.toStringAsFixed(0)} EGP',
         ),
         const Divider(height: 32),
@@ -497,9 +528,18 @@ class _ReviewStep extends StatelessWidget {
           emphasized: true,
         ),
         const SizedBox(height: 20),
+        if (state.hasSubmissionError) ...[
+          Text(
+            AppStrings.of(context).orderRetry,
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
+          const SizedBox(height: 12),
+        ],
         _PrimaryCheckoutButton(
           label: state.isSubmitting
-              ? (AppStrings.of(context).isArabic ? 'جارٍ تأكيد الطلب...' : 'PLACING ORDER...')
+              ? (AppStrings.of(context).isArabic
+                  ? 'جارٍ تأكيد الطلب...'
+                  : 'PLACING ORDER...')
               : AppStrings.of(context).placeOrder,
           onPressed: state.isSubmitting
               ? null
@@ -567,9 +607,11 @@ class _ReviewPriceRow extends StatelessWidget {
 
     return Row(
       children: [
-        Text(label, style: style),
-        const Spacer(),
-        Text(value, style: style),
+        Expanded(child: Text(label, style: style)),
+        const SizedBox(width: 12),
+        Text(value,
+            style: style,
+            textDirection: value.contains('EGP') ? TextDirection.ltr : null),
       ],
     );
   }
@@ -609,93 +651,129 @@ class _PrimaryCheckoutButton extends StatelessWidget {
 }
 
 class _OrderSuccessPage extends StatelessWidget {
-  const _OrderSuccessPage({required this.receipt});
+  const _OrderSuccessPage({required this.receipt, required this.cartCleared});
 
   final OrderReceipt receipt;
+  final bool cartCleared;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.nearBlack,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              const Spacer(),
-              TweenAnimationBuilder<double>(
-                tween: Tween<double>(begin: 0.7, end: 1),
-                duration: const Duration(milliseconds: 420),
-                curve: Curves.easeOutBack,
-                builder: (context, value, child) {
-                  return Transform.scale(
-                    scale: value,
-                    child: child,
-                  );
-                },
-                child: Container(
-                  width: 74,
-                  height: 74,
-                  decoration: const BoxDecoration(
-                    color: AppColors.acidLime,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    AppIcons.check,
-                    size: 44,
-                    color: AppColors.nearBlack,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 28),
-              Text(
-                AppStrings.of(context).orderPlaced,
-                textAlign: TextAlign.center,
-                style: AppTheme.display(
-                  fontSize: 48,
-                  color: AppColors.white,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                '#${receipt.orderId}',
-                style: const TextStyle(
-                  color: AppColors.concrete,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Total ${receipt.total.toStringAsFixed(0)} EGP · ${receipt.deliveryEta}',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.white),
-              ),
-              const Spacer(),
-              _PrimaryCheckoutButton(
-                label: AppStrings.of(context).viewOrder,
-                onPressed: () {
-                  Navigator.of(context).pushNamed(
-                    Routes.orderDetails,
-                    arguments: receipt.orderId,
-                  );
-                },
-              ),
-              const SizedBox(height: 10),
-              OutlinedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    Routes.home,
-                    (route) => false,
-                  );
-                },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.white,
-                  side: const BorderSide(color: AppColors.white),
-                ),
-                child: Text(AppStrings.of(context).backHome),
-              ),
-            ],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: PopScope<Object?>(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) {
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil(Routes.home, (route) => false);
+          }
+        },
+        child: Scaffold(
+          backgroundColor: AppColors.nearBlack,
+          body: SafeArea(
+            child: LayoutBuilder(
+                builder: (context, constraints) => SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints:
+                            BoxConstraints(minHeight: constraints.maxHeight),
+                        child: IntrinsicHeight(
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Column(
+                              children: [
+                                const Spacer(),
+                                TweenAnimationBuilder<double>(
+                                  tween: Tween<double>(begin: 0.7, end: 1),
+                                  duration: const Duration(milliseconds: 420),
+                                  curve: Curves.easeOutBack,
+                                  builder: (context, value, child) {
+                                    return Transform.scale(
+                                      scale: value,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Container(
+                                    width: 74,
+                                    height: 74,
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.acidLime,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      AppIcons.check,
+                                      textDirection: TextDirection.ltr,
+                                      size: 44,
+                                      color: AppColors.nearBlack,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 28),
+                                Text(
+                                  AppStrings.of(context).orderPlaced,
+                                  textAlign: TextAlign.center,
+                                  style: AppTheme.displayFor(
+                                    context,
+                                    fontSize: 48,
+                                    color: AppColors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  '#${receipt.orderId}',
+                                  textDirection: TextDirection.ltr,
+                                  style: const TextStyle(
+                                    color: AppColors.concrete,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  '${AppStrings.of(context).total} ${receipt.total.toStringAsFixed(0)} EGP · ${AppStrings.of(context).deliveryEta(receipt.deliveryEta)}',
+                                  textAlign: TextAlign.center,
+                                  style:
+                                      const TextStyle(color: AppColors.white),
+                                ),
+                                const Spacer(),
+                                if (!cartCleared) ...[
+                                  Text(AppStrings.of(context).cartCleanupFailed,
+                                      style: const TextStyle(
+                                          color: AppColors.white)),
+                                  const SizedBox(height: 12),
+                                ],
+                                _PrimaryCheckoutButton(
+                                  label: AppStrings.of(context).viewOrder,
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pushNamedAndRemoveUntil(
+                                      Routes.orderDetails,
+                                      ModalRoute.withName(Routes.home),
+                                      arguments: receipt.orderId,
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 10),
+                                OutlinedButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pushNamedAndRemoveUntil(
+                                      Routes.home,
+                                      (route) => false,
+                                    );
+                                  },
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: AppColors.white,
+                                    side: const BorderSide(
+                                        color: AppColors.white),
+                                  ),
+                                  child: Text(AppStrings.of(context).backHome),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    )),
           ),
         ),
       ),

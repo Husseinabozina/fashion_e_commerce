@@ -62,16 +62,18 @@ class _OrderCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            Wrap(
+              spacing: 12,
+              runSpacing: 8,
               children: [
                 Text(
                   '#${order.id}',
+                  textDirection: TextDirection.ltr,
                   style: const TextStyle(
                     fontWeight: FontWeight.w900,
                     letterSpacing: 0.6,
                   ),
                 ),
-                const Spacer(),
                 _StatusPill(status: order.status),
               ],
             ),
@@ -89,8 +91,7 @@ class _OrderCard extends StatelessWidget {
                   child: Image.network(
                     order.items.first.product.imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) =>
-                        Icon(AppIcons.product),
+                    errorBuilder: (_, __, ___) => Icon(AppIcons.product),
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -99,7 +100,9 @@ class _OrderCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        AppStrings.of(context).isArabic ? '${order.items.length} منتج' : '${order.items.length} ITEM${order.items.length == 1 ? '' : 'S'}',
+                        AppStrings.of(context).isArabic
+                            ? '${order.items.length} منتج'
+                            : '${order.items.length} ITEM${order.items.length == 1 ? '' : 'S'}',
                         style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w900,
@@ -144,7 +147,7 @@ class _StatusPill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       color: completed ? AppColors.acidLime : AppColors.concrete,
       child: Text(
-        status.label.toUpperCase(),
+        AppStrings.of(context).orderStatus(status.label).toUpperCase(),
         style: const TextStyle(
           fontSize: 9,
           fontWeight: FontWeight.w900,
@@ -163,7 +166,9 @@ class _EmptyOrders extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Text(
-          AppStrings.of(context).isArabic ? 'لا توجد\nطلبات بعد.' : 'NO ORDERS\nYET.',
+          AppStrings.of(context).isArabic
+              ? 'لا توجد\nطلبات بعد.'
+              : 'NO ORDERS\nYET.',
           textAlign: TextAlign.center,
           style: AppTheme.displayFor(context, fontSize: 38),
         ),

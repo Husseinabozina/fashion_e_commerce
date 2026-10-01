@@ -24,7 +24,8 @@ class PlaceOrder {
         total: receipt.total,
         createdAt: DateTime.now(),
         deliveryEta: receipt.deliveryEta,
-        shippingAddressLabel: request.address.compactLabel,
+        shippingAddressLabel:
+            '${request.address.fullName}\n${request.address.compactLabel}\n${request.address.phone}',
         deliveryTitle: request.delivery.title,
         paymentTitle: request.payment.title,
         status: OrderStatus.placed,

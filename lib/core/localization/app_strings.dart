@@ -26,10 +26,12 @@ class AppStrings {
   String get shopByCategory => isArabic ? 'تسوق حسب الفئة' : 'SHOP BY CATEGORY';
   String get view => isArabic ? 'عرض' : 'VIEW';
   String get streetEdit => isArabic ? 'اختيارات الشارع' : 'STREET EDIT';
-  String get noRules => isArabic ? 'بدون قواعد.\nاختيارك أنت.' : 'NO RULES.\nJUST ROTATION.';
+  String get noRules =>
+      isArabic ? 'بدون قواعد.\nاختيارك أنت.' : 'NO RULES.\nJUST ROTATION.';
   String get discoverEdit => isArabic ? 'اكتشف المجموعة' : 'DISCOVER THE EDIT';
 
   String get selectSize => isArabic ? 'اختر المقاس' : 'SELECT SIZE';
+  String get size => isArabic ? 'المقاس' : 'Size';
   String get sizeGuide => isArabic ? 'دليل المقاسات' : 'SIZE GUIDE';
   String get addToBag => isArabic ? 'أضف إلى الحقيبة' : 'ADD TO BAG  →';
   String get selectASize => isArabic ? 'اختر مقاسًا' : 'SELECT A SIZE';
@@ -54,12 +56,100 @@ class AppStrings {
   String get orderPlaced => isArabic ? 'تم\nتأكيد الطلب.' : 'ORDER\nPLACED.';
   String get viewOrder => isArabic ? 'عرض الطلب' : 'VIEW ORDER  →';
   String get backHome => isArabic ? 'العودة للرئيسية' : 'BACK TO HOME';
+  String get free => isArabic ? 'مجاني' : 'FREE';
+  String get orderRetry => isArabic
+      ? 'تعذر تأكيد الطلب. اختياراتك محفوظة، حاول مرة أخرى.'
+      : 'Could not place your order. Your choices are saved. Please try again.';
+  String get cartCleanupFailed => isArabic
+      ? 'تم تأكيد طلبك، لكن تعذر تحديث الحقيبة. لا تكرر الطلب.'
+      : 'Your order is placed, but the bag could not be updated. Do not place it again.';
+
+  String promotionTitle(String title) => !isArabic
+      ? title
+      : switch (title) {
+          'Street Drop 10%' => 'خصم ١٠٪ على اختيارات الشارع',
+          'NOVA 500 EGP Off' => 'خصم ٥٠٠ جنيه من NOVA',
+          _ => title,
+        };
+
+  String promotionMessage(String message) {
+    if (!isArabic) return message;
+    if (message == 'Invalid promotion code.') return 'كود الخصم غير صحيح.';
+    final minimum =
+        RegExp(r'^Minimum subtotal is (\d+) EGP\.$').firstMatch(message);
+    if (minimum != null) {
+      return 'الحد الأدنى للمجموع الفرعي ${minimum[1]} جنيه.';
+    }
+    if (message.endsWith(' applied.')) {
+      return 'تم تطبيق ${message.replaceFirst(' applied.', '')}.';
+    }
+    return 'تعذر تطبيق كود الخصم. حاول مرة أخرى.';
+  }
+
+  String deliveryTitle(String title) => !isArabic
+      ? title
+      : switch (title) {
+          'Standard Delivery' => 'توصيل عادي',
+          'Express Delivery' => 'توصيل سريع',
+          _ => title,
+        };
+
+  String deliveryEta(String eta) => !isArabic
+      ? eta
+      : switch (eta) {
+          '2–4 business days' => 'من يومين إلى ٤ أيام عمل',
+          'Next business day' => 'يوم العمل التالي',
+          'Delivered 27 Sep' => 'تم التوصيل ٢٧ سبتمبر',
+          _ => eta,
+        };
+
+  String paymentTitle(String title) => !isArabic
+      ? title
+      : switch (title) {
+          'Card' => 'بطاقة بنكية',
+          'Cash on Delivery' => 'الدفع عند الاستلام',
+          'Wallet' => 'محفظة إلكترونية',
+          _ => title,
+        };
+
+  String paymentSubtitle(String subtitle) => !isArabic
+      ? subtitle
+      : switch (subtitle) {
+          'Visa · Mastercard' => 'فيزا · ماستركارد',
+          'Pay when your order arrives' => 'ادفع عند وصول طلبك',
+          'Digital wallet' => 'محفظة رقمية',
+          _ => subtitle,
+        };
+
+  String orderStatus(String status) => !isArabic
+      ? status
+      : switch (status) {
+          'Order placed' => 'تم تأكيد الطلب',
+          'Confirmed' => 'تم قبول الطلب',
+          'Preparing' => 'جارٍ التجهيز',
+          'Shipped' => 'تم الشحن',
+          'Out for delivery' => 'في الطريق إليك',
+          'Delivered' => 'تم التوصيل',
+          'Cancelled' => 'تم الإلغاء',
+          'Return requested' => 'تم طلب الإرجاع',
+          'Returned' => 'تم الإرجاع',
+          'Refunded' => 'تم رد المبلغ',
+          _ => status,
+        };
+
+  String checkoutFailure(String message) => !isArabic
+      ? message
+      : switch (message) {
+          'Your bag is empty.' => 'حقيبتك فارغة.',
+          _ => 'تعذر تحميل خطوات الشراء. حاول مرة أخرى.',
+        };
 
   String get orderDetails => isArabic ? 'تفاصيل الطلب' : 'ORDER DETAILS';
   String get tracking => isArabic ? 'تتبع الطلب' : 'TRACKING';
   String get items => isArabic ? 'المنتجات' : 'ITEMS';
   String get returnLabel => isArabic ? 'إرجاع' : 'RETURN';
-  String get returnExchange => isArabic ? 'إرجاع /\nاستبدال' : 'RETURN /\nEXCHANGE';
+  String get returnExchange =>
+      isArabic ? 'إرجاع /\nاستبدال' : 'RETURN /\nEXCHANGE';
   String get exchangeSize => isArabic ? 'تبديل المقاس' : 'EXCHANGE SIZE';
   String get reason => isArabic ? 'السبب' : 'REASON';
   String get newSize => isArabic ? 'المقاس الجديد' : 'NEW SIZE';
@@ -71,11 +161,13 @@ class AppStrings {
       : 'Browse freely. Sign in when you want your account synced.';
   String get signIn => isArabic ? 'تسجيل الدخول' : 'SIGN IN';
   String get signOut => isArabic ? 'تسجيل الخروج' : 'SIGN OUT';
-  String get ordersReturns => isArabic ? 'الطلبات والإرجاع' : 'ORDERS & RETURNS';
+  String get ordersReturns =>
+      isArabic ? 'الطلبات والإرجاع' : 'ORDERS & RETURNS';
   String get savedItems => isArabic ? 'العناصر المحفوظة' : 'SAVED ITEMS';
   String get addresses => isArabic ? 'العناوين' : 'ADDRESSES';
   String get notifications => isArabic ? 'الإشعارات' : 'NOTIFICATIONS';
-  String get languageRegion => isArabic ? 'اللغة والمنطقة' : 'LANGUAGE & REGION';
+  String get languageRegion =>
+      isArabic ? 'اللغة والمنطقة' : 'LANGUAGE & REGION';
   String get english => 'English';
   String get arabic => 'العربية';
 
