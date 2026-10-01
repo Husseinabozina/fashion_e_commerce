@@ -79,12 +79,13 @@ void main() {
           TextButton(onPressed: () {}, child: const Text('View')),
           OutlinedButton(onPressed: () {}, child: const Text('Filter')),
           FilledButton(onPressed: () {}, child: const Text('Shop')),
+          const Text('Description', style: TextStyle(color: AppColors.midGray)),
         ]),
       ),
     ));
     await tester.pumpAndSettle();
 
-    for (final label in ['View', 'Filter', 'Shop']) {
+    for (final label in ['View', 'Filter', 'Shop', 'Description']) {
       final paragraph = tester.renderObject<RenderParagraph>(find.text(label));
       final foreground = paragraph.text.style!.color!;
       final background =
@@ -110,7 +111,7 @@ void main() {
         TextDirection.rtl);
     expect(tester.takeException(), isNull);
 
-    await tester.tap(find.text('SHOP THE DROP'));
+    await tester.tap(find.text('تسوق المجموعة'));
     await tester.pumpAndSettle();
     final back = find.descendant(
       of: find.byType(BackButton),

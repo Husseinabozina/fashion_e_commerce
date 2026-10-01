@@ -119,35 +119,53 @@ class _CartItemTile extends StatelessWidget {
               ),
               const SizedBox(height: 5),
               Text(
-                '${item.color} · ${AppStrings.of(context).size} ${item.size}',
+                '${AppStrings.of(context).colorName(item.color)} · ${AppStrings.of(context).size} ${item.size}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.midGray,
                     ),
               ),
               const SizedBox(height: 12),
-              Row(
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  _QuantityButton(
-                    icon: AppIcons.minus,
-                    onPressed: () => context.read<CartCubit>().decrement(item),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 13),
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 160),
-                      child: Text(
-                        '${item.quantity}',
-                        key: ValueKey<int>(item.quantity),
-                        style: const TextStyle(fontWeight: FontWeight.w900),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _QuantityButton(
+                        icon: AppIcons.minus,
+                        tooltip: AppStrings.of(context).isArabic
+                            ? 'تقليل الكمية'
+                            : 'Decrease quantity',
+                        onPressed: () =>
+                            context.read<CartCubit>().decrement(item),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 13),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 160),
+                          child: Text(
+                            '${item.quantity}',
+                            key: ValueKey<int>(item.quantity),
+                            style: const TextStyle(fontWeight: FontWeight.w900),
+                          ),
+                        ),
+                      ),
+                      _QuantityButton(
+                        icon: AppIcons.plus,
+                        tooltip: AppStrings.of(context).isArabic
+                            ? 'زيادة الكمية'
+                            : 'Increase quantity',
+                        onPressed: () =>
+                            context.read<CartCubit>().increment(item),
+                      ),
+                    ],
                   ),
-                  _QuantityButton(
-                    icon: AppIcons.plus,
-                    onPressed: () => context.read<CartCubit>().increment(item),
-                  ),
-                  const Spacer(),
                   IconButton(
+                    tooltip: AppStrings.of(context).isArabic
+                        ? 'حذف المنتج'
+                        : 'Remove item',
                     onPressed: () => context.read<CartCubit>().remove(item),
                     icon: Icon(AppIcons.trash, size: 21),
                   ),
@@ -171,10 +189,12 @@ class _CartItemTile extends StatelessWidget {
 class _QuantityButton extends StatelessWidget {
   const _QuantityButton({
     required this.icon,
+    required this.tooltip,
     required this.onPressed,
   });
 
   final IconData icon;
+  final String tooltip;
   final VoidCallback onPressed;
 
   @override
@@ -182,17 +202,20 @@ class _QuantityButton extends StatelessWidget {
     return SizedBox(
       width: 32,
       height: 32,
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          padding: EdgeInsets.zero,
-          foregroundColor: AppColors.nearBlack,
-          side: const BorderSide(color: AppColors.concrete),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
+      child: Tooltip(
+        message: tooltip,
+        child: OutlinedButton(
+          onPressed: onPressed,
+          style: OutlinedButton.styleFrom(
+            padding: EdgeInsets.zero,
+            foregroundColor: AppColors.nearBlack,
+            side: const BorderSide(color: AppColors.concrete),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
           ),
+          child: Icon(icon, size: 16),
         ),
-        child: Icon(icon, size: 16),
       ),
     );
   }
@@ -256,9 +279,9 @@ class _CartSummary extends StatelessWidget {
                   emphasized: true,
                 ),
                 const SizedBox(height: 14),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                      minWidth: double.infinity, minHeight: 52),
                   child: FilledButton(
                     onPressed: () async {
                       await Navigator.of(context).pushNamed(Routes.checkout);
@@ -371,8 +394,8 @@ class _PromoCodeSectionState extends State<_PromoCodeSection> {
               ),
             ),
             const SizedBox(width: 8),
-            SizedBox(
-              height: 48,
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48),
               child: FilledButton(
                 onPressed: () {
                   FocusScope.of(context).unfocus();
@@ -434,14 +457,20 @@ class _SummaryRow extends StatelessWidget {
               fontWeight: FontWeight.w700,
             );
 
-    return Row(
-      children: [
-        Expanded(child: Text(label, style: style)),
-        const SizedBox(width: 12),
-        Text(value,
-            style: style,
-            textDirection: value.contains('EGP') ? TextDirection.ltr : null),
-      ],
+    return SizedBox(
+      width: double.infinity,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        spacing: 12,
+        runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text(label, style: style),
+          Text(value,
+              style: style,
+              textDirection: value.contains('EGP') ? TextDirection.ltr : null),
+        ],
+      ),
     );
   }
 }
@@ -465,8 +494,10 @@ class _EmptyCart extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
-            const Text(
-              'Build your rotation from the latest drops.',
+            Text(
+              AppStrings.of(context).isArabic
+                  ? 'اختَر ستايلك من أحدث المجموعات.'
+                  : 'Build your rotation from the latest drops.',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 18),

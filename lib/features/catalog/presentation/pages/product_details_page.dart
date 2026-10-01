@@ -37,7 +37,7 @@ class ProductDetailsPage extends StatelessWidget {
                     ),
                   ),
                 ProductDetailsFailure(:final message) => Center(
-                    child: Text(message),
+                    child: Text(AppStrings.of(context).loadFailure(message)),
                   ),
                 ProductDetailsReady() => _ProductDetailsContent(state: state),
               };
@@ -129,14 +129,14 @@ class _ProductDetailsContent extends StatelessWidget {
                     ),
                   ),
                   if (product.isNew)
-                    const ColoredBox(
+                    ColoredBox(
                       color: AppColors.acidLime,
                       child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 5),
                         child: Text(
-                          'NEW',
-                          style: TextStyle(fontWeight: FontWeight.w900),
+                          AppStrings.of(context).newLabel,
+                          style: const TextStyle(fontWeight: FontWeight.w900),
                         ),
                       ),
                     ),
@@ -152,7 +152,8 @@ class _ProductDetailsContent extends StatelessWidget {
               const SizedBox(height: 22),
               _LabelValue(
                 label: AppStrings.of(context).color,
-                value: state.selectedColor ?? 'Select',
+                value: AppStrings.of(context)
+                    .colorName(state.selectedColor ?? 'Select'),
               ),
               const SizedBox(height: 10),
               Wrap(
@@ -160,7 +161,7 @@ class _ProductDetailsContent extends StatelessWidget {
                 children: product.colors.map((color) {
                   final selected = state.selectedColor == color;
                   return ChoiceChip(
-                    label: Text(color),
+                    label: Text(AppStrings.of(context).colorName(color)),
                     selected: selected,
                     showCheckmark: false,
                     selectedColor: AppColors.nearBlack,
@@ -183,7 +184,10 @@ class _ProductDetailsContent extends StatelessWidget {
                 }).toList(),
               ),
               const SizedBox(height: 24),
-              Row(
+              Wrap(
+                spacing: 12,
+                runSpacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Text(
                     AppStrings.of(context).selectSize,
@@ -192,7 +196,6 @@ class _ProductDetailsContent extends StatelessWidget {
                       letterSpacing: 0.6,
                     ),
                   ),
-                  const Spacer(),
                   TextButton(
                     onPressed: () => _showSizeGuide(context),
                     child: Text(AppStrings.of(context).sizeGuide),
@@ -276,10 +279,12 @@ class _ProductDetailsContent extends StatelessWidget {
                 }).toList(),
               ),
               const SizedBox(height: 24),
-              _InfoRow(title: AppStrings.of(context).fit, value: product.fit),
+              _InfoRow(
+                  title: AppStrings.of(context).fit,
+                  value: AppStrings.of(context).productFit(product.fit)),
               const Divider(height: 28),
               Text(
-                product.description,
+                AppStrings.of(context).productDescription(product.description),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       height: 1.5,
                     ),
@@ -340,16 +345,18 @@ class _DetailsTopBar extends StatelessWidget {
     return Row(
       children: [
         IconButton(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           onPressed: Navigator.of(context).pop,
           icon: Icon(AppIcons.arrowLeft),
         ),
         const Spacer(),
-        Icon(AppIcons.share),
-        const SizedBox(width: 18),
         BlocBuilder<WishlistCubit, WishlistState>(
           builder: (context, state) {
             final saved = state is WishlistLoaded && state.contains(product.id);
             return IconButton(
+              tooltip: saved
+                  ? AppStrings.of(context).removeSavedProduct
+                  : AppStrings.of(context).saveProduct,
               onPressed: () {
                 context.read<WishlistCubit>().toggle(product);
               },
@@ -365,6 +372,7 @@ class _DetailsTopBar extends StatelessWidget {
         ),
         const SizedBox(width: 4),
         IconButton(
+          tooltip: AppStrings.of(context).viewBag,
           onPressed: () => Navigator.of(context).pushNamed(Routes.cart),
           icon: Icon(AppIcons.bag),
         ),
@@ -385,6 +393,7 @@ class _LabelValue extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RichText(
+      textScaler: MediaQuery.textScalerOf(context),
       text: TextSpan(
         style: Theme.of(context).textTheme.bodyMedium,
         children: [
@@ -410,13 +419,14 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
+      spacing: 16,
+      runSpacing: 8,
       children: [
         Text(
           title,
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
-        const Spacer(),
         Text(value),
       ],
     );
@@ -460,7 +470,9 @@ class _CompleteTheLookSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        Row(
+        Wrap(
+          spacing: 16,
+          runSpacing: 8,
           children: [
             Text(
               strings.isArabic ? 'إجمالي المختار' : 'SELECTED TOTAL',
@@ -468,7 +480,6 @@ class _CompleteTheLookSection extends StatelessWidget {
                 fontWeight: FontWeight.w900,
               ),
             ),
-            const Spacer(),
             Text(
               state.lookTotal.toStringAsFixed(0) + ' EGP',
               style: const TextStyle(
@@ -479,9 +490,9 @@ class _CompleteTheLookSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          width: double.infinity,
-          height: 50,
+        ConstrainedBox(
+          constraints:
+              const BoxConstraints(minHeight: 52, minWidth: double.infinity),
           child: FilledButton.icon(
             onPressed: state.canAddLook
                 ? () async {
@@ -737,13 +748,14 @@ class _ReviewsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        Wrap(
+          spacing: 12,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Expanded(
-              child: Text(
-                strings.isArabic ? 'التقييمات' : 'REVIEWS',
-                style: AppTheme.displayFor(context, fontSize: 28),
-              ),
+            Text(
+              strings.isArabic ? 'التقييمات' : 'REVIEWS',
+              style: AppTheme.displayFor(context, fontSize: 28),
             ),
             OutlinedButton(
               onPressed: () => _showReviewSheet(context),
@@ -762,7 +774,10 @@ class _ReviewsSection extends StatelessWidget {
             style: const TextStyle(color: AppColors.midGray),
           )
         else ...[
-          Row(
+          Wrap(
+            spacing: 10,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
                 state.averageRating.toStringAsFixed(1),
@@ -770,7 +785,6 @@ class _ReviewsSection extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               _Stars(rating: state.averageRating.round()),
-              const Spacer(),
               Text(
                 strings.isArabic
                     ? state.reviews.length.toString() + ' تقييم'
@@ -840,10 +854,12 @@ class _ReviewCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Wrap(
+            spacing: 12,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               _Stars(rating: review.rating),
-              const Spacer(),
               if (review.verifiedPurchase)
                 Text(
                   strings.isArabic ? 'شراء موثّق' : 'VERIFIED PURCHASE',
@@ -940,6 +956,9 @@ class _WriteReviewSheetState extends State<_WriteReviewSheet> {
                 children: List.generate(
                   5,
                   (index) => IconButton(
+                    tooltip: strings.isArabic
+                        ? '${index + 1} من ٥ نجوم'
+                        : '${index + 1} of 5 stars',
                     onPressed: () => setState(() => _rating = index + 1),
                     icon: Icon(
                       index < _rating ? AppIcons.starFilled : AppIcons.star,
@@ -954,28 +973,16 @@ class _WriteReviewSheetState extends State<_WriteReviewSheet> {
                 style: const TextStyle(fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 8),
-              SegmentedButton<FitFeedback>(
-                segments: [
-                  ButtonSegment(
-                    value: FitFeedback.runsSmall,
-                    label: Text(
-                        _fitLabel(FitFeedback.runsSmall, strings.isArabic)),
-                  ),
-                  ButtonSegment(
-                    value: FitFeedback.trueToSize,
-                    label: Text(
-                        _fitLabel(FitFeedback.trueToSize, strings.isArabic)),
-                  ),
-                  ButtonSegment(
-                    value: FitFeedback.runsLarge,
-                    label: Text(
-                        _fitLabel(FitFeedback.runsLarge, strings.isArabic)),
-                  ),
-                ],
-                selected: <FitFeedback>{_fit},
-                onSelectionChanged: (value) {
-                  setState(() => _fit = value.first);
-                },
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: FitFeedback.values
+                    .map((fit) => ChoiceChip(
+                          label: Text(_fitLabel(fit, strings.isArabic)),
+                          selected: _fit == fit,
+                          onSelected: (_) => setState(() => _fit = fit),
+                        ))
+                    .toList(),
               ),
               const SizedBox(height: 16),
               TextField(
@@ -988,9 +995,9 @@ class _WriteReviewSheetState extends State<_WriteReviewSheet> {
                 ),
               ),
               const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                    minHeight: 52, minWidth: double.infinity),
                 child: FilledButton(
                   onPressed: () async {
                     final submitted =
@@ -1032,26 +1039,22 @@ class _ServiceStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: _ServiceItem(
-            icon: AppIcons.delivery,
-            title: AppStrings.of(context).freeDelivery,
-            subtitle: AppStrings.of(context).isArabic
-                ? 'من 2 إلى 4 أيام عمل'
-                : '2–4 business days',
-          ),
+        _ServiceItem(
+          icon: AppIcons.delivery,
+          title: AppStrings.of(context).freeDelivery,
+          subtitle: AppStrings.of(context).isArabic
+              ? 'من 2 إلى 4 أيام عمل'
+              : '2–4 business days',
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _ServiceItem(
-            icon: AppIcons.returns,
-            title: AppStrings.of(context).easyReturns,
-            subtitle: AppStrings.of(context).isArabic
-                ? 'خلال 14 يومًا'
-                : 'Within 14 days',
-          ),
+        const SizedBox(height: 12),
+        _ServiceItem(
+          icon: AppIcons.returns,
+          title: AppStrings.of(context).easyReturns,
+          subtitle: AppStrings.of(context).isArabic
+              ? 'خلال 14 يومًا'
+              : 'Within 14 days',
         ),
       ],
     );
@@ -1124,9 +1127,9 @@ class _AddToBagBar extends StatelessWidget {
             ),
           ),
         ),
-        child: SizedBox(
-          width: double.infinity,
-          height: 52,
+        child: ConstrainedBox(
+          constraints:
+              const BoxConstraints(minHeight: 52, minWidth: double.infinity),
           child: FilledButton(
             onPressed: canAdd
                 ? () async {
@@ -1140,7 +1143,8 @@ class _AddToBagBar extends StatelessWidget {
                       SnackBar(
                         backgroundColor: AppColors.nearBlack,
                         content: Text(
-                          'Added ${state.product.name} · Size ${state.selectedSize}',
+                          AppStrings.of(context).addedToBag(
+                              state.product.name, state.selectedSize!),
                           style: const TextStyle(color: AppColors.white),
                         ),
                         action: SnackBarAction(

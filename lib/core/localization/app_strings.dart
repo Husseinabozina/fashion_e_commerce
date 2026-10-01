@@ -157,8 +157,8 @@ class AppStrings {
 
   String get guestMode => isArabic ? 'وضع\nالضيف.' : 'GUEST\nMODE.';
   String get guestDescription => isArabic
-      ? 'تصفح بحرية، وسجل الدخول عندما تريد مزامنة بياناتك.'
-      : 'Browse freely. Sign in when you want your account synced.';
+      ? 'تصفح بحرية، وجرّب تسجيل الدخول لاستكشاف حسابك.'
+      : 'Browse freely. Try signing in to explore your account.';
   String get signIn => isArabic ? 'تسجيل الدخول' : 'SIGN IN';
   String get signOut => isArabic ? 'تسجيل الخروج' : 'SIGN OUT';
   String get ordersReturns =>
@@ -170,6 +170,133 @@ class AppStrings {
       isArabic ? 'اللغة والمنطقة' : 'LANGUAGE & REGION';
   String get english => 'English';
   String get arabic => 'العربية';
+
+  String returnReason(String value) => !isArabic
+      ? value
+      : switch (value) {
+          'Wrong size' => 'مقاس غير مناسب',
+          'Too small' => 'صغير جدًا',
+          'Too large' => 'كبير جدًا',
+          'Changed mind' => 'غيّرت رأيي',
+          'Different from images' => 'مختلف عن الصور',
+          'Damaged' => 'منتج تالف',
+          _ => value,
+        };
+  String get tryAgain => isArabic ? 'حاول مرة أخرى' : 'TRY AGAIN';
+  String loadFailure(String message) =>
+      isArabic ? 'تعذر تحميل البيانات. حاول مرة أخرى.' : message;
+  String get newLabel => isArabic ? 'جديد' : 'NEW';
+  String get shopTheDrop => isArabic ? 'تسوق المجموعة' : 'SHOP THE DROP';
+  String get limitedRelease => isArabic ? 'إصدار محدود' : 'LIMITED RELEASE';
+  String get exploreProducts =>
+      isArabic ? 'استكشف المنتجات' : 'EXPLORE PRODUCTS';
+  String get saveRotation =>
+      isArabic ? 'احفظ اختياراتك.' : 'SAVE YOUR\nROTATION.';
+  String get saveDescription => isArabic
+      ? 'اضغط على القلب لحفظ المنتجات التي تحبها والعودة إليها لاحقًا.'
+      : 'Tap the heart on products you want to come back to.';
+  String get saveProduct => isArabic ? 'حفظ المنتج' : 'Save product';
+  String get removeSavedProduct =>
+      isArabic ? 'إزالة من المحفوظات' : 'Remove from saved';
+  String get invalidEmail =>
+      isArabic ? 'أدخل بريدًا إلكترونيًا صحيحًا' : 'Enter a valid email';
+  String get invalidPassword => isArabic
+      ? 'كلمة المرور ٤ أحرف على الأقل'
+      : 'Password must be at least 4 characters';
+  String get requiredField => isArabic ? 'هذا الحقل مطلوب' : 'Required';
+  String get signInFailed => isArabic
+      ? 'تعذر تسجيل الدخول. راجع البريد وكلمة المرور.'
+      : 'Could not sign in. Check your email and password.';
+  String get removeAddress => isArabic ? 'حذف العنوان' : 'Remove address';
+  String addedToBag(String name, String size) => isArabic
+      ? 'تمت إضافة $name · المقاس $size إلى الحقيبة'
+      : 'Added $name · Size $size';
+  String categoryName(String value) => !isArabic
+      ? value
+      : switch (value) {
+          'Sneakers' => 'أحذية رياضية',
+          'Hoodies' => 'هوديز',
+          'Jackets' => 'جاكيتات',
+          'T-Shirts' => 'تيشيرتات',
+          'Bags' => 'حقائب',
+          _ => value,
+        };
+  String colorName(String value) => !isArabic
+      ? value
+      : switch (value) {
+          'Select' => 'اختر اللون',
+          'Black' => 'أسود',
+          'Grey' => 'رمادي',
+          'Sand' => 'رملي',
+          'White' => 'أبيض',
+          'Red' => 'أحمر',
+          'Olive' => 'زيتوني',
+          _ => value,
+        };
+  String productFit(String value) => !isArabic
+      ? value
+      : switch (value) {
+          'Regular fit' => 'قَصّة عادية',
+          'True to size' => 'مطابق للمقاس',
+          'Slightly narrow' => 'ضيق قليلًا',
+          'Oversized fit' => 'قَصّة واسعة',
+          'Relaxed fit' => 'قَصّة مريحة',
+          _ => value,
+        };
+  String sortOption(String value) => !isArabic
+      ? value
+      : switch (value) {
+          'Recommended' => 'مقترح لك',
+          'Newest first' => 'الأحدث أولًا',
+          'Price: low to high' => 'السعر: من الأقل للأعلى',
+          'Price: high to low' => 'السعر: من الأعلى للأقل',
+          _ => value,
+        };
+  String notificationText(String value) => !isArabic
+      ? value
+      : switch (value) {
+          'Your order is moving' => 'طلبك في الطريق',
+          'NOVA-025884 has left the warehouse.' =>
+            'غادر الطلب NOVA-025884 المخزن.',
+          'Size 44 is back' => 'المقاس ٤٤ متوفر مجددًا',
+          'NEW BALANCE 9060 is available again in Black.' =>
+            'يتوفر NEW BALANCE 9060 مجددًا باللون الأسود.',
+          _ => value,
+        };
+  String brandCopy(String value) => !isArabic
+      ? value
+      : switch (value) {
+          'GREY DAYS. FUTURE FORWARD.' => 'درجات الرمادي. خطوة نحو المستقبل.',
+          'MOVE DIFFERENT.' => 'تحرك بطريقتك.',
+          'CURATED FOR THE ROTATION.' => 'اختيارات تناسب ستايلك.',
+          'BUILT FOR YOUR ROTATION.' => 'مصمم لستايلك.',
+          'Performance roots, everyday comfort and layered street silhouettes.' =>
+            'أداء رياضي، وراحة يومية، وتصاميم تناسب إطلالات الشارع.',
+          'Sport-driven design translated into everyday street rotation.' =>
+            'تصميم مستوحى من الرياضة لإطلالاتك اليومية.',
+          'A tight edit of street essentials, utility layers and daily footwear.' =>
+            'تشكيلة مختارة من أساسيات الشارع، والقطع العملية، والأحذية اليومية.',
+          'A curated brand page with products currently available in NOVA.' =>
+            'مجموعة مختارة من منتجات العلامة المتوفرة حاليًا في NOVA.',
+          _ => value,
+        };
+  String productDescription(String value) => !isArabic
+      ? value
+      : switch (value) {
+          'A layered street runner with an oversized sole and everyday cushioning.' =>
+            'حذاء بطبقات متداخلة ونعل بارز، مع توسيد مريح للاستخدام اليومي.',
+          'A clean everyday sneaker with visible cushioning and a bold color story.' =>
+            'حذاء يومي بتصميم بسيط، وتوسيد ظاهر، وألوان جريئة.',
+          'Minimal street runner selected for daily rotation and clean styling.' =>
+            'حذاء بتصميم بسيط، يناسب الاستخدام اليومي والإطلالات المتنوعة.',
+          'Low-profile court styling with a clean upper and versatile neutral finish.' =>
+            'حذاء منخفض بتصميم مستوحى من الملاعب وألوان محايدة سهلة التنسيق.',
+          'Heavyweight brushed cotton hoodie cut oversized for street layering.' =>
+            'هودي من قطن ثقيل وناعم، بقَصّة واسعة تناسب تنسيق الطبقات.',
+          'Structured utility layer with roomy pockets and a relaxed silhouette.' =>
+            'قطعة عملية بجيوب واسعة وقَصّة مريحة.',
+          _ => value,
+        };
 
   String get filters => isArabic ? 'التصفية' : 'FILTERS';
   String get sort => isArabic ? 'الترتيب' : 'SORT';

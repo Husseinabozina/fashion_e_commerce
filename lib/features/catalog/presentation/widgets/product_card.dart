@@ -4,6 +4,7 @@ import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductCard extends StatelessWidget {
@@ -13,6 +14,9 @@ class ProductCard extends StatelessWidget {
   });
 
   final Product product;
+
+  static double carouselHeight(BuildContext context) =>
+      268 + (MediaQuery.textScalerOf(context).scale(100) - 100).clamp(0, 200);
 
   @override
   Widget build(BuildContext context) {
@@ -61,9 +65,12 @@ class ProductCard extends StatelessWidget {
                     top: 4,
                     child: BlocBuilder<WishlistCubit, WishlistState>(
                       builder: (context, state) {
-                        final saved =
-                            state is WishlistLoaded && state.contains(product.id);
+                        final saved = state is WishlistLoaded &&
+                            state.contains(product.id);
                         return IconButton(
+                          tooltip: saved
+                              ? AppStrings.of(context).removeSavedProduct
+                              : AppStrings.of(context).saveProduct,
                           style: IconButton.styleFrom(
                             backgroundColor: AppColors.white,
                             foregroundColor: AppColors.nearBlack,
@@ -74,9 +81,7 @@ class ProductCard extends StatelessWidget {
                           icon: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 180),
                             child: Icon(
-                              saved
-                                  ? AppIcons.savedActive
-                                  : AppIcons.saved,
+                              saved ? AppIcons.savedActive : AppIcons.saved,
                               key: ValueKey<bool>(saved),
                               size: 22,
                             ),
@@ -108,7 +113,9 @@ class ProductCard extends StatelessWidget {
                   ),
             ),
             const SizedBox(height: 5),
-            Row(
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
               children: [
                 Text(
                   '${product.price.toStringAsFixed(0)} EGP',
@@ -117,9 +124,8 @@ class ProductCard extends StatelessWidget {
                       ),
                 ),
                 if (product.previousPrice case final oldPrice?) ...[
-                  const SizedBox(width: 8),
                   Text(
-                    '${oldPrice.toStringAsFixed(0)}',
+                    oldPrice.toStringAsFixed(0),
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: AppColors.midGray,
                           decoration: TextDecoration.lineThrough,
@@ -140,13 +146,13 @@ class _NewBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ColoredBox(
+    return ColoredBox(
       color: AppColors.acidLime,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
         child: Text(
-          'NEW',
-          style: TextStyle(
+          AppStrings.of(context).newLabel,
+          style: const TextStyle(
             color: AppColors.nearBlack,
             fontSize: 10,
             fontWeight: FontWeight.w900,

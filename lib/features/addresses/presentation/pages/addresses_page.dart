@@ -32,9 +32,8 @@ class AddressesPage extends StatelessWidget {
                 ),
               ),
             AddressesFailure(:final message) =>
-              Center(child: Text(message)),
-            AddressesLoaded(:final items) when items.isEmpty =>
-              Center(
+              Center(child: Text(AppStrings.of(context).loadFailure(message))),
+            AddressesLoaded(:final items) when items.isEmpty => Center(
                 child: Text(
                   strings.isArabic
                       ? 'لا توجد عناوين محفوظة.'
@@ -42,8 +41,7 @@ class AddressesPage extends StatelessWidget {
                   style: AppTheme.displayFor(context, fontSize: 28),
                 ),
               ),
-            AddressesLoaded(:final items) =>
-              _AddressList(items: items),
+            AddressesLoaded(:final items) => _AddressList(items: items),
           };
         },
       ),
@@ -84,9 +82,7 @@ class _AddressList extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.white,
             border: Border.all(
-              color: item.isDefault
-                  ? AppColors.nearBlack
-                  : AppColors.concrete,
+              color: item.isDefault ? AppColors.nearBlack : AppColors.concrete,
             ),
           ),
           child: Column(
@@ -94,10 +90,11 @@ class _AddressList extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Text(
+                  Expanded(
+                      child: Text(
                     item.label.toUpperCase(),
                     style: const TextStyle(fontWeight: FontWeight.w900),
-                  ),
+                  )),
                   if (item.isDefault) ...[
                     const SizedBox(width: 8),
                     Container(
@@ -115,8 +112,8 @@ class _AddressList extends StatelessWidget {
                       ),
                     ),
                   ],
-                  const Spacer(),
                   IconButton(
+                    tooltip: strings.removeAddress,
                     onPressed: () {
                       context.read<AddressesCubit>().remove(item.id);
                     },
@@ -133,6 +130,7 @@ class _AddressList extends StatelessWidget {
               const SizedBox(height: 3),
               Text(
                 item.address.phone,
+                textDirection: TextDirection.ltr,
                 style: const TextStyle(color: AppColors.midGray),
               ),
               if (!item.isDefault) ...[
@@ -142,9 +140,7 @@ class _AddressList extends StatelessWidget {
                     context.read<AddressesCubit>().setDefault(item.id);
                   },
                   child: Text(
-                    strings.isArabic
-                        ? 'اجعله الافتراضي'
-                        : 'SET AS DEFAULT',
+                    strings.isArabic ? 'اجعله الافتراضي' : 'SET AS DEFAULT',
                   ),
                 ),
               ],
@@ -164,7 +160,8 @@ class _AddAddressSheet extends StatefulWidget {
 }
 
 class _AddAddressSheetState extends State<_AddAddressSheet> {
-  final _label = TextEditingController(text: 'Home');
+  final _formKey = GlobalKey<FormState>();
+  final _label = TextEditingController();
   final _name = TextEditingController();
   final _phone = TextEditingController();
   final _city = TextEditingController();
@@ -184,6 +181,10 @@ class _AddAddressSheetState extends State<_AddAddressSheet> {
     super.dispose();
   }
 
+  String? _required(String? value) => value == null || value.trim().isEmpty
+      ? AppStrings.of(context).requiredField
+      : null;
+
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
@@ -197,95 +198,100 @@ class _AddAddressSheetState extends State<_AddAddressSheet> {
           24 + MediaQuery.viewInsetsOf(context).bottom,
         ),
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextField(
-                controller: _label,
-                decoration: InputDecoration(
-                  labelText: strings.isArabic ? 'اسم العنوان' : 'LABEL',
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _name,
-                decoration: InputDecoration(
-                  labelText:
-                      strings.isArabic ? 'الاسم الكامل' : 'FULL NAME',
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _phone,
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  labelText: strings.isArabic ? 'رقم الهاتف' : 'PHONE',
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _city,
-                decoration: InputDecoration(
-                  labelText: strings.isArabic ? 'المدينة' : 'CITY',
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _area,
-                decoration: InputDecoration(
-                  labelText: strings.isArabic ? 'المنطقة' : 'AREA',
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _street,
-                decoration: InputDecoration(
-                  labelText: strings.isArabic ? 'الشارع' : 'STREET',
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _building,
-                decoration: InputDecoration(
-                  labelText: strings.isArabic ? 'المبنى' : 'BUILDING',
-                ),
-              ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: FilledButton(
-                  onPressed: () async {
-                    if (_name.text.trim().isEmpty ||
-                        _phone.text.trim().isEmpty ||
-                        _city.text.trim().isEmpty ||
-                        _street.text.trim().isEmpty) {
-                      return;
-                    }
-
-                    await context.read<AddressesCubit>().add(
-                          label: _label.text.trim().isEmpty
-                              ? 'Address'
-                              : _label.text.trim(),
-                          address: ShippingAddress(
-                            fullName: _name.text.trim(),
-                            phone: _phone.text.trim(),
-                            city: _city.text.trim(),
-                            area: _area.text.trim(),
-                            street: _street.text.trim(),
-                            building: _building.text.trim(),
-                          ),
-                        );
-
-                    if (context.mounted) {
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  child: Text(
-                    strings.isArabic ? 'حفظ العنوان' : 'SAVE ADDRESS',
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _label,
+                  decoration: InputDecoration(
+                    labelText: strings.isArabic ? 'اسم العنوان' : 'LABEL',
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _name,
+                  validator: _required,
+                  decoration: InputDecoration(
+                    labelText: strings.isArabic ? 'الاسم الكامل' : 'FULL NAME',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _phone,
+                  validator: _required,
+                  textDirection: TextDirection.ltr,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    labelText: strings.isArabic ? 'رقم الهاتف' : 'PHONE',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _city,
+                  validator: _required,
+                  decoration: InputDecoration(
+                    labelText: strings.isArabic ? 'المدينة' : 'CITY',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _area,
+                  validator: _required,
+                  decoration: InputDecoration(
+                    labelText: strings.isArabic ? 'المنطقة' : 'AREA',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _street,
+                  validator: _required,
+                  decoration: InputDecoration(
+                    labelText: strings.isArabic ? 'الشارع' : 'STREET',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _building,
+                  validator: _required,
+                  decoration: InputDecoration(
+                    labelText: strings.isArabic ? 'المبنى' : 'BUILDING',
+                  ),
+                ),
+                const SizedBox(height: 18),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                      minHeight: 52, minWidth: double.infinity),
+                  child: FilledButton(
+                    onPressed: () async {
+                      if (!_formKey.currentState!.validate()) return;
+                      FocusScope.of(context).unfocus();
+
+                      await context.read<AddressesCubit>().add(
+                            label: _label.text.trim().isEmpty
+                                ? (strings.isArabic ? 'عنوان' : 'Address')
+                                : _label.text.trim(),
+                            address: ShippingAddress(
+                              fullName: _name.text.trim(),
+                              phone: _phone.text.trim(),
+                              city: _city.text.trim(),
+                              area: _area.text.trim(),
+                              street: _street.text.trim(),
+                              building: _building.text.trim(),
+                            ),
+                          );
+
+                      if (context.mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    child: Text(
+                      strings.isArabic ? 'حفظ العنوان' : 'SAVE ADDRESS',
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

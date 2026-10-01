@@ -75,7 +75,8 @@ class _SearchPageState extends State<SearchPage> {
                         ),
                       ),
                     SearchFailure(:final message) => Center(
-                        child: Text(message),
+                        child:
+                            Text(AppStrings.of(context).loadFailure(message)),
                       ),
                     SearchReady(:final products) when products.isEmpty =>
                       const _NoResults(),
@@ -99,7 +100,8 @@ class _SearchToolbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 52,
+      height:
+          52 + (MediaQuery.textScalerOf(context).scale(20) - 20).clamp(0, 60),
       child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         scrollDirection: Axis.horizontal,
@@ -122,7 +124,7 @@ class _SearchToolbar extends StatelessWidget {
           if (state.criteria.category case final category?) ...[
             const SizedBox(width: 8),
             InputChip(
-              label: Text(category),
+              label: Text(AppStrings.of(context).categoryName(category)),
               onDeleted: () => context.read<SearchCubit>().setCategory(null),
             ),
           ],
@@ -172,17 +174,18 @@ class _FilterSheet extends StatelessWidget {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-        child: Column(
+        child: SingleChildScrollView(
+            child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Text(
-                  'FILTERS',
-                  style: AppTheme.display(fontSize: 28),
-                ),
-                const Spacer(),
+                Expanded(
+                    child: Text(
+                  AppStrings.of(context).filters,
+                  style: AppTheme.displayFor(context, fontSize: 28),
+                )),
                 TextButton(
                   onPressed: () {
                     context.read<SearchCubit>().clearFilters();
@@ -203,7 +206,7 @@ class _FilterSheet extends StatelessWidget {
               runSpacing: 8,
               children: state.categories.map((category) {
                 return ChoiceChip(
-                  label: Text(category),
+                  label: Text(AppStrings.of(context).categoryName(category)),
                   selected: state.criteria.category == category,
                   showCheckmark: false,
                   onSelected: (_) {
@@ -235,7 +238,7 @@ class _FilterSheet extends StatelessWidget {
               }).toList(),
             ),
           ],
-        ),
+        )),
       ),
     );
   }
@@ -258,20 +261,21 @@ class _SortSheet extends StatelessWidget {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-        child: Column(
+        child: SingleChildScrollView(
+            child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'SORT BY',
-              style: AppTheme.display(fontSize: 28),
+              AppStrings.of(context).sort,
+              style: AppTheme.displayFor(context, fontSize: 28),
             ),
             const SizedBox(height: 10),
             ...options.entries.map(
               (entry) => RadioListTile<ProductSort>(
                 value: entry.key,
                 groupValue: selected,
-                title: Text(entry.value),
+                title: Text(AppStrings.of(context).sortOption(entry.value)),
                 contentPadding: EdgeInsets.zero,
                 onChanged: (value) {
                   if (value == null) return;
@@ -281,7 +285,7 @@ class _SortSheet extends StatelessWidget {
               ),
             ),
           ],
-        ),
+        )),
       ),
     );
   }
@@ -296,11 +300,12 @@ class _SearchGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 28),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 12,
         mainAxisSpacing: 20,
-        childAspectRatio: 0.62,
+        mainAxisExtent: (MediaQuery.sizeOf(context).width - 44) / 2 / .62 +
+            (MediaQuery.textScalerOf(context).scale(100) - 100).clamp(0, 200),
       ),
       itemCount: state.products.length,
       itemBuilder: (context, index) {
@@ -350,17 +355,17 @@ class _SearchProductTile extends StatelessWidget {
                   ),
                 ),
                 if (product.isNew)
-                  const Positioned(
+                  Positioned(
                     left: 8,
                     top: 8,
                     child: ColoredBox(
                       color: AppColors.acidLime,
                       child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 7, vertical: 4),
                         child: Text(
-                          'NEW',
-                          style: TextStyle(
+                          AppStrings.of(context).newLabel,
+                          style: const TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w900,
                           ),
@@ -376,6 +381,9 @@ class _SearchProductTile extends StatelessWidget {
                       final saved =
                           state is WishlistLoaded && state.contains(product.id);
                       return IconButton(
+                        tooltip: saved
+                            ? AppStrings.of(context).removeSavedProduct
+                            : AppStrings.of(context).saveProduct,
                         style: IconButton.styleFrom(
                           backgroundColor: AppColors.white,
                           foregroundColor: AppColors.nearBlack,

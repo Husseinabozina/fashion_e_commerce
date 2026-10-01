@@ -29,7 +29,7 @@ class FollowingBrandsPage extends StatelessWidget {
                 ),
               ),
             FollowingBrandsFailure(:final message) =>
-              Center(child: Text(message)),
+              Center(child: Text(AppStrings.of(context).loadFailure(message))),
             FollowingBrandsLoaded(:final brands) when brands.isEmpty =>
               _EmptyFollowing(isArabic: strings.isArabic),
             FollowingBrandsLoaded(:final brands) =>
@@ -91,7 +91,7 @@ class _FollowingList extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        brand.tagline,
+                        AppStrings.of(context).brandCopy(brand.tagline),
                         style: const TextStyle(
                           color: AppColors.midGray,
                           fontSize: 11,
@@ -126,9 +126,7 @@ class _EmptyFollowing extends StatelessWidget {
             Icon(AppIcons.plus, size: 54),
             const SizedBox(height: 16),
             Text(
-              isArabic
-                  ? 'لسه مش بتتابع أي علامة.'
-                  : 'NO BRANDS\nFOLLOWED YET.',
+              isArabic ? 'لسه مش بتتابع أي علامة.' : 'NO BRANDS\nFOLLOWED YET.',
               textAlign: TextAlign.center,
               style: AppTheme.displayFor(context, fontSize: 31),
             ),

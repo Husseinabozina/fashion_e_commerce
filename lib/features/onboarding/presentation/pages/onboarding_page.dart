@@ -3,6 +3,7 @@ import 'package:fashion_e_commerce/core/localization/locale_cubit.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -119,7 +120,8 @@ class OnboardingPage extends StatelessWidget {
                     children: _interests.map((interest) {
                       final selected = state.interests.contains(interest);
                       return FilterChip(
-                        label: Text(interest),
+                        label:
+                            Text(AppStrings.of(context).categoryName(interest)),
                         selected: selected,
                         showCheckmark: false,
                         onSelected: (_) {
@@ -131,8 +133,8 @@ class OnboardingPage extends StatelessWidget {
                     }).toList(),
                   ),
                   const SizedBox(height: 34),
-                  SizedBox(
-                    height: 54,
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 52),
                     child: FilledButton(
                       onPressed: state.isSaving
                           ? null

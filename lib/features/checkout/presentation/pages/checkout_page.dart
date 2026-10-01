@@ -628,9 +628,9 @@ class _PrimaryCheckoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
+    return ConstrainedBox(
+      constraints:
+          const BoxConstraints(minHeight: 52, minWidth: double.infinity),
       child: FilledButton(
         onPressed: onPressed,
         style: FilledButton.styleFrom(

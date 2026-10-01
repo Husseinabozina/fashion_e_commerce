@@ -22,7 +22,8 @@ class BrandPage extends StatelessWidget {
                     color: AppColors.nearBlack,
                   ),
                 ),
-              BrandFailure(:final message) => Center(child: Text(message)),
+              BrandFailure(:final message) => Center(
+                  child: Text(AppStrings.of(context).loadFailure(message))),
               BrandReady() => _BrandContent(state: state),
             };
           },
@@ -68,7 +69,7 @@ class _BrandContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  state.brand.tagline,
+                  strings.brandCopy(state.brand.tagline),
                   style: const TextStyle(
                     color: AppColors.concrete,
                     fontWeight: FontWeight.w900,
@@ -77,7 +78,7 @@ class _BrandContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  state.brand.description,
+                  strings.brandCopy(state.brand.description),
                   style: const TextStyle(
                     color: AppColors.white,
                     height: 1.5,
@@ -176,8 +177,7 @@ class _BrandProductRow extends StatelessWidget {
               child: Image.network(
                 product.imageUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) =>
-                    Icon(AppIcons.product),
+                errorBuilder: (_, __, ___) => Icon(AppIcons.product),
               ),
             ),
             const SizedBox(width: 14),
@@ -193,7 +193,9 @@ class _BrandProductRow extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    product.category.toUpperCase(),
+                    AppStrings.of(context)
+                        .categoryName(product.category)
+                        .toUpperCase(),
                     style: const TextStyle(
                       color: AppColors.midGray,
                       fontSize: 10,

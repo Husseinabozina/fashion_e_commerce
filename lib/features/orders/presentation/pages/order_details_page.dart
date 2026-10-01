@@ -37,7 +37,8 @@ class OrderDetailsPage extends StatelessWidget {
                   color: AppColors.nearBlack,
                 ),
               ),
-            OrderDetailsFailure(:final message) => Center(child: Text(message)),
+            OrderDetailsFailure(:final message) =>
+              Center(child: Text(AppStrings.of(context).loadFailure(message))),
             OrderDetailsReady(:final order) =>
               _OrderDetailsContent(order: order),
           };
@@ -125,7 +126,7 @@ class _OrderDetailsContent extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${item.color} · ${AppStrings.of(context).size} ${item.size} · ×${item.quantity}',
+                        '${AppStrings.of(context).colorName(item.color)} · ${AppStrings.of(context).size} ${item.size} · ×${item.quantity}',
                         style: const TextStyle(
                           color: AppColors.midGray,
                           fontSize: 12,
@@ -163,7 +164,9 @@ class _OrderDetailsContent extends StatelessWidget {
           value: AppStrings.of(context).paymentTitle(order.paymentTitle),
         ),
         const Divider(height: 34),
-        Row(
+        Wrap(
+          spacing: 16,
+          runSpacing: 8,
           children: [
             Text(
               AppStrings.of(context).total.toUpperCase(),
@@ -172,7 +175,6 @@ class _OrderDetailsContent extends StatelessWidget {
                 fontWeight: FontWeight.w900,
               ),
             ),
-            const Spacer(),
             Text(
               '${order.total.toStringAsFixed(0)} EGP',
               style: const TextStyle(
@@ -258,7 +260,8 @@ class _TrackingTimeline extends StatelessWidget {
               ],
             ),
             const SizedBox(width: 12),
-            Padding(
+            Expanded(
+                child: Padding(
               padding: const EdgeInsets.only(top: 1),
               child: Text(
                 AppStrings.of(context).orderStatus(stage.label),
@@ -267,7 +270,7 @@ class _TrackingTimeline extends StatelessWidget {
                   color: active ? AppColors.nearBlack : AppColors.midGray,
                 ),
               ),
-            ),
+            )),
           ],
         );
       }),
@@ -358,32 +361,31 @@ class _ReturnExchangeSheetState extends State<_ReturnExchangeSheet> {
                 style: AppTheme.displayFor(context, fontSize: 34),
               ),
               const SizedBox(height: 18),
-              SegmentedButton<ReturnRequestType>(
-                segments: [
-                  ButtonSegment(
-                    value: ReturnRequestType.returnItem,
-                    label: Text(AppStrings.of(context).returnLabel),
-                  ),
-                  ButtonSegment(
-                    value: ReturnRequestType.exchangeSize,
-                    label: Text(AppStrings.of(context).exchangeSize),
-                  ),
-                ],
-                selected: <ReturnRequestType>{_type},
-                onSelectionChanged: (value) {
-                  setState(() => _type = value.first);
-                },
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: ReturnRequestType.values
+                    .map((type) => ChoiceChip(
+                          label: Text(type == ReturnRequestType.returnItem
+                              ? AppStrings.of(context).returnLabel
+                              : AppStrings.of(context).exchangeSize),
+                          selected: _type == type,
+                          onSelected: (_) => setState(() => _type = type),
+                        ))
+                    .toList(),
               ),
               const SizedBox(height: 20),
               DropdownButtonFormField<String>(
                 initialValue: _reason,
+                isExpanded: true,
                 decoration:
                     InputDecoration(labelText: AppStrings.of(context).reason),
                 items: reasons
                     .map(
                       (reason) => DropdownMenuItem(
                         value: reason,
-                        child: Text(reason),
+                        child:
+                            Text(AppStrings.of(context).returnReason(reason)),
                       ),
                     )
                     .toList(),
@@ -415,9 +417,9 @@ class _ReturnExchangeSheetState extends State<_ReturnExchangeSheet> {
                 ),
               ],
               const SizedBox(height: 22),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                    minHeight: 52, minWidth: double.infinity),
                 child: FilledButton(
                   onPressed: _type == ReturnRequestType.exchangeSize &&
                           _size == null

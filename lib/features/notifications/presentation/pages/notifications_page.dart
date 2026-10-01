@@ -19,9 +19,7 @@ class NotificationsPage extends StatelessWidget {
           TextButton(
             onPressed: context.read<NotificationsCubit>().markAllRead,
             child: Text(
-              AppStrings.of(context).isArabic
-                  ? 'قراءة الكل'
-                  : 'MARK ALL READ',
+              AppStrings.of(context).isArabic ? 'قراءة الكل' : 'MARK ALL READ',
             ),
           ),
         ],
@@ -35,7 +33,7 @@ class NotificationsPage extends StatelessWidget {
                 ),
               ),
             NotificationsFailure(:final message) =>
-              Center(child: Text(message)),
+              Center(child: Text(AppStrings.of(context).loadFailure(message))),
             NotificationsLoaded(:final items) when items.isEmpty =>
               const _EmptyNotifications(),
             NotificationsLoaded(:final items) => ListView.separated(
@@ -86,14 +84,14 @@ class _NotificationCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item.title,
+                    AppStrings.of(context).notificationText(item.title),
                     style: const TextStyle(
                       fontWeight: FontWeight.w900,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    item.message,
+                    AppStrings.of(context).notificationText(item.message),
                     style: const TextStyle(
                       color: AppColors.midGray,
                       height: 1.35,

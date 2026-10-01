@@ -23,7 +23,8 @@ class OrdersPage extends StatelessWidget {
                   color: AppColors.nearBlack,
                 ),
               ),
-            OrdersFailure(:final message) => Center(child: Text(message)),
+            OrdersFailure(:final message) =>
+              Center(child: Text(AppStrings.of(context).loadFailure(message))),
             OrdersLoaded(:final orders) when orders.isEmpty =>
               const _EmptyOrders(),
             OrdersLoaded(:final orders) => RefreshIndicator(

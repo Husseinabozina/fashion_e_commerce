@@ -178,9 +178,11 @@ class _DropRadar extends StatelessWidget {
                 horizontal: 8,
                 vertical: 5,
               ),
-              child: const Text(
-                'DROP RADAR',
-                style: TextStyle(
+              child: Text(
+                AppStrings.of(context).isArabic
+                    ? 'رادار المجموعات'
+                    : 'DROP RADAR',
+                style: const TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w900,
                 ),

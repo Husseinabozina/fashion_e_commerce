@@ -7,7 +7,7 @@ abstract final class AppColors {
   static const offWhite = Color(0xFFF5F5F2);
   static const concrete = Color(0xFFC9C9C4);
   static const darkGray = Color(0xFF242424);
-  static const midGray = Color(0xFF777772);
+  static const midGray = Color(0xFF62625E);
   static const acidLime = Color(0xFFC8FF1E);
   static const white = Colors.white;
 }

@@ -20,10 +20,12 @@ class ShopPage extends StatelessWidget {
         title: Text(strings.shop.toUpperCase()),
         actions: [
           IconButton(
+            tooltip: strings.search,
             onPressed: () => Navigator.of(context).pushNamed(Routes.search),
             icon: Icon(AppIcons.search),
           ),
           IconButton(
+            tooltip: strings.viewBag,
             onPressed: () => Navigator.of(context).pushNamed(Routes.cart),
             icon: Icon(AppIcons.bag),
           ),
@@ -38,7 +40,7 @@ class ShopPage extends StatelessWidget {
                 ),
               ),
             CatalogBrowseFailure(:final message) =>
-              Center(child: Text(message)),
+              Center(child: Text(AppStrings.of(context).loadFailure(message))),
             CatalogBrowseLoaded() => _ShopContent(state: state),
           };
         },
@@ -71,7 +73,7 @@ class _ShopContent extends StatelessWidget {
         const SizedBox(height: 10),
         ...state.categories.map(
           (category) => _BrowseRow(
-            label: category,
+            label: strings.categoryName(category),
             onTap: () {
               Navigator.of(context).pushNamed(
                 Routes.search,
@@ -110,7 +112,7 @@ class _ShopContent extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 268,
+          height: ProductCard.carouselHeight(context),
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: state.products.length,
@@ -146,13 +148,14 @@ class _SectionLabel extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 10),
-        Text(
+        Expanded(
+            child: Text(
           label,
           style: const TextStyle(
             fontWeight: FontWeight.w900,
             letterSpacing: 0.5,
           ),
-        ),
+        )),
       ],
     );
   }

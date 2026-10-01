@@ -62,7 +62,7 @@ class _HomeContent extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 268,
+            height: ProductCard.carouselHeight(context),
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: catalog.newArrivals.length,
@@ -107,6 +107,7 @@ class _TopBar extends StatelessWidget {
         Text(
           'NOVA_',
           textDirection: TextDirection.ltr,
+          textScaler: TextScaler.noScaling,
           style: AppTheme.display(fontSize: 26),
         ),
         const Spacer(),
@@ -142,8 +143,8 @@ class _SearchField extends StatelessWidget {
       onTap: () => Navigator.of(context).pushNamed(Routes.search),
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        height: 46,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
+        constraints: const BoxConstraints(minHeight: 48),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(8),
@@ -206,52 +207,57 @@ class _HeroDrop extends StatelessWidget {
             top: 18,
             child: Text(
               'DROP\n026',
+              textDirection: TextDirection.ltr,
+              textScaler: TextScaler.noScaling,
               style: AppTheme.display(
                 fontSize: 62,
                 color: AppColors.white,
               ),
             ),
           ),
-          const Positioned(
-            left: 16,
-            bottom: 80,
-            child: Text(
-              'LIMITED RELEASE',
-              style: TextStyle(
-                color: AppColors.white,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.4,
-                fontSize: 12,
-              ),
-            ),
-          ),
           Positioned(
             left: 16,
+            right: 16,
             bottom: 20,
-            child: FilledButton.icon(
-              onPressed: () => Navigator.of(context).pushNamed(
-                Routes.search,
-                arguments: const ProductSearchCriteria(
-                  sort: ProductSort.newest,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppStrings.of(context).limitedRelease,
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.4,
+                    fontSize: 12,
+                  ),
                 ),
-              ),
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.acidLime,
-                foregroundColor: AppColors.nearBlack,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
+                const SizedBox(height: 12),
+                FilledButton.icon(
+                  onPressed: () => Navigator.of(context).pushNamed(
+                    Routes.search,
+                    arguments: const ProductSearchCriteria(
+                      sort: ProductSort.newest,
+                    ),
+                  ),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.acidLime,
+                    foregroundColor: AppColors.nearBlack,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 14,
+                    ),
+                  ),
+                  iconAlignment: IconAlignment.end,
+                  icon: Icon(AppIcons.arrowRight, size: 18),
+                  label: Text(
+                    AppStrings.of(context).shopTheDrop,
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 14,
-                ),
-              ),
-              iconAlignment: IconAlignment.end,
-              icon: Icon(AppIcons.arrowRight, size: 18),
-              label: const Text(
-                'SHOP THE DROP',
-                style: TextStyle(fontWeight: FontWeight.w900),
-              ),
+              ],
             ),
           ),
         ],
@@ -328,7 +334,7 @@ class _CategoryRow extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                category.toUpperCase(),
+                AppStrings.of(context).categoryName(category).toUpperCase(),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
@@ -366,7 +372,7 @@ class _RecentlyViewedSection extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               SizedBox(
-                height: 268,
+                height: ProductCard.carouselHeight(context),
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: state.items.length,
@@ -413,9 +419,11 @@ class _EditorialBlock extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Curated streetwear essentials. Fresh drops, clean silhouettes, zero noise.',
-            style: TextStyle(
+          Text(
+            AppStrings.of(context).isArabic
+                ? 'أساسيات مختارة لستايل الشارع. مجموعات جديدة وتصاميم بسيطة تناسبك.'
+                : 'Curated streetwear essentials. Fresh drops, clean silhouettes, zero noise.',
+            style: const TextStyle(
               color: AppColors.white,
               height: 1.4,
             ),
@@ -548,13 +556,13 @@ class _HomeError extends StatelessWidget {
             Icon(AppIcons.wifiOff, size: 40),
             const SizedBox(height: 16),
             Text(
-              message,
+              AppStrings.of(context).loadFailure(message),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 18),
             FilledButton(
               onPressed: context.read<HomeCubit>().load,
-              child: const Text('TRY AGAIN'),
+              child: Text(AppStrings.of(context).tryAgain),
             ),
           ],
         ),

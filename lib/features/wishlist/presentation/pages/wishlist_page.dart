@@ -4,6 +4,7 @@ import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:fashion_e_commerce/core/localization/app_strings.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WishlistPage extends StatelessWidget {
@@ -13,7 +14,7 @@ class WishlistPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SAVED'),
+        title: Text(AppStrings.of(context).saved.toUpperCase()),
       ),
       body: BlocBuilder<WishlistCubit, WishlistState>(
         builder: (context, state) {
@@ -42,11 +43,12 @@ class _WishlistGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 28),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 12,
         mainAxisSpacing: 20,
-        childAspectRatio: 0.62,
+        mainAxisExtent: (MediaQuery.sizeOf(context).width - 44) / 2 / .62 +
+            (MediaQuery.textScalerOf(context).scale(100) - 100).clamp(0, 200),
       ),
       itemCount: items.length,
       itemBuilder: (context, index) {
@@ -100,6 +102,7 @@ class _WishlistTile extends StatelessWidget {
                       backgroundColor: AppColors.offWhite,
                       foregroundColor: AppColors.nearBlack,
                     ),
+                    tooltip: AppStrings.of(context).removeSavedProduct,
                     onPressed: () {
                       context.read<WishlistCubit>().toggle(product);
                     },
@@ -146,19 +149,20 @@ class _EmptyWishlist extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(
+        child: SingleChildScrollView(
+            child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(AppIcons.saved, size: 56),
             const SizedBox(height: 18),
             Text(
-              'SAVE YOUR\nROTATION.',
+              AppStrings.of(context).saveRotation,
               textAlign: TextAlign.center,
-              style: AppTheme.display(fontSize: 32),
+              style: AppTheme.displayFor(context, fontSize: 32),
             ),
             const SizedBox(height: 10),
-            const Text(
-              'Tap the heart on products you want to come back to.',
+            Text(
+              AppStrings.of(context).saveDescription,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 18),
@@ -169,10 +173,10 @@ class _EmptyWishlist extends StatelessWidget {
                   (route) => false,
                 );
               },
-              child: const Text('EXPLORE PRODUCTS'),
+              child: Text(AppStrings.of(context).exploreProducts),
             ),
           ],
-        ),
+        )),
       ),
     );
   }
