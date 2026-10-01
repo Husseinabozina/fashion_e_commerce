@@ -17,4 +17,5 @@ abstract final class Routes {
   static const String brand = '/brand';
   static const String onboarding = '/onboarding';
   static const String followingBrands = '/following-brands';
+  static const String addresses = '/addresses';
 }

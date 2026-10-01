@@ -64,8 +64,9 @@ class _CheckoutFlow extends StatelessWidget {
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 220),
                 child: switch (state.step) {
-                  CheckoutStep.address => const _AddressStep(
-                      key: ValueKey<String>('address'),
+                  CheckoutStep.address => _AddressStep(
+                      key: const ValueKey<String>('address'),
+                      initialAddress: state.address,
                     ),
                   CheckoutStep.delivery => _DeliveryStep(
                       key: const ValueKey<String>('delivery'),
@@ -138,7 +139,12 @@ class _CheckoutProgress extends StatelessWidget {
 }
 
 class _AddressStep extends StatefulWidget {
-  const _AddressStep({super.key});
+  const _AddressStep({
+    required this.initialAddress,
+    super.key,
+  });
+
+  final ShippingAddress? initialAddress;
 
   @override
   State<_AddressStep> createState() => _AddressStepState();
@@ -146,12 +152,24 @@ class _AddressStep extends StatefulWidget {
 
 class _AddressStepState extends State<_AddressStep> {
   final _formKey = GlobalKey<FormState>();
-  final _name = TextEditingController(text: 'Hussein Abozina');
-  final _phone = TextEditingController(text: '01000000000');
-  final _city = TextEditingController(text: 'Damietta');
-  final _area = TextEditingController(text: 'City Centre');
-  final _street = TextEditingController(text: 'Main Street');
-  final _building = TextEditingController(text: '12');
+  late final TextEditingController _name;
+  late final TextEditingController _phone;
+  late final TextEditingController _city;
+  late final TextEditingController _area;
+  late final TextEditingController _street;
+  late final TextEditingController _building;
+
+  @override
+  void initState() {
+    super.initState();
+    final address = widget.initialAddress;
+    _name = TextEditingController(text: address?.fullName ?? '');
+    _phone = TextEditingController(text: address?.phone ?? '');
+    _city = TextEditingController(text: address?.city ?? '');
+    _area = TextEditingController(text: address?.area ?? '');
+    _street = TextEditingController(text: address?.street ?? '');
+    _building = TextEditingController(text: address?.building ?? '');
+  }
 
   @override
   void dispose() {

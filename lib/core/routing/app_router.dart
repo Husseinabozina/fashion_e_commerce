@@ -1,5 +1,7 @@
 import 'package:fashion_e_commerce/core/di/service_locator.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
+import 'package:fashion_e_commerce/features/addresses/presentation/cubit/addresses_cubit.dart';
+import 'package:fashion_e_commerce/features/addresses/presentation/pages/addresses_page.dart';
 import 'package:fashion_e_commerce/features/auth/presentation/pages/account_page.dart';
 import 'package:fashion_e_commerce/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:fashion_e_commerce/features/brands/presentation/cubit/brand_cubit.dart';
@@ -109,6 +111,13 @@ abstract final class AppRouter {
         ),
       Routes.orderDetails => _orderDetailsRoute(settings),
       Routes.account => _page(const AccountPage(), settings),
+      Routes.addresses => _page(
+          BlocProvider<AddressesCubit>(
+            create: (_) => serviceLocator<AddressesCubit>()..load(),
+            child: const AddressesPage(),
+          ),
+          settings,
+        ),
       Routes.signIn => _page(const SignInPage(), settings),
       _ => _unknownRoute(settings),
     };

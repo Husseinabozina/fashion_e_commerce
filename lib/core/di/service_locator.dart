@@ -1,4 +1,14 @@
 import 'package:fashion_e_commerce/core/localization/locale_cubit.dart';
+import 'package:fashion_e_commerce/features/addresses/data/datasources/addresses_data_source.dart';
+import 'package:fashion_e_commerce/features/addresses/data/datasources/in_memory_addresses_data_source.dart';
+import 'package:fashion_e_commerce/features/addresses/data/repositories/addresses_repository_impl.dart';
+import 'package:fashion_e_commerce/features/addresses/domain/repositories/addresses_repository.dart';
+import 'package:fashion_e_commerce/features/addresses/domain/usecases/get_addresses.dart';
+import 'package:fashion_e_commerce/features/addresses/domain/usecases/get_default_address.dart';
+import 'package:fashion_e_commerce/features/addresses/domain/usecases/remove_address.dart';
+import 'package:fashion_e_commerce/features/addresses/domain/usecases/save_address.dart';
+import 'package:fashion_e_commerce/features/addresses/domain/usecases/set_default_address.dart';
+import 'package:fashion_e_commerce/features/addresses/presentation/cubit/addresses_cubit.dart';
 import 'package:fashion_e_commerce/features/auth/data/datasources/auth_data_source.dart';
 import 'package:fashion_e_commerce/features/auth/data/datasources/in_memory_auth_data_source.dart';
 import 'package:fashion_e_commerce/features/auth/data/repositories/auth_repository_impl.dart';
@@ -106,6 +116,27 @@ void configureDependencies() {
   if (serviceLocator.isRegistered<HomeCubit>()) return;
 
   serviceLocator
+    ..registerLazySingleton<AddressesDataSource>(
+      InMemoryAddressesDataSource.new,
+    )
+    ..registerLazySingleton<AddressesRepository>(
+      () => AddressesRepositoryImpl(serviceLocator<AddressesDataSource>()),
+    )
+    ..registerLazySingleton<GetAddresses>(
+      () => GetAddresses(serviceLocator<AddressesRepository>()),
+    )
+    ..registerLazySingleton<GetDefaultAddress>(
+      () => GetDefaultAddress(serviceLocator<AddressesRepository>()),
+    )
+    ..registerLazySingleton<SaveAddress>(
+      () => SaveAddress(serviceLocator<AddressesRepository>()),
+    )
+    ..registerLazySingleton<RemoveAddress>(
+      () => RemoveAddress(serviceLocator<AddressesRepository>()),
+    )
+    ..registerLazySingleton<SetDefaultAddress>(
+      () => SetDefaultAddress(serviceLocator<AddressesRepository>()),
+    )
     ..registerLazySingleton<AuthDataSource>(
       InMemoryAuthDataSource.new,
     )
@@ -308,6 +339,14 @@ void configureDependencies() {
       ),
     )
     ..registerFactory<LocaleCubit>(LocaleCubit.new)
+    ..registerFactory<AddressesCubit>(
+      () => AddressesCubit(
+        serviceLocator<GetAddresses>(),
+        serviceLocator<SaveAddress>(),
+        serviceLocator<RemoveAddress>(),
+        serviceLocator<SetDefaultAddress>(),
+      ),
+    )
     ..registerFactory<AuthCubit>(
       () => AuthCubit(
         serviceLocator<GetCurrentUser>(),
@@ -378,6 +417,7 @@ void configureDependencies() {
         serviceLocator<GetCart>(),
         serviceLocator<GetCheckoutOptions>(),
         serviceLocator<GetAppliedPromotion>(),
+        serviceLocator<GetDefaultAddress>(),
         serviceLocator<PlaceOrder>(),
         serviceLocator<ClearCart>(),
       ),

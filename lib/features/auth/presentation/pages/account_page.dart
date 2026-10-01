@@ -90,6 +90,8 @@ class AccountPage extends StatelessWidget {
                   _AccountTile(
                     icon: Icons.location_on_outlined,
                     label: strings.addresses,
+                    onTap: () =>
+                        Navigator.of(context).pushNamed(Routes.addresses),
                   ),
                   _AccountTile(
                     icon: Icons.notifications_none_rounded,

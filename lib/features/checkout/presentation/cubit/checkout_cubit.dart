@@ -1,3 +1,4 @@
+import 'package:fashion_e_commerce/features/addresses/domain/usecases/get_default_address.dart';
 import 'package:fashion_e_commerce/features/cart/domain/entities/cart_item.dart';
 import 'package:fashion_e_commerce/features/cart/domain/usecases/clear_cart.dart';
 import 'package:fashion_e_commerce/features/cart/domain/usecases/get_cart.dart';
@@ -92,6 +93,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     this._getCart,
     this._getCheckoutOptions,
     this._getAppliedPromotion,
+    this._getDefaultAddress,
     this._placeOrder,
     this._clearCart,
   ) : super(const CheckoutLoading());
@@ -99,6 +101,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   final GetCart _getCart;
   final GetCheckoutOptions _getCheckoutOptions;
   final GetAppliedPromotion _getAppliedPromotion;
+  final GetDefaultAddress _getDefaultAddress;
   final PlaceOrder _placeOrder;
   final ClearCart _clearCart;
 
@@ -114,12 +117,14 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
       final options = await _getCheckoutOptions();
       final promotion = await _getAppliedPromotion();
+      final defaultAddress = await _getDefaultAddress();
 
       emit(
         CheckoutReady(
           items: items,
           options: options,
           promotion: promotion,
+          address: defaultAddress?.address,
         ),
       );
     } catch (_) {
