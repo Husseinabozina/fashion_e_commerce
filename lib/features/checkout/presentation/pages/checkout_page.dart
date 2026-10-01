@@ -640,7 +640,7 @@ class _OrderSuccessPage extends StatelessWidget {
                     color: AppColors.acidLime,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     AppIcons.check,
                     size: 44,
                     color: AppColors.nearBlack,

@@ -78,7 +78,7 @@ class _ProductDetailsContent extends StatelessWidget {
                   child: Image.network(
                     product.imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const Center(
+                    errorBuilder: (_, __, ___) => Center(
                       child: Icon(AppIcons.product, size: 72),
                     ),
                   ),
