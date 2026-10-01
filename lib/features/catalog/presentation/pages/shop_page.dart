@@ -94,8 +94,8 @@ class _ShopContent extends StatelessWidget {
                   label: Text(brand),
                   onPressed: () {
                     Navigator.of(context).pushNamed(
-                      Routes.search,
-                      arguments: ProductSearchCriteria(brand: brand),
+                      Routes.brand,
+                      arguments: brand,
                     );
                   },
                 ),

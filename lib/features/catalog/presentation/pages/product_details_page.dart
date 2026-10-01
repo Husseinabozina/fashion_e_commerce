@@ -91,12 +91,33 @@ class _ProductDetailsContent extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          product.brand,
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 0.8,
+                        InkWell(
+                          onTap: () => Navigator.of(context).pushNamed(
+                            Routes.brand,
+                            arguments: product.brand,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  product.brand,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: 0.8,
+                                      ),
+                                ),
                               ),
+                              const SizedBox(width: 4),
+                              const Icon(
+                                Icons.arrow_forward_rounded,
+                                size: 14,
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 5),
                         Text(

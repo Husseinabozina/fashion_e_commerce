@@ -2,6 +2,8 @@ import 'package:fashion_e_commerce/core/di/service_locator.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
 import 'package:fashion_e_commerce/features/auth/presentation/pages/account_page.dart';
 import 'package:fashion_e_commerce/features/auth/presentation/pages/sign_in_page.dart';
+import 'package:fashion_e_commerce/features/brands/presentation/cubit/brand_cubit.dart';
+import 'package:fashion_e_commerce/features/brands/presentation/pages/brand_page.dart';
 import 'package:fashion_e_commerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:fashion_e_commerce/features/cart/presentation/pages/cart_page.dart';
 import 'package:fashion_e_commerce/features/checkout/presentation/cubit/checkout_cubit.dart';
@@ -42,6 +44,7 @@ abstract final class AppRouter {
           settings,
         ),
       Routes.productDetails => _productDetailsRoute(settings),
+      Routes.brand => _brandRoute(settings),
       Routes.cart => _page(
           BlocProvider<CartCubit>(
             create: (_) => serviceLocator<CartCubit>()..load(),
@@ -91,6 +94,24 @@ abstract final class AppRouter {
       Routes.signIn => _page(const SignInPage(), settings),
       _ => _unknownRoute(settings),
     };
+  }
+
+  static MaterialPageRoute<dynamic> _brandRoute(
+    RouteSettings settings,
+  ) {
+    final brandName = settings.arguments;
+
+    if (brandName is! String || brandName.isEmpty) {
+      return _unknownRoute(settings);
+    }
+
+    return _page(
+      BlocProvider<BrandCubit>(
+        create: (_) => serviceLocator<BrandCubit>()..load(brandName),
+        child: const BrandPage(),
+      ),
+      settings,
+    );
   }
 
   static MaterialPageRoute<dynamic> _searchRoute(

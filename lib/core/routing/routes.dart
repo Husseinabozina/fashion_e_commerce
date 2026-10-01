@@ -14,4 +14,5 @@ abstract final class Routes {
   static const String shop = '/shop';
   static const String discover = '/discover';
   static const String notifications = '/notifications';
+  static const String brand = '/brand';
 }

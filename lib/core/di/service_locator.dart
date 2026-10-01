@@ -7,6 +7,14 @@ import 'package:fashion_e_commerce/features/auth/domain/usecases/get_current_use
 import 'package:fashion_e_commerce/features/auth/domain/usecases/sign_in.dart';
 import 'package:fashion_e_commerce/features/auth/domain/usecases/sign_out.dart';
 import 'package:fashion_e_commerce/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:fashion_e_commerce/features/brands/data/datasources/brands_data_source.dart';
+import 'package:fashion_e_commerce/features/brands/data/datasources/in_memory_brands_data_source.dart';
+import 'package:fashion_e_commerce/features/brands/data/repositories/brands_repository_impl.dart';
+import 'package:fashion_e_commerce/features/brands/domain/repositories/brands_repository.dart';
+import 'package:fashion_e_commerce/features/brands/domain/usecases/get_brand.dart';
+import 'package:fashion_e_commerce/features/brands/domain/usecases/is_following_brand.dart';
+import 'package:fashion_e_commerce/features/brands/domain/usecases/toggle_brand_follow.dart';
+import 'package:fashion_e_commerce/features/brands/presentation/cubit/brand_cubit.dart';
 import 'package:fashion_e_commerce/features/cart/data/datasources/cart_data_source.dart';
 import 'package:fashion_e_commerce/features/cart/data/datasources/in_memory_cart_data_source.dart';
 import 'package:fashion_e_commerce/features/cart/data/repositories/cart_repository_impl.dart';
@@ -103,6 +111,21 @@ void configureDependencies() {
     )
     ..registerLazySingleton<SignOut>(
       () => SignOut(serviceLocator<AuthRepository>()),
+    )
+    ..registerLazySingleton<BrandsDataSource>(
+      InMemoryBrandsDataSource.new,
+    )
+    ..registerLazySingleton<BrandsRepository>(
+      () => BrandsRepositoryImpl(serviceLocator<BrandsDataSource>()),
+    )
+    ..registerLazySingleton<GetBrand>(
+      () => GetBrand(serviceLocator<BrandsRepository>()),
+    )
+    ..registerLazySingleton<IsFollowingBrand>(
+      () => IsFollowingBrand(serviceLocator<BrandsRepository>()),
+    )
+    ..registerLazySingleton<ToggleBrandFollow>(
+      () => ToggleBrandFollow(serviceLocator<BrandsRepository>()),
     )
     ..registerLazySingleton<CatalogDataSource>(
       DemoCatalogDataSource.new,
@@ -257,6 +280,14 @@ void configureDependencies() {
         serviceLocator<GetCurrentUser>(),
         serviceLocator<SignIn>(),
         serviceLocator<SignOut>(),
+      ),
+    )
+    ..registerFactory<BrandCubit>(
+      () => BrandCubit(
+        serviceLocator<GetBrand>(),
+        serviceLocator<IsFollowingBrand>(),
+        serviceLocator<ToggleBrandFollow>(),
+        serviceLocator<SearchProducts>(),
       ),
     )
     ..registerFactory<CatalogBrowseCubit>(
