@@ -1,0 +1,228 @@
+rules_version = '2';
+// Prototype schema. UID ownership comes from the document path and Auth, never
+// from editable profile fields. All unspecified paths are denied.
+// products/{id}: admin-managed catalog; authenticated read, no client writes.
+// products/{id}/reviews/{uid}: authorUid/name, rating 1..5, comment <=2000,
+//   fit enum, immutable createdAt, updatedAt; verifiedPurchase must be false.
+// catalog/settings, brands/{id}, promotions/{code}: admin-managed metadata.
+// users/{uid}/cart/{key}: productId,color,size strings, quantity 1..99.
+// users/{uid}/wishlist/{productId}: productId only.
+// users/{uid}/following/{brandId}: brandId only.
+// users/{uid}/recentlyViewed/{productId}: productId, viewedAt timestamp.
+// users/{uid}/addresses/{id}: label, fullName, phone, city, area, street,
+//   building, notes; private bounded strings, no arbitrary extra fields.
+// users/{uid}/settings/shopping: onboarding bool, <=5 supported interests.
+// users/{uid}/settings/defaultAddress: addressId of an existing own address.
+// users/{uid}/settings/promotion: an existing catalog promotion code.
+// users/{uid}/subscriptions/{key}: productId,color,size strings.
+// users/{uid}/notifications/{id}: server-created title/message/type/productId,
+//   createdAt timestamp; client may mark only isRead=true.
+// users/{uid}/demoOrders/{id}: isDemo=true, <=20 validated item snapshots,
+//   bounded total, shipping label, delivery/payment/eta, immutable createdAt.
+//   Only placed can be created. Delivery/payment status requires trusted admin.
+// users/{uid}/returnRequests/{id}: delivered demo order + itemIndex/itemKey,
+//   type/reason/requestedSize/status=submitted; createdAt immutable.
+// Real orders and payments have no client write permissions.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function authenticated() { return request.auth != null; }
+    function owner(uid) { return authenticated() && request.auth.uid == uid; }
+    function text(value, min, max) { return value is string && value.size() >= min && value.size() <= max; }
+    function fields(d, names) { return d.keys().hasAll(names) && d.keys().hasOnly(names); }
+    function product(id) { return get(/databases/$(database)/documents/products/$(id)).data; }
+    function productExists(id) { return text(id,1,80) && exists(/databases/$(database)/documents/products/$(id)); }
+    function brandExists(id) { return text(id,1,80) && exists(/databases/$(database)/documents/brands/$(id)); }
+    function validReference(d) { return fields(d,['productId']) && productExists(d.productId); }
+    function validVariant(d) {
+      return productExists(d.productId) && text(d.color,1,40) && text(d.size,1,20)
+        && d.color in product(d.productId).colors && d.size in product(d.productId).sizes;
+    }
+    function validCart(d) {
+      return fields(d,['productId','color','size','quantity']) && validVariant(d)
+        && !(d.size in product(d.productId).outOfStockSizes)
+        && d.quantity is int && d.quantity >= 1 && d.quantity <= 99;
+    }
+    function validFollowing(d) { return fields(d,['brandId']) && brandExists(d.brandId); }
+    function validRecent(d) {
+      return fields(d,['productId','viewedAt']) && productExists(d.productId)
+        && d.viewedAt is timestamp && d.viewedAt == request.time;
+    }
+    function validAddress(d) {
+      return fields(d,['label','fullName','phone','city','area','street','building','notes'])
+        && text(d.label,1,80) && text(d.fullName,1,80) && text(d.phone,1,40)
+        && text(d.city,1,80) && text(d.area,1,80) && text(d.street,1,160)
+        && text(d.building,1,40) && text(d.notes,0,500);
+    }
+    function validShopping(d) {
+      return fields(d,['hasCompletedOnboarding','interests']) && d.hasCompletedOnboarding is bool
+        && d.interests is list && d.interests.size() <= 5
+        && d.interests.toSet().hasOnly(['Sneakers','Hoodies','Jackets','T-Shirts','Bags']);
+    }
+    function validDefault(d,uid) {
+      return fields(d,['addressId']) && text(d.addressId,1,100)
+        && existsAfter(/databases/$(database)/documents/users/$(uid)/addresses/$(d.addressId));
+    }
+    function validPromotion(d) {
+      return fields(d,['code']) && text(d.code,1,40)
+        && exists(/databases/$(database)/documents/promotions/$(d.code));
+    }
+    function validSubscription(d) {
+      return fields(d,['productId','color','size']) && validVariant(d);
+    }
+    function validReview(d,uid) {
+      return fields(d,['authorUid','authorName','rating','comment','fit','createdAt','updatedAt','verifiedPurchase'])
+        && d.authorUid == uid && text(d.authorName,1,80)
+        && d.authorName == request.auth.token.name
+        && d.rating is int && d.rating >= 1 && d.rating <= 5
+        && text(d.comment,1,2000) && d.fit in ['runsSmall','trueToSize','runsLarge']
+        && d.createdAt is timestamp && d.updatedAt is timestamp
+        && d.updatedAt == request.time && d.verifiedPurchase == false;
+    }
+    function validNotification(d) {
+      return fields(d,['title','message','type','productId','createdAt','isRead'])
+        && text(d.title,1,160) && text(d.message,1,1000)
+        && d.type in ['order','backInStock','priceDrop','promotion']
+        && (d.productId == null || text(d.productId,1,80))
+        && d.createdAt is timestamp && d.isRead is bool;
+    }
+    function validOrderItem(d) {
+      return d is map && fields(d,['productId','brand','name','category','price','imageUrl','color','size','quantity'])
+        && text(d.productId,1,80) && text(d.brand,1,80) && text(d.name,1,160)
+        && text(d.category,1,40) && text(d.imageUrl,1,2000) && d.imageUrl.matches('https://.*')
+        && text(d.color,1,40) && text(d.size,1,20)
+        && d.quantity is int && d.quantity >= 1 && d.quantity <= 99
+        && d.price is number && d.price >= 0 && d.price <= 1000000;
+    }
+    function validOrderItems(items) {
+      return items is list && items.size() >= 1 && items.size() <= 20
+        && (items.size() <= 0 || validOrderItem(items[0]))
+        && (items.size() <= 1 || validOrderItem(items[1]))
+        && (items.size() <= 2 || validOrderItem(items[2]))
+        && (items.size() <= 3 || validOrderItem(items[3]))
+        && (items.size() <= 4 || validOrderItem(items[4]))
+        && (items.size() <= 5 || validOrderItem(items[5]))
+        && (items.size() <= 6 || validOrderItem(items[6]))
+        && (items.size() <= 7 || validOrderItem(items[7]))
+        && (items.size() <= 8 || validOrderItem(items[8]))
+        && (items.size() <= 9 || validOrderItem(items[9]))
+        && (items.size() <= 10 || validOrderItem(items[10]))
+        && (items.size() <= 11 || validOrderItem(items[11]))
+        && (items.size() <= 12 || validOrderItem(items[12]))
+        && (items.size() <= 13 || validOrderItem(items[13]))
+        && (items.size() <= 14 || validOrderItem(items[14]))
+        && (items.size() <= 15 || validOrderItem(items[15]))
+        && (items.size() <= 16 || validOrderItem(items[16]))
+        && (items.size() <= 17 || validOrderItem(items[17]))
+        && (items.size() <= 18 || validOrderItem(items[18]))
+        && (items.size() <= 19 || validOrderItem(items[19]))
+      ;
+    }
+    function validDemoOrder(d) {
+      return fields(d,['isDemo','items','total','createdAt','deliveryEta','shippingAddressLabel','deliveryTitle','paymentTitle','status','returnRequestId'])
+        && d.isDemo == true && validOrderItems(d.items)
+        && d.total is number && d.total >= 0 && d.total <= 100000000
+        && d.createdAt is timestamp && text(d.deliveryEta,1,80) && text(d.shippingAddressLabel,1,700)
+        && d.deliveryTitle in ['Standard Delivery','Express Delivery']
+        && d.paymentTitle in ['Card','Cash on Delivery','Wallet']
+        && d.status in ['placed','confirmed','preparing','shipped','outForDelivery','delivered','cancelled','returnRequested','returned','refunded']
+        && (d.returnRequestId == null || text(d.returnRequestId,1,300));
+    }
+    function validReturn(d,uid) {
+      let order = get(/databases/$(database)/documents/users/$(uid)/demoOrders/$(d.orderId)).data;
+      return fields(d,['orderId','itemKey','itemIndex','type','reason','requestedSize','status','createdAt'])
+        && text(d.orderId,1,100) && text(d.itemKey,1,160)
+        && d.itemIndex is int && d.itemIndex >= 0 && d.itemIndex < order.items.size()
+        && d.itemKey == order.items[d.itemIndex].productId + '::' + order.items[d.itemIndex].color + '::' + order.items[d.itemIndex].size
+        && d.type in ['returnItem','exchangeSize']
+        && d.reason in ['Wrong size','Too small','Too large','Changed mind','Different from images','Damaged']
+        && ((d.type == 'returnItem' && d.requestedSize == null)
+          || (d.type == 'exchangeSize' && text(d.requestedSize,1,20)
+            && d.requestedSize in product(order.items[d.itemIndex].productId).sizes
+            && !(d.requestedSize in product(order.items[d.itemIndex].productId).outOfStockSizes)))
+        && d.status == 'submitted' && d.createdAt is timestamp && d.createdAt == request.time;
+    }
+    match /products/{id} {
+      allow read: if authenticated();
+      allow write: if false;
+      match /reviews/{uid} {
+        allow read: if authenticated();
+        allow create: if owner(uid) && request.auth.token.firebase.sign_in_provider != 'anonymous'
+          && validReview(request.resource.data,uid) && request.resource.data.createdAt == request.time;
+        allow update: if owner(uid) && request.auth.token.firebase.sign_in_provider != 'anonymous'
+          && validReview(request.resource.data,uid)
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.authorUid == resource.data.authorUid;
+        allow delete: if owner(uid);
+      }
+    }
+    match /catalog/{id} { allow read: if authenticated(); allow write: if false; }
+    match /brands/{id} { allow read: if authenticated(); allow write: if false; }
+    match /promotions/{id} { allow read: if authenticated(); allow write: if false; }
+    match /users/{uid} {
+      allow read, write: if false;
+      match /cart/{id} {
+        allow read, delete: if owner(uid);
+        allow create, update: if owner(uid) && validCart(request.resource.data);
+      }
+      match /wishlist/{id} {
+        allow read, delete: if owner(uid);
+        allow create, update: if owner(uid) && validReference(request.resource.data) && request.resource.data.productId == id;
+      }
+      match /following/{id} {
+        allow read, delete: if owner(uid);
+        allow create, update: if owner(uid) && validFollowing(request.resource.data) && request.resource.data.brandId == id;
+      }
+      match /recentlyViewed/{id} {
+        allow read, delete: if owner(uid);
+        allow create, update: if owner(uid) && validRecent(request.resource.data) && request.resource.data.productId == id;
+      }
+      match /addresses/{id} {
+        allow read, delete: if owner(uid);
+        allow create, update: if owner(uid) && validAddress(request.resource.data);
+      }
+      match /settings/shopping {
+        allow read, delete: if owner(uid);
+        allow create, update: if owner(uid) && validShopping(request.resource.data);
+      }
+      match /settings/defaultAddress {
+        allow read, delete: if owner(uid);
+        allow create, update: if owner(uid) && validDefault(request.resource.data,uid);
+      }
+      match /settings/promotion {
+        allow read, delete: if owner(uid);
+        allow create, update: if owner(uid) && validPromotion(request.resource.data);
+      }
+      match /subscriptions/{id} {
+        allow read, delete: if owner(uid);
+        allow create, update: if owner(uid) && validSubscription(request.resource.data);
+      }
+      match /notifications/{id} {
+        allow read: if owner(uid);
+        allow create, delete: if false;
+        allow update: if owner(uid) && validNotification(request.resource.data)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead'])
+          && request.resource.data.isRead == true;
+      }
+      match /demoOrders/{id} {
+        allow read: if owner(uid);
+        allow create: if owner(uid) && validDemoOrder(request.resource.data)
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.status == 'placed' && request.resource.data.returnRequestId == null;
+        allow update: if owner(uid) && validDemoOrder(request.resource.data)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','returnRequestId'])
+          && resource.data.status == 'delivered' && request.resource.data.status == 'returnRequested'
+          && getAfter(/databases/$(database)/documents/users/$(uid)/returnRequests/$(request.resource.data.returnRequestId)).data.orderId == id;
+        allow delete: if false;
+      }
+      match /returnRequests/{id} {
+        allow read: if owner(uid);
+        allow create: if owner(uid) && validReturn(request.resource.data,uid)
+          && get(/databases/$(database)/documents/users/$(uid)/demoOrders/$(request.resource.data.orderId)).data.status == 'delivered'
+          && getAfter(/databases/$(database)/documents/users/$(uid)/demoOrders/$(request.resource.data.orderId)).data.returnRequestId == id
+          && getAfter(/databases/$(database)/documents/users/$(uid)/demoOrders/$(request.resource.data.orderId)).data.status == 'returnRequested';
+        allow update, delete: if false;
+      }
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

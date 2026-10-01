@@ -1,7 +1,7 @@
 import 'package:fashion_e_commerce/features/notifications/domain/entities/app_notification.dart';
 import 'package:fashion_e_commerce/features/notifications/domain/usecases/get_notifications.dart';
 import 'package:fashion_e_commerce/features/notifications/domain/usecases/mark_notifications_read.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fashion_e_commerce/core/presentation/account_cubit.dart';
 
 sealed class NotificationsState {
   const NotificationsState();
@@ -25,7 +25,7 @@ final class NotificationsFailure extends NotificationsState {
   final String message;
 }
 
-class NotificationsCubit extends Cubit<NotificationsState> {
+class NotificationsCubit extends AccountCubit<NotificationsState> {
   NotificationsCubit(
     this._getNotifications,
     this._markNotificationsRead,
@@ -44,6 +44,10 @@ class NotificationsCubit extends Cubit<NotificationsState> {
   }
 
   Future<void> markAllRead() async {
-    emit(NotificationsLoaded(await _markNotificationsRead()));
+    try {
+      emit(NotificationsLoaded(await _markNotificationsRead()));
+    } catch (_) {
+      emit(const NotificationsFailure('Notifications could not be loaded.'));
+    }
   }
 }

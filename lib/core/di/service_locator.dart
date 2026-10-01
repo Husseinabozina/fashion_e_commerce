@@ -1,3 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fashion_e_commerce/core/firebase/firebase_account_store.dart';
+import 'package:fashion_e_commerce/features/auth/data/datasources/firebase_auth_data_source.dart';
+import 'package:fashion_e_commerce/features/auth/domain/usecases/create_account.dart';
+import 'package:fashion_e_commerce/features/auth/domain/usecases/reset_password.dart';
+import 'package:fashion_e_commerce/features/addresses/data/datasources/firestore_addresses_data_source.dart';
+import 'package:fashion_e_commerce/features/brands/data/datasources/firestore_brands_data_source.dart';
+import 'package:fashion_e_commerce/features/catalog/data/datasources/firestore_catalog_data_source.dart';
+import 'package:fashion_e_commerce/features/cart/data/datasources/firestore_cart_data_source.dart';
+import 'package:fashion_e_commerce/features/notifications/data/datasources/firestore_notifications_data_source.dart';
+import 'package:fashion_e_commerce/features/onboarding/data/datasources/firestore_preferences_data_source.dart';
+import 'package:fashion_e_commerce/features/orders/data/datasources/firestore_orders_data_source.dart';
+import 'package:fashion_e_commerce/features/promotions/data/datasources/firestore_promotions_data_source.dart';
+import 'package:fashion_e_commerce/features/recently_viewed/data/datasources/firestore_recently_viewed_data_source.dart';
+import 'package:fashion_e_commerce/features/reviews/data/datasources/firestore_reviews_data_source.dart';
+import 'package:fashion_e_commerce/features/wishlist/data/datasources/firestore_wishlist_data_source.dart';
+import 'package:fashion_e_commerce/features/checkout/data/datasources/firebase_checkout_data_source.dart';
 import 'package:fashion_e_commerce/core/localization/locale_cubit.dart';
 import 'package:fashion_e_commerce/features/addresses/data/datasources/addresses_data_source.dart';
 import 'package:fashion_e_commerce/features/addresses/data/datasources/in_memory_addresses_data_source.dart';
@@ -112,12 +130,19 @@ import 'package:get_it/get_it.dart';
 
 final GetIt serviceLocator = GetIt.instance;
 
-void configureDependencies() {
+void configureDependencies(
+    {FirebaseFirestore? firestore, FirebaseAuth? firebaseAuth}) {
+  if ((firestore == null) != (firebaseAuth == null))
+    throw ArgumentError('Provide both Firebase services.');
+  final store =
+      firestore != null ? FirebaseAccountStore(firestore, firebaseAuth!) : null;
   if (serviceLocator.isRegistered<HomeCubit>()) return;
 
   serviceLocator
     ..registerLazySingleton<AddressesDataSource>(
-      InMemoryAddressesDataSource.new,
+      () => store == null
+          ? InMemoryAddressesDataSource()
+          : FirestoreAddressesDataSource(store),
     )
     ..registerLazySingleton<AddressesRepository>(
       () => AddressesRepositoryImpl(serviceLocator<AddressesDataSource>()),
@@ -138,7 +163,9 @@ void configureDependencies() {
       () => SetDefaultAddress(serviceLocator<AddressesRepository>()),
     )
     ..registerLazySingleton<AuthDataSource>(
-      InMemoryAuthDataSource.new,
+      () => firebaseAuth == null
+          ? InMemoryAuthDataSource()
+          : FirebaseAuthDataSource(firebaseAuth),
     )
     ..registerLazySingleton<AuthRepository>(
       () => AuthRepositoryImpl(serviceLocator<AuthDataSource>()),
@@ -146,6 +173,10 @@ void configureDependencies() {
     ..registerLazySingleton<GetCurrentUser>(
       () => GetCurrentUser(serviceLocator<AuthRepository>()),
     )
+    ..registerLazySingleton<CreateAccount>(
+        () => CreateAccount(serviceLocator<AuthRepository>()))
+    ..registerLazySingleton<ResetPassword>(
+        () => ResetPassword(serviceLocator<AuthRepository>()))
     ..registerLazySingleton<SignIn>(
       () => SignIn(serviceLocator<AuthRepository>()),
     )
@@ -153,7 +184,9 @@ void configureDependencies() {
       () => SignOut(serviceLocator<AuthRepository>()),
     )
     ..registerLazySingleton<BrandsDataSource>(
-      InMemoryBrandsDataSource.new,
+      () => store == null
+          ? InMemoryBrandsDataSource()
+          : FirestoreBrandsDataSource(store),
     )
     ..registerLazySingleton<BrandsRepository>(
       () => BrandsRepositoryImpl(serviceLocator<BrandsDataSource>()),
@@ -171,7 +204,9 @@ void configureDependencies() {
       () => ToggleBrandFollow(serviceLocator<BrandsRepository>()),
     )
     ..registerLazySingleton<PreferencesDataSource>(
-      InMemoryPreferencesDataSource.new,
+      () => store == null
+          ? InMemoryPreferencesDataSource()
+          : FirestorePreferencesDataSource(store),
     )
     ..registerLazySingleton<PreferencesRepository>(
       () => PreferencesRepositoryImpl(
@@ -189,7 +224,9 @@ void configureDependencies() {
       ),
     )
     ..registerLazySingleton<CatalogDataSource>(
-      DemoCatalogDataSource.new,
+      () => store == null
+          ? DemoCatalogDataSource()
+          : FirestoreCatalogDataSource(firestore!),
     )
     ..registerLazySingleton<CatalogRepository>(
       () => CatalogRepositoryImpl(serviceLocator<CatalogDataSource>()),
@@ -210,7 +247,9 @@ void configureDependencies() {
       () => SearchProducts(serviceLocator<CatalogRepository>()),
     )
     ..registerLazySingleton<CartDataSource>(
-      InMemoryCartDataSource.new,
+      () => store == null
+          ? InMemoryCartDataSource()
+          : FirestoreCartDataSource(store),
     )
     ..registerLazySingleton<CartRepository>(
       () => CartRepositoryImpl(serviceLocator<CartDataSource>()),
@@ -231,7 +270,9 @@ void configureDependencies() {
       () => ClearCart(serviceLocator<CartRepository>()),
     )
     ..registerLazySingleton<PromotionsDataSource>(
-      InMemoryPromotionsDataSource.new,
+      () => store == null
+          ? InMemoryPromotionsDataSource()
+          : FirestorePromotionsDataSource(store),
     )
     ..registerLazySingleton<PromotionsRepository>(
       () => PromotionsRepositoryImpl(serviceLocator<PromotionsDataSource>()),
@@ -246,7 +287,9 @@ void configureDependencies() {
       () => ClearPromotion(serviceLocator<PromotionsRepository>()),
     )
     ..registerLazySingleton<RecentlyViewedDataSource>(
-      InMemoryRecentlyViewedDataSource.new,
+      () => store == null
+          ? InMemoryRecentlyViewedDataSource()
+          : FirestoreRecentlyViewedDataSource(store),
     )
     ..registerLazySingleton<RecentlyViewedRepository>(
       () => RecentlyViewedRepositoryImpl(
@@ -264,7 +307,9 @@ void configureDependencies() {
       ),
     )
     ..registerLazySingleton<ReviewsDataSource>(
-      InMemoryReviewsDataSource.new,
+      () => store == null
+          ? InMemoryReviewsDataSource()
+          : FirestoreReviewsDataSource(store),
     )
     ..registerLazySingleton<ReviewsRepository>(
       () => ReviewsRepositoryImpl(serviceLocator<ReviewsDataSource>()),
@@ -276,7 +321,9 @@ void configureDependencies() {
       () => SubmitProductReview(serviceLocator<ReviewsRepository>()),
     )
     ..registerLazySingleton<WishlistDataSource>(
-      InMemoryWishlistDataSource.new,
+      () => store == null
+          ? InMemoryWishlistDataSource()
+          : FirestoreWishlistDataSource(store),
     )
     ..registerLazySingleton<WishlistRepository>(
       () => WishlistRepositoryImpl(serviceLocator<WishlistDataSource>()),
@@ -288,7 +335,9 @@ void configureDependencies() {
       () => ToggleWishlist(serviceLocator<WishlistRepository>()),
     )
     ..registerLazySingleton<NotificationsDataSource>(
-      InMemoryNotificationsDataSource.new,
+      () => store == null
+          ? InMemoryNotificationsDataSource()
+          : FirestoreNotificationsDataSource(store),
     )
     ..registerLazySingleton<NotificationsRepository>(
       () => NotificationsRepositoryImpl(
@@ -309,7 +358,9 @@ void configureDependencies() {
       ),
     )
     ..registerLazySingleton<OrdersDataSource>(
-      InMemoryOrdersDataSource.new,
+      () => store == null
+          ? InMemoryOrdersDataSource()
+          : FirestoreOrdersDataSource(store),
     )
     ..registerLazySingleton<OrdersRepository>(
       () => OrdersRepositoryImpl(serviceLocator<OrdersDataSource>()),
@@ -324,7 +375,9 @@ void configureDependencies() {
       () => RequestReturn(serviceLocator<OrdersRepository>()),
     )
     ..registerLazySingleton<CheckoutDataSource>(
-      DemoCheckoutDataSource.new,
+      () => store == null
+          ? DemoCheckoutDataSource()
+          : FirebaseCheckoutDataSource(store),
     )
     ..registerLazySingleton<CheckoutRepository>(
       () => CheckoutRepositoryImpl(serviceLocator<CheckoutDataSource>()),
@@ -352,6 +405,10 @@ void configureDependencies() {
         serviceLocator<GetCurrentUser>(),
         serviceLocator<SignIn>(),
         serviceLocator<SignOut>(),
+        createAccount: serviceLocator<CreateAccount>(),
+        resetPassword: serviceLocator<ResetPassword>(),
+        users: serviceLocator<AuthRepository>().watchUser(),
+        isDemo: store == null,
       ),
     )
     ..registerFactory<BrandCubit>(
@@ -420,6 +477,11 @@ void configureDependencies() {
         serviceLocator<GetDefaultAddress>(),
         serviceLocator<PlaceOrder>(),
         serviceLocator<ClearCart>(),
+        isCurrentAccount:
+            store == null ? null : (uid) => store.auth.currentUser?.uid == uid,
+        submissionIdFactory: store == null
+            ? null
+            : () => store.collection('demoOrders').doc().id,
       ),
     )
     ..registerFactory<OnboardingCubit>(

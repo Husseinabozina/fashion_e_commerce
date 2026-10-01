@@ -1,7 +1,7 @@
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/wishlist/domain/usecases/get_wishlist.dart';
 import 'package:fashion_e_commerce/features/wishlist/domain/usecases/toggle_wishlist.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fashion_e_commerce/core/presentation/account_cubit.dart';
 
 sealed class WishlistState {
   const WishlistState();
@@ -21,7 +21,11 @@ final class WishlistLoaded extends WishlistState {
   }
 }
 
-class WishlistCubit extends Cubit<WishlistState> {
+final class WishlistFailure extends WishlistState {
+  const WishlistFailure();
+}
+
+class WishlistCubit extends AccountCubit<WishlistState> {
   WishlistCubit(
     this._getWishlist,
     this._toggleWishlist,
@@ -31,11 +35,19 @@ class WishlistCubit extends Cubit<WishlistState> {
   final ToggleWishlist _toggleWishlist;
 
   Future<void> load() async {
-    emit(const WishlistLoading());
-    emit(WishlistLoaded(await _getWishlist()));
+    try {
+      emit(const WishlistLoading());
+      emit(WishlistLoaded(await _getWishlist()));
+    } catch (_) {
+      emit(const WishlistFailure());
+    }
   }
 
   Future<void> toggle(Product product) async {
-    emit(WishlistLoaded(await _toggleWishlist(product)));
+    try {
+      emit(WishlistLoaded(await _toggleWishlist(product)));
+    } catch (_) {
+      emit(const WishlistFailure());
+    }
   }
 }

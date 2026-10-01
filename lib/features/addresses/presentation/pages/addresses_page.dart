@@ -1,3 +1,4 @@
+import 'package:fashion_e_commerce/core/presentation/account_action.dart';
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
@@ -267,19 +268,23 @@ class _AddAddressSheetState extends State<_AddAddressSheet> {
                       if (!_formKey.currentState!.validate()) return;
                       FocusScope.of(context).unfocus();
 
-                      await context.read<AddressesCubit>().add(
-                            label: _label.text.trim().isEmpty
-                                ? (strings.isArabic ? 'عنوان' : 'Address')
-                                : _label.text.trim(),
-                            address: ShippingAddress(
-                              fullName: _name.text.trim(),
-                              phone: _phone.text.trim(),
-                              city: _city.text.trim(),
-                              area: _area.text.trim(),
-                              street: _street.text.trim(),
-                              building: _building.text.trim(),
-                            ),
-                          );
+                      final saved = await accountAction(context, () async {
+                        await context.read<AddressesCubit>().add(
+                              label: _label.text.trim().isEmpty
+                                  ? (strings.isArabic ? 'عنوان' : 'Address')
+                                  : _label.text.trim(),
+                              address: ShippingAddress(
+                                fullName: _name.text.trim(),
+                                phone: _phone.text.trim(),
+                                city: _city.text.trim(),
+                                area: _area.text.trim(),
+                                street: _street.text.trim(),
+                                building: _building.text.trim(),
+                              ),
+                            );
+                        return true;
+                      });
+                      if (saved != true) return;
 
                       if (context.mounted) {
                         Navigator.of(context).pop();

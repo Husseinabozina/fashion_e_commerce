@@ -1,77 +1,28 @@
-# Fashion E-Commerce Architecture
+# NOVA application architecture
 
-## Current verified scope
+## Composition and dependency direction
 
-The repository currently contains the application shell and one real feature:
-the two-stage splash experience. There is no implemented commerce data/domain
-logic in the current `master` branch yet.
-
-Because of that, this migration intentionally does **not** create empty
-`domain/` or `data/` folders. Doing so would add ceremony without a real
-boundary to protect.
-
-## Target structure
-
-```text
-lib/
-  app/
-    app.dart
-  core/
-    config/
-    routing/
-  features/
-    splash/
-      presentation/
-        pages/
-        widgets/
-```
-
-As commerce features are added:
-
-```text
-features/
-  products/
-    presentation/
-    domain/
-    data/
-  cart/
-    presentation/
-    domain/
-    data/
-  auth/
-    presentation/
-    domain/
-    data/
-```
-
-## Dependency rule
-
-When a feature has business/data layers:
+The app now has catalog, search, product details/complete looks, authentication, wishlist, bag, checkout, orders/returns, addresses, brands, preferences, reviews, promotions, notifications and recent-history features. Each feature groups its presentation, business rules and external data boundary.
 
 ```text
 presentation -> domain <- data
+app/core wires concrete implementations
 ```
 
-- Presentation owns Flutter widgets/state.
-- Domain owns business rules and repository contracts.
-- Data owns DTOs, APIs, caches, and repository implementations.
-- App/core wires concrete dependencies and cross-cutting configuration.
+Presentation owns widgets and Cubits. Domain owns entities, use cases and repository contracts. Data owns Firebase/demo data sources and serialization. `configureDependencies` selects either real Firebase services or deterministic demo sources; tests can inject fake SDK instances without changing feature business rules.
 
-## Refactor invariants
+`main.dart` initializes Firebase before starting account-dependent screens. The bootstrap has an explicit retry state. `FirebaseAccountStore` creates UID-scoped collection references at operation start; it keeps no account data cache. Account transitions recreate the navigator and personal Cubits. `AccountCubit` ignores late results after disposal, while form write errors leave the form open for retry. Global Auth cancels its stream subscription.
 
-This migration must preserve:
-- the first splash background/color and logo composition;
-- the approximately two-second transition to the second splash;
-- the Hero transition tag continuity;
-- the second splash background, bottom padding, and upward slide animation;
-- the existing assets;
-- the current 360×800 ScreenUtil design size.
+## Data ownership
 
-## Reliability fixes included
+The catalog and promotions are server-managed. User data lives under `users/{uid}`. A guest is an authenticated anonymous UID, and registration links credentials to preserve it. Signing into an existing account does not merge unrelated guest data. Reviews are public to authenticated shoppers and owned by the author's UID; private addresses/order labels never enter public collections.
 
-- the delayed navigation timer is cancellable on dispose;
-- navigation checks `mounted` before using the context;
-- the animation controller is disposed;
-- routing is centralized and real rather than commented-out placeholder code;
-- the default counter test is replaced with tests for actual application behavior;
-- CI is added for analyzer and tests.
+Checkout remains a simulated business flow. Product reference documents in the bag read the latest catalog, while demo order item snapshots preserve the submitted display values. An attempt ID makes receipt saves idempotent. Owner checks prevent an in-flight purchase from saving or clearing data in a newly selected account. A failed cart cleanup cannot cause the same order to be placed again.
+
+## Preserved presentation invariants
+
+The two-stage splash, cancellable navigation timer, disposed animation controller, central routes, Hero tag, existing assets and 360×800 ScreenUtil design size remain. English/Arabic, small screens, large text, keyboard forms and the full simulated purchase journey are covered by existing widget regression tests. Android visual review remains outside this change's acceptance scope.
+
+## Verification
+
+Flutter analyzer and all feature/widget tests run in GitHub Actions. Firebase adapters have fake-SDK tests for persistence and account scope. The Auth/Firestore emulator suite probes real rules using allowed writes and adversarial requests. A separate live smoke check confirms the configured project/database and server-side owner isolation, then removes its temporary data.

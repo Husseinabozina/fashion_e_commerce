@@ -1,6 +1,6 @@
 import 'package:fashion_e_commerce/features/onboarding/domain/entities/shopping_preferences.dart';
 import 'package:fashion_e_commerce/features/onboarding/domain/usecases/save_shopping_preferences.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fashion_e_commerce/core/presentation/account_cubit.dart';
 
 class OnboardingState {
   const OnboardingState({
@@ -22,7 +22,7 @@ class OnboardingState {
   }
 }
 
-class OnboardingCubit extends Cubit<OnboardingState> {
+class OnboardingCubit extends AccountCubit<OnboardingState> {
   OnboardingCubit(this._saveShoppingPreferences)
       : super(const OnboardingState());
 
@@ -38,27 +38,39 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   }
 
   Future<void> complete() async {
-    emit(state.copyWith(isSaving: true));
+    try {
+      emit(state.copyWith(isSaving: true));
 
-    await _saveShoppingPreferences(
-      ShoppingPreferences(
-        hasCompletedOnboarding: true,
-        interests: state.interests,
-      ),
-    );
+      await _saveShoppingPreferences(
+        ShoppingPreferences(
+          hasCompletedOnboarding: true,
+          interests: state.interests,
+        ),
+      );
 
-    emit(state.copyWith(isSaving: false));
+      emit(state.copyWith(isSaving: false));
+    } catch (_) {
+      rethrow;
+    } finally {
+      emit(state.copyWith(isSaving: false));
+    }
   }
 
   Future<void> skip() async {
-    emit(state.copyWith(isSaving: true));
+    try {
+      emit(state.copyWith(isSaving: true));
 
-    await _saveShoppingPreferences(
-      const ShoppingPreferences(
-        hasCompletedOnboarding: true,
-      ),
-    );
+      await _saveShoppingPreferences(
+        const ShoppingPreferences(
+          hasCompletedOnboarding: true,
+        ),
+      );
 
-    emit(const OnboardingState());
+      emit(const OnboardingState());
+    } catch (_) {
+      rethrow;
+    } finally {
+      emit(state.copyWith(isSaving: false));
+    }
   }
 }

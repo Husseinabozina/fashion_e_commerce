@@ -4,6 +4,7 @@ import 'package:fashion_e_commerce/features/orders/domain/entities/order_status.
 class Order {
   const Order({
     required this.id,
+    this.ownerId,
     required this.items,
     required this.total,
     required this.createdAt,
@@ -15,6 +16,7 @@ class Order {
   });
 
   final String id;
+  final String? ownerId;
   final List<CartItem> items;
   final double total;
   final DateTime createdAt;
@@ -29,6 +31,7 @@ class Order {
   }) {
     return Order(
       id: id,
+      ownerId: ownerId,
       items: items,
       total: total,
       createdAt: createdAt,

@@ -20,6 +20,7 @@ class PlaceOrder {
     await _ordersRepository.saveOrder(
       Order(
         id: receipt.orderId,
+        ownerId: receipt.ownerId,
         items: request.items,
         total: receipt.total,
         createdAt: DateTime.now(),

@@ -1,7 +1,7 @@
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product_search_criteria.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/usecases/search_products.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fashion_e_commerce/core/presentation/account_cubit.dart';
 
 sealed class CatalogBrowseState {
   const CatalogBrowseState();
@@ -29,7 +29,7 @@ final class CatalogBrowseFailure extends CatalogBrowseState {
   final String message;
 }
 
-class CatalogBrowseCubit extends Cubit<CatalogBrowseState> {
+class CatalogBrowseCubit extends AccountCubit<CatalogBrowseState> {
   CatalogBrowseCubit(this._searchProducts)
       : super(const CatalogBrowseLoading());
 

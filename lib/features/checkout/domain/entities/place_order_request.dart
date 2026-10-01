@@ -11,6 +11,7 @@ class PlaceOrderRequest {
     required this.delivery,
     required this.payment,
     this.promotion,
+    this.idempotencyKey,
   });
 
   final List<CartItem> items;
@@ -18,6 +19,7 @@ class PlaceOrderRequest {
   final DeliveryOption delivery;
   final PaymentOption payment;
   final Promotion? promotion;
+  final String? idempotencyKey;
 
   double get subtotal {
     return items.fold<double>(

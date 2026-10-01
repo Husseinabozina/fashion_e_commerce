@@ -37,3 +37,22 @@ jobs:
 
       - name: Test
         run: flutter test
+
+  firebase-rules-and-auth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: tools/firebase/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install Firebase verification tools
+        run: npm --prefix tools/firebase ci
+      - name: Verify rules and account linking on emulators
+        run: tools/firebase/node_modules/.bin/firebase emulators:exec --only auth,firestore --project demo-nova 'npm --prefix tools/firebase run test:rules'

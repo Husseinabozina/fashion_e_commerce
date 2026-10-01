@@ -1,3 +1,4 @@
+import 'package:fashion_e_commerce/core/presentation/account_action.dart';
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
@@ -425,12 +426,18 @@ class _ReturnExchangeSheetState extends State<_ReturnExchangeSheet> {
                           _size == null
                       ? null
                       : () async {
-                          await context.read<OrderDetailsCubit>().submitReturn(
-                                itemKey: widget.itemKey,
-                                type: _type,
-                                reason: _reason,
-                                requestedSize: _size,
-                              );
+                          final saved = await accountAction(context, () async {
+                            await context
+                                .read<OrderDetailsCubit>()
+                                .submitReturn(
+                                  itemKey: widget.itemKey,
+                                  type: _type,
+                                  reason: _reason,
+                                  requestedSize: _size,
+                                );
+                            return true;
+                          });
+                          if (saved != true) return;
                           if (context.mounted) {
                             Navigator.of(context).pop();
                           }

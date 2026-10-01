@@ -1,3 +1,4 @@
+import 'package:fashion_e_commerce/core/presentation/retry_panel.dart';
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
@@ -19,6 +20,8 @@ class WishlistPage extends StatelessWidget {
       body: BlocBuilder<WishlistCubit, WishlistState>(
         builder: (context, state) {
           return switch (state) {
+            WishlistFailure() =>
+              RetryPanel(onRetry: context.read<WishlistCubit>().load),
             WishlistLoading() => const Center(
                 child: CircularProgressIndicator(
                   color: AppColors.nearBlack,

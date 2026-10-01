@@ -5,7 +5,7 @@ import 'package:fashion_e_commerce/features/brands/domain/usecases/toggle_brand_
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product_search_criteria.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/usecases/search_products.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fashion_e_commerce/core/presentation/account_cubit.dart';
 
 sealed class BrandState {
   const BrandState();
@@ -43,7 +43,7 @@ final class BrandFailure extends BrandState {
   final String message;
 }
 
-class BrandCubit extends Cubit<BrandState> {
+class BrandCubit extends AccountCubit<BrandState> {
   BrandCubit(
     this._getBrand,
     this._isFollowingBrand,
@@ -79,10 +79,14 @@ class BrandCubit extends Cubit<BrandState> {
   }
 
   Future<void> toggleFollow() async {
-    final current = state;
-    if (current is! BrandReady) return;
+    try {
+      final current = state;
+      if (current is! BrandReady) return;
 
-    final isFollowing = await _toggleBrandFollow(current.brand.id);
-    emit(current.copyWith(isFollowing: isFollowing));
+      final isFollowing = await _toggleBrandFollow(current.brand.id);
+      emit(current.copyWith(isFollowing: isFollowing));
+    } catch (_) {
+      emit(const BrandFailure('Brand could not be loaded.'));
+    }
   }
 }

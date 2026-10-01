@@ -12,7 +12,7 @@ import 'package:fashion_e_commerce/features/checkout/domain/usecases/get_checkou
 import 'package:fashion_e_commerce/features/checkout/domain/usecases/place_order.dart';
 import 'package:fashion_e_commerce/features/promotions/domain/entities/promotion.dart';
 import 'package:fashion_e_commerce/features/promotions/domain/usecases/get_applied_promotion.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fashion_e_commerce/core/presentation/account_cubit.dart';
 
 enum CheckoutStep { address, delivery, payment, review }
 
@@ -93,15 +93,19 @@ final class CheckoutFailure extends CheckoutState {
   final String message;
 }
 
-class CheckoutCubit extends Cubit<CheckoutState> {
+class CheckoutCubit extends AccountCubit<CheckoutState> {
   CheckoutCubit(
-    this._getCart,
-    this._getCheckoutOptions,
-    this._getAppliedPromotion,
-    this._getDefaultAddress,
-    this._placeOrder,
-    this._clearCart,
-  ) : super(const CheckoutLoading());
+      this._getCart,
+      this._getCheckoutOptions,
+      this._getAppliedPromotion,
+      this._getDefaultAddress,
+      this._placeOrder,
+      this._clearCart,
+      {String Function()? submissionIdFactory,
+      bool Function(String)? isCurrentAccount})
+      : _submissionIdFactory = submissionIdFactory,
+        _isCurrentAccount = isCurrentAccount,
+        super(const CheckoutLoading());
 
   final GetCart _getCart;
   final GetCheckoutOptions _getCheckoutOptions;
@@ -109,8 +113,12 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   final GetDefaultAddress _getDefaultAddress;
   final PlaceOrder _placeOrder;
   final ClearCart _clearCart;
+  final String Function()? _submissionIdFactory;
+  String? _submissionId;
+  final bool Function(String)? _isCurrentAccount;
 
   Future<void> load() async {
+    _submissionId = _submissionIdFactory?.call();
     emit(const CheckoutLoading());
 
     try {
@@ -213,6 +221,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
           delivery: current.delivery!,
           payment: current.payment!,
           promotion: current.promotion,
+          idempotencyKey: _submissionId,
         ),
       );
     } catch (_) {
@@ -225,7 +234,12 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     // Placement has succeeded: cleanup failure must never offer order retry.
     var cartCleared = true;
     try {
-      await _clearCart();
+      if (receipt.ownerId != null &&
+          _isCurrentAccount?.call(receipt.ownerId!) == false) {
+        cartCleared = false;
+      } else {
+        await _clearCart();
+      }
     } catch (_) {
       cartCleared = false;
     }

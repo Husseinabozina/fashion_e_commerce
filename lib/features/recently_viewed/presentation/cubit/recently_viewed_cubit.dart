@@ -1,7 +1,7 @@
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/recently_viewed/domain/usecases/get_recently_viewed.dart';
 import 'package:fashion_e_commerce/features/recently_viewed/domain/usecases/track_recently_viewed.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fashion_e_commerce/core/presentation/account_cubit.dart';
 
 sealed class RecentlyViewedState {
   const RecentlyViewedState();
@@ -17,7 +17,7 @@ final class RecentlyViewedLoaded extends RecentlyViewedState {
   final List<Product> items;
 }
 
-class RecentlyViewedCubit extends Cubit<RecentlyViewedState> {
+class RecentlyViewedCubit extends AccountCubit<RecentlyViewedState> {
   RecentlyViewedCubit(
     this._getRecentlyViewed,
     this._trackRecentlyViewed,
@@ -27,10 +27,20 @@ class RecentlyViewedCubit extends Cubit<RecentlyViewedState> {
   final TrackRecentlyViewed _trackRecentlyViewed;
 
   Future<void> load() async {
-    emit(RecentlyViewedLoaded(await _getRecentlyViewed()));
+    try {
+      emit(RecentlyViewedLoaded(await _getRecentlyViewed()));
+    } catch (_) {
+      // Recent history must not block shopping.
+      emit(const RecentlyViewedLoaded([]));
+    }
   }
 
   Future<void> track(Product product) async {
-    emit(RecentlyViewedLoaded(await _trackRecentlyViewed(product)));
+    try {
+      emit(RecentlyViewedLoaded(await _trackRecentlyViewed(product)));
+    } catch (_) {
+      // Recent history must not block shopping.
+      emit(const RecentlyViewedLoaded([]));
+    }
   }
 }

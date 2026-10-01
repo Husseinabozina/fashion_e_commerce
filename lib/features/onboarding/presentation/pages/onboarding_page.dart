@@ -1,3 +1,4 @@
+import 'package:fashion_e_commerce/core/presentation/account_action.dart';
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/localization/locale_cubit.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
@@ -139,7 +140,14 @@ class OnboardingPage extends StatelessWidget {
                       onPressed: state.isSaving
                           ? null
                           : () async {
-                              await context.read<OnboardingCubit>().complete();
+                              final saved =
+                                  await accountAction(context, () async {
+                                await context
+                                    .read<OnboardingCubit>()
+                                    .complete();
+                                return true;
+                              });
+                              if (saved != true) return;
                               if (!context.mounted) return;
 
                               Navigator.of(context).pushNamedAndRemoveUntil(
@@ -162,7 +170,12 @@ class OnboardingPage extends StatelessWidget {
                     onPressed: state.isSaving
                         ? null
                         : () async {
-                            await context.read<OnboardingCubit>().skip();
+                            final saved =
+                                await accountAction(context, () async {
+                              await context.read<OnboardingCubit>().skip();
+                              return true;
+                            });
+                            if (saved != true) return;
                             if (!context.mounted) return;
 
                             Navigator.of(context).pushNamedAndRemoveUntil(

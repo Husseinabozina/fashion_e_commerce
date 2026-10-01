@@ -8,7 +8,7 @@ import 'package:fashion_e_commerce/features/notifications/domain/usecases/subscr
 import 'package:fashion_e_commerce/features/reviews/domain/entities/product_review.dart';
 import 'package:fashion_e_commerce/features/reviews/domain/usecases/get_product_reviews.dart';
 import 'package:fashion_e_commerce/features/reviews/domain/usecases/submit_product_review.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fashion_e_commerce/core/presentation/account_cubit.dart';
 
 sealed class ProductDetailsState {
   const ProductDetailsState();
@@ -69,9 +69,7 @@ final class ProductDetailsReady extends ProductDetailsState {
       counts[review.fit] = (counts[review.fit] ?? 0) + 1;
     }
 
-    return counts.entries
-        .reduce((a, b) => a.value >= b.value ? a : b)
-        .key;
+    return counts.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
   }
 
   ProductDetailsReady copyWith({
@@ -102,7 +100,7 @@ final class ProductDetailsFailure extends ProductDetailsState {
   final String message;
 }
 
-class ProductDetailsCubit extends Cubit<ProductDetailsState> {
+class ProductDetailsCubit extends AccountCubit<ProductDetailsState> {
   ProductDetailsCubit(
     this._getProductDetails,
     this._getCompleteLook,
@@ -132,8 +130,7 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
           product: product,
           selectedColor: product.colors.isEmpty ? null : product.colors.first,
           lookProducts: lookProducts,
-          selectedLookIds:
-              lookProducts.map((product) => product.id).toSet(),
+          selectedLookIds: lookProducts.map((product) => product.id).toSet(),
           reviews: reviews,
         ),
       );
@@ -191,6 +188,7 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
 
     var added = 0;
     for (final product in current.lookProducts) {
+      if (isClosed) return added;
       if (!current.selectedLookIds.contains(product.id)) continue;
 
       final size = current.lookSizes[product.id];

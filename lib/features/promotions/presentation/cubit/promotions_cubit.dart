@@ -2,7 +2,7 @@ import 'package:fashion_e_commerce/features/promotions/domain/entities/promotion
 import 'package:fashion_e_commerce/features/promotions/domain/usecases/apply_promotion_code.dart';
 import 'package:fashion_e_commerce/features/promotions/domain/usecases/clear_promotion.dart';
 import 'package:fashion_e_commerce/features/promotions/domain/usecases/get_applied_promotion.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fashion_e_commerce/core/presentation/account_cubit.dart';
 
 sealed class PromotionsState {
   const PromotionsState();
@@ -28,7 +28,7 @@ final class PromotionsReady extends PromotionsState {
   }
 }
 
-class PromotionsCubit extends Cubit<PromotionsState> {
+class PromotionsCubit extends AccountCubit<PromotionsState> {
   PromotionsCubit(
     this._getAppliedPromotion,
     this._applyPromotionCode,
@@ -40,11 +40,19 @@ class PromotionsCubit extends Cubit<PromotionsState> {
   final ClearPromotion _clearPromotion;
 
   Future<void> load() async {
-    emit(
-      PromotionsReady(
-        applied: await _getAppliedPromotion(),
-      ),
-    );
+    try {
+      emit(
+        PromotionsReady(
+          applied: await _getAppliedPromotion(),
+        ),
+      );
+    } catch (_) {
+      final current = state;
+      emit(PromotionsReady(
+          applied: current is PromotionsReady ? current.applied : null,
+          message: 'Could not save the change. Try again.',
+          hasError: true));
+    }
   }
 
   Future<void> apply({
@@ -76,7 +84,15 @@ class PromotionsCubit extends Cubit<PromotionsState> {
   }
 
   Future<void> clear() async {
-    await _clearPromotion();
-    emit(const PromotionsReady());
+    try {
+      await _clearPromotion();
+      emit(const PromotionsReady());
+    } catch (_) {
+      final current = state;
+      emit(PromotionsReady(
+          applied: current is PromotionsReady ? current.applied : null,
+          message: 'Could not save the change. Try again.',
+          hasError: true));
+    }
   }
 }

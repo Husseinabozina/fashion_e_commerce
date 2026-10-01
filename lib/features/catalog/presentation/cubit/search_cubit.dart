@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/entities/product_search_criteria.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/usecases/search_products.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fashion_e_commerce/core/presentation/account_cubit.dart';
 
 sealed class SearchState {
   const SearchState();
@@ -33,7 +33,7 @@ final class SearchFailure extends SearchState {
   final String message;
 }
 
-class SearchCubit extends Cubit<SearchState> {
+class SearchCubit extends AccountCubit<SearchState> {
   SearchCubit(this._searchProducts) : super(const SearchLoading());
 
   final SearchProducts _searchProducts;
@@ -49,11 +49,12 @@ class SearchCubit extends Cubit<SearchState> {
     _criteria = initialCriteria;
 
     try {
-      final allProducts =
-          await _searchProducts(const ProductSearchCriteria());
-      _categories =
-          allProducts.map((product) => product.category).toSet().toList()
-            ..sort();
+      final allProducts = await _searchProducts(const ProductSearchCriteria());
+      _categories = allProducts
+          .map((product) => product.category)
+          .toSet()
+          .toList()
+        ..sort();
       _brands = allProducts.map((product) => product.brand).toSet().toList()
         ..sort();
       final products = await _searchProducts(initialCriteria);

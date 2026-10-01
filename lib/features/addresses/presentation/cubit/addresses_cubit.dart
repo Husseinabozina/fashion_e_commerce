@@ -4,7 +4,7 @@ import 'package:fashion_e_commerce/features/addresses/domain/usecases/remove_add
 import 'package:fashion_e_commerce/features/addresses/domain/usecases/save_address.dart';
 import 'package:fashion_e_commerce/features/addresses/domain/usecases/set_default_address.dart';
 import 'package:fashion_e_commerce/features/checkout/domain/entities/shipping_address.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fashion_e_commerce/core/presentation/account_cubit.dart';
 
 sealed class AddressesState {
   const AddressesState();
@@ -26,7 +26,7 @@ final class AddressesFailure extends AddressesState {
   final String message;
 }
 
-class AddressesCubit extends Cubit<AddressesState> {
+class AddressesCubit extends AccountCubit<AddressesState> {
   AddressesCubit(
     this._getAddresses,
     this._saveAddress,
@@ -63,10 +63,18 @@ class AddressesCubit extends Cubit<AddressesState> {
   }
 
   Future<void> remove(String id) async {
-    emit(AddressesLoaded(await _removeAddress(id)));
+    try {
+      emit(AddressesLoaded(await _removeAddress(id)));
+    } catch (_) {
+      emit(const AddressesFailure('Addresses could not be loaded.'));
+    }
   }
 
   Future<void> setDefault(String id) async {
-    emit(AddressesLoaded(await _setDefaultAddress(id)));
+    try {
+      emit(AddressesLoaded(await _setDefaultAddress(id)));
+    } catch (_) {
+      emit(const AddressesFailure('Addresses could not be loaded.'));
+    }
   }
 }

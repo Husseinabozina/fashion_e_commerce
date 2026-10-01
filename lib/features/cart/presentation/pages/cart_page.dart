@@ -1,3 +1,4 @@
+import 'package:fashion_e_commerce/core/presentation/retry_panel.dart';
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
@@ -27,6 +28,8 @@ class CartPage extends StatelessWidget {
       body: BlocBuilder<CartCubit, CartState>(
         builder: (context, state) {
           return switch (state) {
+            CartFailure() =>
+              RetryPanel(onRetry: context.read<CartCubit>().load),
             CartLoading() => const Center(
                 child: CircularProgressIndicator(
                   color: AppColors.nearBlack,

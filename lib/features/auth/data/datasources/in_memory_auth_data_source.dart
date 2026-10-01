@@ -5,6 +5,26 @@ class InMemoryAuthDataSource implements AuthDataSource {
   AppUser _current = const AppUser.guest();
 
   @override
+  Stream<AppUser> watchUser() => const Stream.empty();
+
+  @override
+  Future<void> resetPassword(String email) async {}
+
+  @override
+  Future<AppUser> createAccount(
+      {required String name,
+      required String email,
+      required String password}) async {
+    await signIn(email: email, password: password);
+    _current = AppUser(
+        id: _current.id,
+        name: name.trim(),
+        email: _current.email,
+        isGuest: false);
+    return _current;
+  }
+
+  @override
   Future<AppUser> currentUser() async => _current;
 
   @override

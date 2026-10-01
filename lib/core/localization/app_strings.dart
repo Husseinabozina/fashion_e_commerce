@@ -204,6 +204,30 @@ class AppStrings {
       ? 'كلمة المرور ٤ أحرف على الأقل'
       : 'Password must be at least 4 characters';
   String get requiredField => isArabic ? 'هذا الحقل مطلوب' : 'Required';
+  String get createAccount => isArabic ? 'إنشاء حساب' : 'CREATE ACCOUNT';
+  String get resetPassword =>
+      isArabic ? 'نسيت كلمة المرور؟' : 'FORGOT PASSWORD?';
+  String authError(String code) => switch (code) {
+        'email-already-in-use' => isArabic
+            ? 'البريد مستخدم بالفعل. سجّل الدخول بحسابك.'
+            : 'This email already has an account. Please sign in.',
+        'weak-password' => isArabic
+            ? 'استخدم كلمة مرور أقوى، ٦ أحرف على الأقل.'
+            : 'Use a stronger password, at least 6 characters.',
+        'network-request-failed' => isArabic
+            ? 'تعذر الاتصال. راجع الإنترنت وحاول مرة أخرى.'
+            : 'Could not connect. Check your connection and retry.',
+        'too-many-requests' => isArabic
+            ? 'محاولات كثيرة. انتظر قليلًا وحاول مرة أخرى.'
+            : 'Too many attempts. Please wait and try again.',
+        'user-disabled' => isArabic
+            ? 'هذا الحساب غير متاح حاليًا.'
+            : 'This account is currently unavailable.',
+        'invalid-email' => invalidEmail,
+        _ => isArabic
+            ? 'تعذر إكمال الطلب. راجع البيانات وحاول مرة أخرى.'
+            : 'Could not complete the request. Check your details and retry.',
+      };
   String get signInFailed => isArabic
       ? 'تعذر تسجيل الدخول. راجع البريد وكلمة المرور.'
       : 'Could not sign in. Check your email and password.';

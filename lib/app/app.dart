@@ -25,47 +25,60 @@ class FashionApp extends StatelessWidget {
       builder: (context, child) {
         return MultiBlocProvider(
           providers: [
-            BlocProvider<WishlistCubit>(
-              create: (_) => serviceLocator<WishlistCubit>()..load(),
-            ),
-            BlocProvider<RecentlyViewedCubit>(
-              create: (_) => serviceLocator<RecentlyViewedCubit>()..load(),
-            ),
-            BlocProvider<PromotionsCubit>(
-              create: (_) => serviceLocator<PromotionsCubit>()..load(),
-            ),
             BlocProvider<AuthCubit>(
-              create: (_) => serviceLocator<AuthCubit>()..load(),
-            ),
+                create: (_) => serviceLocator<AuthCubit>()..load()),
             BlocProvider<LocaleCubit>(
-              create: (_) => serviceLocator<LocaleCubit>(),
-            ),
+                create: (_) => serviceLocator<LocaleCubit>()),
           ],
-          child: BlocBuilder<LocaleCubit, Locale>(
-            builder: (context, locale) {
-              return MaterialApp(
-                title: 'Fashion E-Commerce',
-                debugShowCheckedModeBanner: false,
-                builder: (_, child) => AnnotatedRegion<SystemUiOverlayStyle>(
-                  value: SystemUiOverlayStyle.dark,
-                  child: child!,
-                ),
-                locale: locale,
-                supportedLocales: const [
-                  Locale('en'),
-                  Locale('ar'),
-                ],
-                localizationsDelegates: const [
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                theme: AppTheme.lightThemeFor(locale),
-                initialRoute: Routes.initialSplash,
-                onGenerateRoute: AppRouter.onGenerateRoute,
-              );
-            },
-          ),
+          child: Builder(
+              builder: (accountContext) =>
+                  BlocSelector<AuthCubit, AuthState, String>(
+                    selector: (_) =>
+                        accountContext.read<AuthCubit>().sessionKey,
+                    builder: (context, sessionKey) => KeyedSubtree(
+                      key: ValueKey(sessionKey),
+                      child: MultiBlocProvider(
+                        providers: [
+                          BlocProvider<WishlistCubit>(
+                              create: (_) =>
+                                  serviceLocator<WishlistCubit>()..load()),
+                          BlocProvider<RecentlyViewedCubit>(
+                              create: (_) =>
+                                  serviceLocator<RecentlyViewedCubit>()
+                                    ..load()),
+                          BlocProvider<PromotionsCubit>(
+                              create: (_) =>
+                                  serviceLocator<PromotionsCubit>()..load()),
+                        ],
+                        child: BlocBuilder<LocaleCubit, Locale>(
+                          builder: (context, locale) {
+                            return MaterialApp(
+                              title: 'Fashion E-Commerce',
+                              debugShowCheckedModeBanner: false,
+                              builder: (_, child) =>
+                                  AnnotatedRegion<SystemUiOverlayStyle>(
+                                value: SystemUiOverlayStyle.dark,
+                                child: child!,
+                              ),
+                              locale: locale,
+                              supportedLocales: const [
+                                Locale('en'),
+                                Locale('ar'),
+                              ],
+                              localizationsDelegates: const [
+                                GlobalMaterialLocalizations.delegate,
+                                GlobalWidgetsLocalizations.delegate,
+                                GlobalCupertinoLocalizations.delegate,
+                              ],
+                              theme: AppTheme.lightThemeFor(locale),
+                              initialRoute: Routes.initialSplash,
+                              onGenerateRoute: AppRouter.onGenerateRoute,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  )),
         );
       },
     );

@@ -1,6 +1,6 @@
 import 'package:fashion_e_commerce/features/catalog/domain/entities/home_catalog.dart';
 import 'package:fashion_e_commerce/features/catalog/domain/usecases/get_home_catalog.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fashion_e_commerce/core/presentation/account_cubit.dart';
 
 sealed class HomeState {
   const HomeState();
@@ -26,7 +26,7 @@ final class HomeFailure extends HomeState {
   final String message;
 }
 
-class HomeCubit extends Cubit<HomeState> {
+class HomeCubit extends AccountCubit<HomeState> {
   HomeCubit(this._getHomeCatalog) : super(const HomeInitial());
 
   final GetHomeCatalog _getHomeCatalog;

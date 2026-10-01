@@ -1,3 +1,5 @@
+import 'package:fashion_e_commerce/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:fashion_e_commerce/core/presentation/account_action.dart';
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
@@ -235,17 +237,19 @@ class _ProductDetailsContent extends StatelessWidget {
                       onPressed: subscribed
                           ? null
                           : () async {
-                              final added = await context
-                                  .read<ProductDetailsCubit>()
-                                  .subscribeForSize(size);
-                              if (!context.mounted || !added) return;
+                              final added = await accountAction(
+                                  context,
+                                  () => context
+                                      .read<ProductDetailsCubit>()
+                                      .subscribeForSize(size));
+                              if (!context.mounted || added != true) return;
 
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
                                     AppStrings.of(context).isArabic
-                                        ? 'سننبهك عندما يتوفر المقاس ' + size
-                                        : 'We’ll notify you when size ' +
+                                        ? 'تم حفظ طلب التنبيه للمقاس ' + size
+                                        : 'Notification request saved for size ' +
                                             size +
                                             ' is back.',
                                   ),
@@ -496,9 +500,11 @@ class _CompleteTheLookSection extends StatelessWidget {
           child: FilledButton.icon(
             onPressed: state.canAddLook
                 ? () async {
-                    final added = await context
-                        .read<ProductDetailsCubit>()
-                        .addSelectedLookToCart();
+                    final added = await accountAction(
+                        context,
+                        () => context
+                            .read<ProductDetailsCubit>()
+                            .addSelectedLookToCart());
 
                     if (!context.mounted || added == 0) return;
 
@@ -822,6 +828,12 @@ class _ReviewsSection extends StatelessWidget {
   }
 
   void _showReviewSheet(BuildContext context) {
+    final auth = context.read<AuthCubit>();
+    final user = auth.state;
+    if (!auth.isDemo && (user is! AuthReady || user.user.isGuest)) {
+      Navigator.of(context).pushNamed(Routes.signIn);
+      return;
+    }
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -1000,13 +1012,14 @@ class _WriteReviewSheetState extends State<_WriteReviewSheet> {
                     minHeight: 52, minWidth: double.infinity),
                 child: FilledButton(
                   onPressed: () async {
-                    final submitted =
-                        await context.read<ProductDetailsCubit>().submitReview(
+                    final submitted = await accountAction(
+                        context,
+                        () => context.read<ProductDetailsCubit>().submitReview(
                               rating: _rating,
                               fit: _fit,
                               comment: _comment.text,
-                            );
-                    if (submitted && context.mounted) {
+                            ));
+                    if (submitted == true && context.mounted) {
                       Navigator.of(context).pop();
                     }
                   },
@@ -1133,10 +1146,12 @@ class _AddToBagBar extends StatelessWidget {
           child: FilledButton(
             onPressed: canAdd
                 ? () async {
-                    final added = await context
-                        .read<ProductDetailsCubit>()
-                        .addSelectedToCart();
-                    if (!context.mounted || !added) return;
+                    final added = await accountAction(
+                        context,
+                        () => context
+                            .read<ProductDetailsCubit>()
+                            .addSelectedToCart());
+                    if (!context.mounted || added != true) return;
 
                     final navigator = Navigator.of(context);
                     ScaffoldMessenger.of(context).showSnackBar(

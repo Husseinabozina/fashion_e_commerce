@@ -1,6 +1,6 @@
 import 'package:fashion_e_commerce/features/orders/domain/entities/order.dart';
 import 'package:fashion_e_commerce/features/orders/domain/usecases/get_orders.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fashion_e_commerce/core/presentation/account_cubit.dart';
 
 sealed class OrdersState {
   const OrdersState();
@@ -22,7 +22,7 @@ final class OrdersFailure extends OrdersState {
   final String message;
 }
 
-class OrdersCubit extends Cubit<OrdersState> {
+class OrdersCubit extends AccountCubit<OrdersState> {
   OrdersCubit(this._getOrders) : super(const OrdersLoading());
 
   final GetOrders _getOrders;

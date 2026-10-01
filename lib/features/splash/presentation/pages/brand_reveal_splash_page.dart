@@ -1,3 +1,4 @@
+import 'package:fashion_e_commerce/core/presentation/retry_panel.dart';
 import 'dart:async';
 
 import 'package:fashion_e_commerce/core/config/app_constants.dart';
@@ -17,6 +18,7 @@ class BrandRevealSplashPage extends StatefulWidget {
 
 class _BrandRevealSplashPageState extends State<BrandRevealSplashPage> {
   Timer? _navigationTimer;
+  bool _failed = false;
 
   @override
   void initState() {
@@ -28,16 +30,18 @@ class _BrandRevealSplashPageState extends State<BrandRevealSplashPage> {
   }
 
   Future<void> _goNext() async {
-    final preferences = await serviceLocator<GetShoppingPreferences>()();
+    try {
+      final preferences = await serviceLocator<GetShoppingPreferences>()();
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      preferences.hasCompletedOnboarding
-          ? Routes.home
-          : Routes.onboarding,
-      (route) => false,
-    );
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        preferences.hasCompletedOnboarding ? Routes.home : Routes.onboarding,
+        (route) => false,
+      );
+    } catch (_) {
+      if (mounted) setState(() => _failed = true);
+    }
   }
 
   @override
@@ -48,6 +52,7 @@ class _BrandRevealSplashPageState extends State<BrandRevealSplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_failed) return Scaffold(body: RetryPanel(onRetry: _goNext));
     return const Scaffold(
       backgroundColor: AppTheme.colorSecondary,
       body: Padding(

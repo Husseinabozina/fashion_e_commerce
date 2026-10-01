@@ -55,7 +55,9 @@ void main() {
   });
 
   Future<CheckoutCubit> ready(_ControlledCheckout checkout,
-      {CartRepository? cart}) async {
+      {CartRepository? cart,
+      bool Function(String)? isCurrentAccount,
+      String Function()? submissionIdFactory}) async {
     final bag = cart ?? serviceLocator<CartRepository>();
     await bag.addItem(_item);
     final cubit = CheckoutCubit(
@@ -64,7 +66,9 @@ void main() {
         serviceLocator<GetAppliedPromotion>(),
         serviceLocator<GetDefaultAddress>(),
         PlaceOrder(checkout, serviceLocator<OrdersRepository>()),
-        ClearCart(bag));
+        ClearCart(bag),
+        isCurrentAccount: isCurrentAccount,
+        submissionIdFactory: submissionIdFactory);
     addTearDown(cubit.close);
     await cubit.load();
     cubit.saveAddress(_address);
@@ -73,6 +77,31 @@ void main() {
     cubit.selectPayment(options.paymentOptions[1]);
     return cubit;
   }
+
+  test('completed order does not clear the bag after an account transition',
+      () async {
+    final checkout = _ControlledCheckout()
+      ..gate = Completer<void>()
+      ..ownerId = 'alice';
+    var account = 'alice';
+    final cubit =
+        await ready(checkout, isCurrentAccount: (uid) => uid == account);
+    final pending = cubit.submitOrder();
+    account = 'bob';
+    checkout.gate!.complete();
+    await pending;
+    expect((cubit.state as CheckoutCompleted).cartCleared, isFalse);
+    expect(await serviceLocator<CartRepository>().getItems(), isNotEmpty);
+  });
+
+  test('placement retry retains the same submission key', () async {
+    final checkout = _ControlledCheckout()..failOnce = true;
+    final cubit =
+        await ready(checkout, submissionIdFactory: () => 'one-attempt');
+    await cubit.submitOrder();
+    await cubit.submitOrder();
+    expect(checkout.keys, ['one-attempt', 'one-attempt']);
+  });
 
   test(
       'rapid confirmation places one order and freezes navigation during submission',
@@ -168,17 +197,25 @@ void main() {
 class _ControlledCheckout extends CheckoutRepositoryImpl {
   _ControlledCheckout() : super(DemoCheckoutDataSource());
   int calls = 0;
+  String? ownerId;
+  final keys = <String?>[];
   bool failOnce = false;
   Completer<void>? gate;
   @override
   Future<OrderReceipt> placeOrder(PlaceOrderRequest request) async {
     calls++;
+    keys.add(request.idempotencyKey);
     if (gate != null) await gate!.future;
     if (failOnce) {
       failOnce = false;
       throw StateError('offline');
     }
-    return super.placeOrder(request);
+    final receipt = await super.placeOrder(request);
+    return OrderReceipt(
+        orderId: receipt.orderId,
+        ownerId: ownerId,
+        total: receipt.total,
+        deliveryEta: receipt.deliveryEta);
   }
 }
 
