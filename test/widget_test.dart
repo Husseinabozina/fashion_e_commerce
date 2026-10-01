@@ -3,6 +3,7 @@ import 'package:fashion_e_commerce/core/config/app_constants.dart';
 import 'package:fashion_e_commerce/core/di/service_locator.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/home_page.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/product_details_page.dart';
+import 'package:fashion_e_commerce/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/pages/brand_reveal_splash_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/pages/initial_splash_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/widgets/brand_logo.dart';
@@ -34,12 +35,17 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('splash flow reaches the home catalog', (tester) async {
-    await _reachHome(tester);
+  testWidgets('first splash flow reaches onboarding', (tester) async {
+    await tester.pumpWidget(const FashionApp());
+    await tester.pump();
 
-    expect(find.byType(HomePage), findsOneWidget);
-    expect(find.text('NOVA_'), findsOneWidget);
-    expect(find.text('DROP\n026'), findsOneWidget);
+    await tester.pump(AppConstants.initialSplashDuration);
+    await tester.pump(const Duration(milliseconds: 250));
+    await tester.pump(AppConstants.brandRevealDuration);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(OnboardingPage), findsOneWidget);
+    expect(find.text('BUILD YOUR\nROTATION.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -98,4 +104,11 @@ Future<void> _reachHome(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 250));
   await tester.pump(AppConstants.brandRevealDuration);
   await tester.pumpAndSettle();
+
+  if (find.byType(OnboardingPage).evaluate().isNotEmpty) {
+    await tester.tap(find.text('SKIP FOR NOW'));
+    await tester.pumpAndSettle();
+  }
+
+  expect(find.byType(HomePage), findsOneWidget);
 }

@@ -52,6 +52,13 @@ import 'package:fashion_e_commerce/features/notifications/domain/usecases/get_no
 import 'package:fashion_e_commerce/features/notifications/domain/usecases/mark_notifications_read.dart';
 import 'package:fashion_e_commerce/features/notifications/domain/usecases/subscribe_back_in_stock.dart';
 import 'package:fashion_e_commerce/features/notifications/presentation/cubit/notifications_cubit.dart';
+import 'package:fashion_e_commerce/features/onboarding/data/datasources/in_memory_preferences_data_source.dart';
+import 'package:fashion_e_commerce/features/onboarding/data/datasources/preferences_data_source.dart';
+import 'package:fashion_e_commerce/features/onboarding/data/repositories/preferences_repository_impl.dart';
+import 'package:fashion_e_commerce/features/onboarding/domain/repositories/preferences_repository.dart';
+import 'package:fashion_e_commerce/features/onboarding/domain/usecases/get_shopping_preferences.dart';
+import 'package:fashion_e_commerce/features/onboarding/domain/usecases/save_shopping_preferences.dart';
+import 'package:fashion_e_commerce/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:fashion_e_commerce/features/orders/data/datasources/in_memory_orders_data_source.dart';
 import 'package:fashion_e_commerce/features/orders/data/datasources/orders_data_source.dart';
 import 'package:fashion_e_commerce/features/orders/data/repositories/orders_repository_impl.dart';
@@ -127,6 +134,24 @@ void configureDependencies() {
     ..registerLazySingleton<ToggleBrandFollow>(
       () => ToggleBrandFollow(serviceLocator<BrandsRepository>()),
     )
+    ..registerLazySingleton<PreferencesDataSource>(
+      InMemoryPreferencesDataSource.new,
+    )
+    ..registerLazySingleton<PreferencesRepository>(
+      () => PreferencesRepositoryImpl(
+        serviceLocator<PreferencesDataSource>(),
+      ),
+    )
+    ..registerLazySingleton<GetShoppingPreferences>(
+      () => GetShoppingPreferences(
+        serviceLocator<PreferencesRepository>(),
+      ),
+    )
+    ..registerLazySingleton<SaveShoppingPreferences>(
+      () => SaveShoppingPreferences(
+        serviceLocator<PreferencesRepository>(),
+      ),
+    )
     ..registerLazySingleton<CatalogDataSource>(
       DemoCatalogDataSource.new,
     )
@@ -134,7 +159,10 @@ void configureDependencies() {
       () => CatalogRepositoryImpl(serviceLocator<CatalogDataSource>()),
     )
     ..registerLazySingleton<GetHomeCatalog>(
-      () => GetHomeCatalog(serviceLocator<CatalogRepository>()),
+      () => GetHomeCatalog(
+        serviceLocator<CatalogRepository>(),
+        serviceLocator<PreferencesRepository>(),
+      ),
     )
     ..registerLazySingleton<GetCompleteLook>(
       () => GetCompleteLook(serviceLocator<CatalogRepository>()),
@@ -342,6 +370,11 @@ void configureDependencies() {
         serviceLocator<GetAppliedPromotion>(),
         serviceLocator<PlaceOrder>(),
         serviceLocator<ClearCart>(),
+      ),
+    )
+    ..registerFactory<OnboardingCubit>(
+      () => OnboardingCubit(
+        serviceLocator<SaveShoppingPreferences>(),
       ),
     )
     ..registerFactory<NotificationsCubit>(

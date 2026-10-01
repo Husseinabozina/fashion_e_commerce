@@ -20,6 +20,8 @@ import 'package:fashion_e_commerce/features/catalog/presentation/pages/search_pa
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/shop_page.dart';
 import 'package:fashion_e_commerce/features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'package:fashion_e_commerce/features/notifications/presentation/pages/notifications_page.dart';
+import 'package:fashion_e_commerce/features/onboarding/presentation/cubit/onboarding_cubit.dart';
+import 'package:fashion_e_commerce/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/cubit/order_details_cubit.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/pages/order_details_page.dart';
@@ -36,6 +38,13 @@ abstract final class AppRouter {
       Routes.initialSplash => _page(const InitialSplashPage(), settings),
       Routes.brandRevealSplash =>
         _page(const BrandRevealSplashPage(), settings),
+      Routes.onboarding => _page(
+          BlocProvider<OnboardingCubit>(
+            create: (_) => serviceLocator<OnboardingCubit>(),
+            child: const OnboardingPage(),
+          ),
+          settings,
+        ),
       Routes.home => _page(
           BlocProvider<HomeCubit>(
             create: (_) => serviceLocator<HomeCubit>()..load(),

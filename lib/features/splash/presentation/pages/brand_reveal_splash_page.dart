@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:fashion_e_commerce/core/config/app_constants.dart';
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
+import 'package:fashion_e_commerce/core/di/service_locator.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
+import 'package:fashion_e_commerce/features/onboarding/domain/usecases/get_shopping_preferences.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/widgets/sliding_brand_logo.dart';
 import 'package:flutter/material.dart';
 
@@ -19,14 +21,21 @@ class _BrandRevealSplashPageState extends State<BrandRevealSplashPage> {
   @override
   void initState() {
     super.initState();
-    _navigationTimer = Timer(AppConstants.brandRevealDuration, _goHome);
+    _navigationTimer = Timer(
+      AppConstants.brandRevealDuration,
+      () => _goNext(),
+    );
   }
 
-  void _goHome() {
+  Future<void> _goNext() async {
+    final preferences = await serviceLocator<GetShoppingPreferences>()();
+
     if (!mounted) return;
 
     Navigator.of(context).pushNamedAndRemoveUntil(
-      Routes.home,
+      preferences.hasCompletedOnboarding
+          ? Routes.home
+          : Routes.onboarding,
       (route) => false,
     );
   }
