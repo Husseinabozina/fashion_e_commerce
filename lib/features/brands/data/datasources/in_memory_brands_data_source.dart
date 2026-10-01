@@ -45,6 +45,13 @@ class InMemoryBrandsDataSource implements BrandsDataSource {
   }
 
   @override
+  Future<List<Brand>> readFollowing() async {
+    return _brands
+        .where((brand) => _following.contains(brand.id))
+        .toList(growable: false);
+  }
+
+  @override
   Future<bool> isFollowing(String brandId) async {
     return _following.contains(brandId);
   }

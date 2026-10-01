@@ -80,6 +80,14 @@ class AccountPage extends StatelessWidget {
                         Navigator.of(context).pushNamed(Routes.wishlist),
                   ),
                   _AccountTile(
+                    icon: Icons.storefront_outlined,
+                    label: strings.isArabic
+                        ? 'العلامات المتابَعة'
+                        : 'FOLLOWING BRANDS',
+                    onTap: () => Navigator.of(context)
+                        .pushNamed(Routes.followingBrands),
+                  ),
+                  _AccountTile(
                     icon: Icons.location_on_outlined,
                     label: strings.addresses,
                   ),

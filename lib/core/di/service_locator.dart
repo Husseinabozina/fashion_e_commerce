@@ -12,9 +12,11 @@ import 'package:fashion_e_commerce/features/brands/data/datasources/in_memory_br
 import 'package:fashion_e_commerce/features/brands/data/repositories/brands_repository_impl.dart';
 import 'package:fashion_e_commerce/features/brands/domain/repositories/brands_repository.dart';
 import 'package:fashion_e_commerce/features/brands/domain/usecases/get_brand.dart';
+import 'package:fashion_e_commerce/features/brands/domain/usecases/get_following_brands.dart';
 import 'package:fashion_e_commerce/features/brands/domain/usecases/is_following_brand.dart';
 import 'package:fashion_e_commerce/features/brands/domain/usecases/toggle_brand_follow.dart';
 import 'package:fashion_e_commerce/features/brands/presentation/cubit/brand_cubit.dart';
+import 'package:fashion_e_commerce/features/brands/presentation/cubit/following_brands_cubit.dart';
 import 'package:fashion_e_commerce/features/cart/data/datasources/cart_data_source.dart';
 import 'package:fashion_e_commerce/features/cart/data/datasources/in_memory_cart_data_source.dart';
 import 'package:fashion_e_commerce/features/cart/data/repositories/cart_repository_impl.dart';
@@ -127,6 +129,9 @@ void configureDependencies() {
     )
     ..registerLazySingleton<GetBrand>(
       () => GetBrand(serviceLocator<BrandsRepository>()),
+    )
+    ..registerLazySingleton<GetFollowingBrands>(
+      () => GetFollowingBrands(serviceLocator<BrandsRepository>()),
     )
     ..registerLazySingleton<IsFollowingBrand>(
       () => IsFollowingBrand(serviceLocator<BrandsRepository>()),
@@ -316,6 +321,11 @@ void configureDependencies() {
         serviceLocator<IsFollowingBrand>(),
         serviceLocator<ToggleBrandFollow>(),
         serviceLocator<SearchProducts>(),
+      ),
+    )
+    ..registerFactory<FollowingBrandsCubit>(
+      () => FollowingBrandsCubit(
+        serviceLocator<GetFollowingBrands>(),
       ),
     )
     ..registerFactory<CatalogBrowseCubit>(

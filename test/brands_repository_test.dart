@@ -15,6 +15,9 @@ void main() {
     expect(await repository.toggleFollow(brand.id), isTrue);
     expect(await repository.isFollowing(brand.id), isTrue);
 
+    final following = await repository.getFollowingBrands();
+    expect(following.map((item) => item.id), contains(brand.id));
+
     expect(await repository.toggleFollow(brand.id), isFalse);
     expect(await repository.isFollowing(brand.id), isFalse);
   });

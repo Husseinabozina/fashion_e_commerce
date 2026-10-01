@@ -4,6 +4,8 @@ import 'package:fashion_e_commerce/features/auth/presentation/pages/account_page
 import 'package:fashion_e_commerce/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:fashion_e_commerce/features/brands/presentation/cubit/brand_cubit.dart';
 import 'package:fashion_e_commerce/features/brands/presentation/pages/brand_page.dart';
+import 'package:fashion_e_commerce/features/brands/presentation/cubit/following_brands_cubit.dart';
+import 'package:fashion_e_commerce/features/brands/presentation/pages/following_brands_page.dart';
 import 'package:fashion_e_commerce/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:fashion_e_commerce/features/cart/presentation/pages/cart_page.dart';
 import 'package:fashion_e_commerce/features/checkout/presentation/cubit/checkout_cubit.dart';
@@ -54,6 +56,13 @@ abstract final class AppRouter {
         ),
       Routes.productDetails => _productDetailsRoute(settings),
       Routes.brand => _brandRoute(settings),
+      Routes.followingBrands => _page(
+          BlocProvider<FollowingBrandsCubit>(
+            create: (_) => serviceLocator<FollowingBrandsCubit>()..load(),
+            child: const FollowingBrandsPage(),
+          ),
+          settings,
+        ),
       Routes.cart => _page(
           BlocProvider<CartCubit>(
             create: (_) => serviceLocator<CartCubit>()..load(),

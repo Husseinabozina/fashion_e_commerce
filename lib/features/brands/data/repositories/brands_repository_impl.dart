@@ -13,6 +13,11 @@ class BrandsRepositoryImpl implements BrandsRepository {
   }
 
   @override
+  Future<List<Brand>> getFollowingBrands() {
+    return _dataSource.readFollowing();
+  }
+
+  @override
   Future<bool> isFollowing(String brandId) {
     return _dataSource.isFollowing(brandId);
   }
