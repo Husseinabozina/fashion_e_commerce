@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:fashion_e_commerce/features/cart/data/models/cart_item_mapper.dart';
 import 'package:fashion_e_commerce/features/orders/domain/entities/order.dart';
 import 'package:fashion_e_commerce/features/orders/domain/entities/order_status.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/entities/sandbox_payment.dart';
 
 abstract final class OrderMapper {
   static Map<String, dynamic> encode(Order order) => {
@@ -15,6 +16,13 @@ abstract final class OrderMapper {
         'paymentTitle': order.paymentTitle,
         'status': order.status.name,
         'returnRequestId': null,
+        if (order.sandboxPayment != null)
+          'sandboxPayment': {
+            'provider': 'MyFatoorah',
+            'invoiceId': order.sandboxPayment!.invoiceId,
+            'amount': SandboxPaymentSession.testAmount,
+            'currency': SandboxPaymentSession.testCurrency,
+          },
       };
   static Order decode(String id, Map<String, dynamic> d) => Order(
       id: id,
@@ -28,5 +36,9 @@ abstract final class OrderMapper {
       shippingAddressLabel: d['shippingAddressLabel'] as String,
       deliveryTitle: d['deliveryTitle'] as String,
       paymentTitle: d['paymentTitle'] as String,
-      status: OrderStatus.values.byName(d['status'] as String));
+      status: OrderStatus.values.byName(d['status'] as String),
+      sandboxPayment: d['sandboxPayment'] is Map
+          ? SandboxPaymentReceipt(
+              (d['sandboxPayment'] as Map)['invoiceId'] as int)
+          : null);
 }

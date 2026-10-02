@@ -26,6 +26,38 @@ before(async () => {
 });
 after(async () => { await env?.cleanup(); });
 
+test('sandbox invoice pointers are own, immutable, bounded and test-only',async()=>{
+ const key='a'.repeat(64), path=`users/alice/sandboxPayments/${key}`;
+ const data=()=>({isDemo:true,reference:'NOVA-'+ 'a'.repeat(32),invoiceId:123,
+ checkoutUrl:'https://demo.myfatoorah.com/Ar/KWT/PayInvoice/Checkout?invoiceKey=test',
+ orderTotalEgp:1000,amount:1,currency:'KWD',createdAt:serverTimestamp()});
+ await assertSucceeds(setDoc(doc(alice,path),data()));
+ await assertSucceeds(getDoc(doc(alice,path)));
+ await assertFails(getDoc(doc(bob,path)));
+ await assertFails(getDocs(collection(bob,'users/alice/sandboxPayments')));
+ await assertFails(updateDoc(doc(alice,path),{invoiceId:999}));
+ await assertFails(deleteDoc(doc(bob,path)));
+ for(const patch of [{isDemo:false},{amount:1000},{currency:'EGP'},{invoiceId:'123'},
+ {checkoutUrl:'https://portal.myfatoorah.com/pay'},{checkoutUrl:'https://demo.myfatoorah.com.evil.test/pay'},
+ {createdAt:Timestamp.fromMillis(1)},{reference:'x'.repeat(1000)},{ownerUid:'alice'},{orderTotalEgp:-1}]) {
+   await assertFails(setDoc(doc(alice,'users/alice/sandboxPayments/'+ 'b'.repeat(64)),{...data(),...patch}));
+ }
+ await assertFails(setDoc(doc(bob,'users/alice/sandboxPayments/'+ 'c'.repeat(64)),data()));
+ await assertFails(setDoc(doc(anonymous,'users/alice/sandboxPayments/'+ 'd'.repeat(64)),data()));
+ await assertSucceeds(deleteDoc(doc(alice,path)));
+});
+test('demo receipt metadata is constrained and cannot become real payment evidence',async()=>{
+ const receipt={provider:'MyFatoorah',invoiceId:123,amount:1,currency:'KWD'};
+ await assertSucceeds(setDoc(doc(alice,'users/alice/demoOrders/sandbox'),{...order(),sandboxPayment:receipt}));
+ await assertFails(updateDoc(doc(alice,'users/alice/demoOrders/sandbox'),{'sandboxPayment.invoiceId':999}));
+ for(const patch of [{amount:200},{provider:'Stripe'},{currency:'EGP'},{invoiceId:-1},{isLive:true}]) {
+   await assertFails(setDoc(doc(alice,'users/alice/demoOrders/sandbox-bad'),{...order(),sandboxPayment:{...receipt,...patch}}));
+ }
+ await assertFails(setDoc(doc(alice,'users/alice/demoOrders/sandbox-cod'),{...order(),paymentTitle:'Cash on Delivery',sandboxPayment:receipt}));
+ await assertFails(setDoc(doc(alice,'payments/real'),{...receipt,status:'paid'}));
+ await assertFails(setDoc(doc(alice,'users/alice/orders/real'),{...order(),isDemo:false}));
+});
+
 test('catalog requires authentication, includes guests', async()=>{
  await assertFails(getDoc(doc(anonymous,'products/nb-9060')));
  await assertSucceeds(getDocs(collection(guest,'products')));

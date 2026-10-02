@@ -13,6 +13,8 @@ import 'package:fashion_e_commerce/features/checkout/domain/usecases/place_order
 import 'package:fashion_e_commerce/features/promotions/domain/entities/promotion.dart';
 import 'package:fashion_e_commerce/features/promotions/domain/usecases/get_applied_promotion.dart';
 import 'package:fashion_e_commerce/core/presentation/account_cubit.dart';
+import '../../domain/entities/sandbox_payment.dart';
+import '../../domain/services/sandbox_payments.dart';
 
 enum CheckoutStep { address, delivery, payment, review }
 
@@ -87,6 +89,15 @@ final class CheckoutCompleted extends CheckoutState {
   final bool cartCleared;
 }
 
+final class CheckoutPaymentPending extends CheckoutState {
+  const CheckoutPaymentPending(this.review, this.session,
+      {this.isChecking = false, this.message = 'ready'});
+  final CheckoutReady review;
+  final SandboxPaymentSession session;
+  final bool isChecking;
+  final String message;
+}
+
 final class CheckoutFailure extends CheckoutState {
   const CheckoutFailure(this.message);
 
@@ -102,9 +113,11 @@ class CheckoutCubit extends AccountCubit<CheckoutState> {
       this._placeOrder,
       this._clearCart,
       {String Function()? submissionIdFactory,
-      bool Function(String)? isCurrentAccount})
+      bool Function(String)? isCurrentAccount,
+      SandboxPayments? sandboxPayments})
       : _submissionIdFactory = submissionIdFactory,
         _isCurrentAccount = isCurrentAccount,
+        _sandboxPayments = sandboxPayments,
         super(const CheckoutLoading());
 
   final GetCart _getCart;
@@ -116,6 +129,57 @@ class CheckoutCubit extends AccountCubit<CheckoutState> {
   final String Function()? _submissionIdFactory;
   String? _submissionId;
   final bool Function(String)? _isCurrentAccount;
+  final SandboxPayments? _sandboxPayments;
+
+  PlaceOrderRequest _request(CheckoutReady current,
+          {SandboxPaymentSession? session}) =>
+      PlaceOrderRequest(
+        items: current.items,
+        address: current.address!,
+        delivery: current.delivery!,
+        payment: current.payment!,
+        promotion: current.promotion,
+        idempotencyKey:
+            session == null ? _submissionId : 'TEST-${session.invoiceId}',
+        sandboxPayment: session?.receipt,
+      );
+
+  void leavePayment() {
+    final current = state;
+    if (current is CheckoutPaymentPending && !current.isChecking) {
+      emit(current.review.copyWith(isSubmitting: false));
+    }
+  }
+
+  Future<void> checkPayment() async {
+    final current = state;
+    if (current is! CheckoutPaymentPending || current.isChecking) return;
+    emit(CheckoutPaymentPending(current.review, current.session,
+        isChecking: true));
+    try {
+      final result = await _sandboxPayments!.check(current.session);
+      if (isClosed) return;
+      if (current.session.ownerId != null &&
+          _isCurrentAccount?.call(current.session.ownerId!) == false) {
+        throw StateError('Account changed during payment.');
+      }
+      if (result == SandboxPaymentStatus.paid) {
+        await _completeOrder(current.review, session: current.session);
+      } else {
+        if (result == SandboxPaymentStatus.cancelled) {
+          await _sandboxPayments.forget(current.session);
+          if (isClosed) return;
+        }
+        emit(CheckoutPaymentPending(current.review, current.session,
+            message: result.name));
+      }
+    } catch (_) {
+      if (!isClosed) {
+        emit(CheckoutPaymentPending(current.review, current.session,
+            message: 'error'));
+      }
+    }
+  }
 
   Future<void> load() async {
     _submissionId = _submissionIdFactory?.call();
@@ -212,21 +276,32 @@ class CheckoutCubit extends AccountCubit<CheckoutState> {
 
     emit(current.copyWith(isSubmitting: true, hasSubmissionError: false));
 
+    if (current.payment!.id == 'card' && _sandboxPayments != null) {
+      try {
+        final session = await _sandboxPayments.begin(_request(current));
+        if (!isClosed) emit(CheckoutPaymentPending(current, session));
+      } catch (_) {
+        if (!isClosed) {
+          emit(current.copyWith(isSubmitting: false, hasSubmissionError: true));
+        }
+      }
+      return;
+    }
+    await _completeOrder(current);
+  }
+
+  Future<void> _completeOrder(CheckoutReady current,
+      {SandboxPaymentSession? session}) async {
     final OrderReceipt receipt;
     try {
       receipt = await _placeOrder(
-        PlaceOrderRequest(
-          items: current.items,
-          address: current.address!,
-          delivery: current.delivery!,
-          payment: current.payment!,
-          promotion: current.promotion,
-          idempotencyKey: _submissionId,
-        ),
+        _request(current, session: session),
       );
     } catch (_) {
       if (!isClosed) {
-        emit(current.copyWith(isSubmitting: false, hasSubmissionError: true));
+        emit(session == null
+            ? current.copyWith(isSubmitting: false, hasSubmissionError: true)
+            : CheckoutPaymentPending(current, session, message: 'saveError'));
       }
       return;
     }
@@ -244,5 +319,12 @@ class CheckoutCubit extends AccountCubit<CheckoutState> {
       cartCleared = false;
     }
     if (!isClosed) emit(CheckoutCompleted(receipt, cartCleared: cartCleared));
+    if (session != null) {
+      try {
+        await _sandboxPayments!.forget(session);
+      } catch (_) {
+        /* A retained invoice still maps to the same demo order ID. */
+      }
+    }
   }
 }

@@ -10,6 +10,7 @@ import 'package:fashion_e_commerce/features/checkout/presentation/cubit/checkout
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'sandbox_payment_page.dart';
 
 class CheckoutPage extends StatelessWidget {
   const CheckoutPage({super.key});
@@ -34,6 +35,7 @@ class CheckoutPage extends StatelessWidget {
           CheckoutCompleted(:final receipt, :final cartCleared) =>
             _OrderSuccessPage(receipt: receipt, cartCleared: cartCleared),
           CheckoutReady() => _CheckoutFlow(state: state),
+          CheckoutPaymentPending() => SandboxPaymentPage(state: state),
         };
       },
     );
@@ -540,7 +542,11 @@ class _ReviewStep extends StatelessWidget {
               ? (AppStrings.of(context).isArabic
                   ? 'جارٍ تأكيد الطلب...'
                   : 'PLACING ORDER...')
-              : AppStrings.of(context).placeOrder,
+              : state.payment!.id == 'card'
+                  ? (AppStrings.of(context).isArabic
+                      ? 'المتابعة للدفع التجريبي'
+                      : 'CONTINUE TO TEST PAYMENT')
+                  : AppStrings.of(context).placeOrder,
           onPressed: state.isSubmitting
               ? null
               : context.read<CheckoutCubit>().submitOrder,
@@ -728,6 +734,15 @@ class _OrderSuccessPage extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 10),
+                                if (receipt.sandboxPayment != null) ...[
+                                  Text(
+                                      AppStrings.of(context).isArabic
+                                          ? 'تم التحقق من دفع تجريبي: 1 د.ك'
+                                          : 'Sandbox payment verified: 1 KWD',
+                                      style: const TextStyle(
+                                          color: AppColors.acidLime)),
+                                  const SizedBox(height: 10),
+                                ],
                                 Text(
                                   '${AppStrings.of(context).total} ${receipt.total.toStringAsFixed(0)} EGP · ${AppStrings.of(context).deliveryEta(receipt.deliveryEta)}',
                                   textAlign: TextAlign.center,

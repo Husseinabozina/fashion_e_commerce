@@ -44,6 +44,7 @@ class InMemoryOrdersDataSource implements OrdersDataSource {
 
   @override
   Future<void> save(Order order) async {
+    if (_orders.any((existing) => existing.id == order.id)) return;
     _orders.insert(0, order);
   }
 

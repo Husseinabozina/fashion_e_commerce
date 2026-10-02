@@ -29,7 +29,7 @@ class DemoCheckoutDataSource implements CheckoutDataSource {
         PaymentOption(
           id: 'card',
           title: 'Card',
-          subtitle: 'Visa · Mastercard',
+          subtitle: 'Test cards · no real charge',
         ),
         PaymentOption(
           id: 'cod',
@@ -48,8 +48,11 @@ class DemoCheckoutDataSource implements CheckoutDataSource {
   @override
   Future<OrderReceipt> submitOrder(PlaceOrderRequest request) async {
     return OrderReceipt(
-      orderId: 'NOVA-${(_nextOrderNumber++).toString().padLeft(6, '0')}',
+      orderId: request.idempotencyKey != null
+          ? 'NOVA-${request.idempotencyKey}'
+          : 'NOVA-${(_nextOrderNumber++).toString().padLeft(6, '0')}',
       total: request.total,
+      sandboxPayment: request.sandboxPayment,
       deliveryEta: request.delivery.eta,
     );
   }

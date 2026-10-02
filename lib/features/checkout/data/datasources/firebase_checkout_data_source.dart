@@ -5,7 +5,7 @@ import 'package:fashion_e_commerce/features/checkout/domain/entities/place_order
 import 'checkout_data_source.dart';
 import 'demo_checkout_data_source.dart';
 
-/// Persists demo orders through PlaceOrder/OrdersRepository; never charges a card.
+/// Persists demo orders through PlaceOrder/OrdersRepository; no real payments.
 class FirebaseCheckoutDataSource implements CheckoutDataSource {
   FirebaseCheckoutDataSource(this.store);
   final FirebaseAccountStore store;
@@ -23,6 +23,7 @@ class FirebaseCheckoutDataSource implements CheckoutDataSource {
           orderId: id,
           ownerId: owner,
           total: (existing.data()!['total'] as num).toDouble(),
+          sandboxPayment: request.sandboxPayment,
           deliveryEta: existing.data()!['deliveryEta'] as String);
     if (request.items.isEmpty || request.items.length > 20)
       throw StateError('Bag must contain 1–20 items.');
@@ -30,6 +31,7 @@ class FirebaseCheckoutDataSource implements CheckoutDataSource {
         orderId: id,
         ownerId: owner,
         total: request.total,
+        sandboxPayment: request.sandboxPayment,
         deliveryEta: request.delivery.eta);
   }
 }

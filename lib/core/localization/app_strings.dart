@@ -116,6 +116,7 @@ class AppStrings {
       ? subtitle
       : switch (subtitle) {
           'Visa · Mastercard' => 'فيزا · ماستركارد',
+          'Test cards · no real charge' => 'كروت اختبار · من غير خصم فلوس',
           'Pay when your order arrives' => 'ادفع عند وصول طلبك',
           'Digital wallet' => 'محفظة رقمية',
           _ => subtitle,

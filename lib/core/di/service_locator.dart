@@ -19,6 +19,9 @@ import 'package:fashion_e_commerce/features/recently_viewed/data/datasources/fir
 import 'package:fashion_e_commerce/features/reviews/data/datasources/firestore_reviews_data_source.dart';
 import 'package:fashion_e_commerce/features/wishlist/data/datasources/firestore_wishlist_data_source.dart';
 import 'package:fashion_e_commerce/features/checkout/data/datasources/firebase_checkout_data_source.dart';
+import 'package:fashion_e_commerce/features/checkout/data/datasources/sandbox_session_store.dart';
+import 'package:fashion_e_commerce/features/checkout/data/services/myfatoorah_sandbox_payments.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/services/sandbox_payments.dart';
 import 'package:fashion_e_commerce/core/localization/locale_cubit.dart';
 import 'package:fashion_e_commerce/features/addresses/data/datasources/addresses_data_source.dart';
 import 'package:fashion_e_commerce/features/addresses/data/datasources/in_memory_addresses_data_source.dart';
@@ -393,6 +396,12 @@ void configureDependencies(
           ? DemoCheckoutDataSource()
           : FirebaseCheckoutDataSource(store),
     )
+    ..registerLazySingleton<SandboxPayments>(() => MyFatoorahSandboxPayments(
+          store == null
+              ? MemorySandboxSessionStore()
+              : FirestoreSandboxSessionStore(store),
+          ownerId: store == null ? null : () => store.uid,
+        ))
     ..registerLazySingleton<CheckoutRepository>(
       () => CheckoutRepositoryImpl(serviceLocator<CheckoutDataSource>()),
     )
@@ -491,6 +500,7 @@ void configureDependencies(
         serviceLocator<GetDefaultAddress>(),
         serviceLocator<PlaceOrder>(),
         serviceLocator<ClearCart>(),
+        sandboxPayments: serviceLocator<SandboxPayments>(),
         isCurrentAccount:
             store == null ? null : (uid) => store.auth.currentUser?.uid == uid,
         submissionIdFactory: store == null

@@ -15,6 +15,7 @@ import 'package:fashion_e_commerce/features/addresses/data/datasources/firestore
 import 'package:fashion_e_commerce/features/addresses/domain/entities/saved_address.dart';
 import 'package:fashion_e_commerce/features/checkout/domain/entities/shipping_address.dart';
 import 'package:fashion_e_commerce/features/checkout/domain/entities/place_order_request.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/entities/sandbox_payment.dart';
 import 'package:fashion_e_commerce/features/checkout/data/datasources/firebase_checkout_data_source.dart';
 import 'package:fashion_e_commerce/features/checkout/data/repositories/checkout_repository_impl.dart';
 import 'package:fashion_e_commerce/features/checkout/domain/usecases/place_order.dart';
@@ -127,7 +128,8 @@ void main() {
         address: address,
         delivery: options.deliveryOptions.first,
         payment: options.paymentOptions.first,
-        idempotencyKey: 'stable-attempt');
+        idempotencyKey: 'stable-attempt',
+        sandboxPayment: const SandboxPaymentReceipt(123));
     final a = await place(request);
     final b = await place(request);
     expect(a.orderId, b.orderId);
@@ -142,6 +144,7 @@ void main() {
     expect(receipt.items.single.product.price, product.price);
     expect(receipt.items.single.product.name, product.name);
     expect(receipt.total, a.total);
+    expect(receipt.sandboxPayment!.invoiceId, 123);
     auth.mockUser = MockUser(uid: 'bob');
     expect(await orders.readAll(), isEmpty);
   });

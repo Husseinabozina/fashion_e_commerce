@@ -1,5 +1,6 @@
 import 'package:fashion_e_commerce/features/cart/domain/entities/cart_item.dart';
 import 'package:fashion_e_commerce/features/orders/domain/entities/order_status.dart';
+import 'package:fashion_e_commerce/features/checkout/domain/entities/sandbox_payment.dart';
 
 class Order {
   const Order({
@@ -13,6 +14,7 @@ class Order {
     required this.deliveryTitle,
     required this.paymentTitle,
     required this.status,
+    this.sandboxPayment,
   });
 
   final String id;
@@ -25,6 +27,7 @@ class Order {
   final String deliveryTitle;
   final String paymentTitle;
   final OrderStatus status;
+  final SandboxPaymentReceipt? sandboxPayment;
 
   Order copyWith({
     OrderStatus? status,
@@ -40,6 +43,7 @@ class Order {
       deliveryTitle: deliveryTitle,
       paymentTitle: paymentTitle,
       status: status ?? this.status,
+      sandboxPayment: sandboxPayment,
     );
   }
 }

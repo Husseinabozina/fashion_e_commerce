@@ -164,6 +164,13 @@ class _OrderDetailsContent extends StatelessWidget {
           title: AppStrings.of(context).payment.toUpperCase(),
           value: AppStrings.of(context).paymentTitle(order.paymentTitle),
         ),
+        if (order.sandboxPayment != null)
+          _InfoCard(
+            title: AppStrings.of(context).isArabic
+                ? 'دفع تجريبي مؤكد'
+                : 'VERIFIED TEST PAYMENT',
+            value: 'MyFatoorah · 1 KWD\n#${order.sandboxPayment!.invoiceId}',
+          ),
         const Divider(height: 34),
         Wrap(
           spacing: 16,

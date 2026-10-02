@@ -3,6 +3,7 @@ import 'package:fashion_e_commerce/features/checkout/domain/entities/delivery_op
 import 'package:fashion_e_commerce/features/checkout/domain/entities/payment_option.dart';
 import 'package:fashion_e_commerce/features/checkout/domain/entities/shipping_address.dart';
 import 'package:fashion_e_commerce/features/promotions/domain/entities/promotion.dart';
+import 'sandbox_payment.dart';
 
 class PlaceOrderRequest {
   const PlaceOrderRequest({
@@ -12,6 +13,7 @@ class PlaceOrderRequest {
     required this.payment,
     this.promotion,
     this.idempotencyKey,
+    this.sandboxPayment,
   });
 
   final List<CartItem> items;
@@ -20,6 +22,7 @@ class PlaceOrderRequest {
   final PaymentOption payment;
   final Promotion? promotion;
   final String? idempotencyKey;
+  final SandboxPaymentReceipt? sandboxPayment;
 
   double get subtotal {
     return items.fold<double>(

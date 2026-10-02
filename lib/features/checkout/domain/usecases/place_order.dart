@@ -30,6 +30,7 @@ class PlaceOrder {
         deliveryTitle: request.delivery.title,
         paymentTitle: request.payment.title,
         status: OrderStatus.placed,
+        sandboxPayment: request.sandboxPayment,
       ),
     );
 

@@ -23,6 +23,10 @@ rules_version = '2';
 // users/{uid}/returnRequests/{id}: delivered demo order + itemIndex/itemKey,
 //   type/reason/requestedSize/status=submitted; createdAt immutable.
 // Real orders and payments have no client write permissions.
+// sandboxPayments: own immutable virtual invoice pointer (public test merchant),
+//   fixed 1 KWD, opaque reference, HTTPS sandbox URL, bounded order total.
+// demoOrders.sandboxPayment: optional CLIENT-verified test receipt, never an
+//   authoritative real payment. All real order/payment paths remain denied.
 service cloud.firestore {
   match /databases/{database}/documents {
     function authenticated() { return request.auth != null; }
@@ -118,14 +122,29 @@ service cloud.firestore {
       ;
     }
     function validDemoOrder(d) {
-      return fields(d,['isDemo','items','total','createdAt','deliveryEta','shippingAddressLabel','deliveryTitle','paymentTitle','status','returnRequestId'])
+      let base = ['isDemo','items','total','createdAt','deliveryEta','shippingAddressLabel','deliveryTitle','paymentTitle','status','returnRequestId'];
+      return d.keys().hasAll(base) && d.keys().hasOnly(base.concat(['sandboxPayment']))
         && d.isDemo == true && validOrderItems(d.items)
         && d.total is number && d.total >= 0 && d.total <= 100000000
         && d.createdAt is timestamp && text(d.deliveryEta,1,80) && text(d.shippingAddressLabel,1,700)
         && d.deliveryTitle in ['Standard Delivery','Express Delivery']
         && d.paymentTitle in ['Card','Cash on Delivery','Wallet']
         && d.status in ['placed','confirmed','preparing','shipped','outForDelivery','delivered','cancelled','returnRequested','returned','refunded']
-        && (d.returnRequestId == null || text(d.returnRequestId,1,300));
+        && (d.returnRequestId == null || text(d.returnRequestId,1,300))
+        && (!('sandboxPayment' in d) || (d.paymentTitle == 'Card' && validSandboxReceipt(d.sandboxPayment)));
+    }
+    function validSandboxReceipt(d) {
+      return d is map && fields(d,['provider','invoiceId','amount','currency'])
+        && d.provider == 'MyFatoorah' && d.invoiceId is int && d.invoiceId > 0
+        && d.amount == 1 && d.currency == 'KWD';
+    }
+    function validSandboxSession(d) {
+      return fields(d,['isDemo','reference','invoiceId','checkoutUrl','orderTotalEgp','amount','currency','createdAt'])
+        && d.isDemo == true && text(d.reference,37,37) && d.reference.matches('^NOVA-[a-f0-9]{32}$')
+        && d.invoiceId is int && d.invoiceId > 0
+        && text(d.checkoutUrl,1,2000) && d.checkoutUrl.matches('^https://demo[.]myfatoorah[.]com/.*$')
+        && d.orderTotalEgp is number && d.orderTotalEgp > 0 && d.orderTotalEgp <= 100000000
+        && d.amount == 1 && d.currency == 'KWD' && d.createdAt is timestamp;
     }
     function validReturn(d,uid) {
       let order = get(/databases/$(database)/documents/users/$(uid)/demoOrders/$(d.orderId)).data;
@@ -173,6 +192,12 @@ service cloud.firestore {
     }
     match /users/{uid} {
       allow read, write: if false;
+      match /sandboxPayments/{id} {
+        allow read, delete: if owner(uid);
+        allow create: if owner(uid) && id.matches('^[a-f0-9]{64}$')
+          && validSandboxSession(request.resource.data) && request.resource.data.createdAt == request.time;
+        allow update: if false;
+      }
       match /cart/{id} {
         allow read, delete: if owner(uid);
         allow create, update: if owner(uid) && validCart(request.resource.data);
