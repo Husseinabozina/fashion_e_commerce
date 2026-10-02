@@ -1,28 +1,14 @@
-import 'package:fashion_e_commerce/features/splash/view/screens/splash_page1.dart';
+import 'package:fashion_e_commerce/app/app.dart';
+import 'package:fashion_e_commerce/core/di/service_locator.dart';
+import 'package:fashion_e_commerce/core/firebase/firebase_bootstrap.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(360, 800),
-      child: MaterialApp(
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            textTheme: GoogleFonts.montserratTextTheme(),
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-          ),
-          home: SplashPage1()),
-    );
+  WidgetsFlutterBinding.ensureInitialized();
+  if (const bool.fromEnvironment('USE_DEMO_DATA')) {
+    configureDependencies();
+    runApp(const FashionApp());
+  } else {
+    runApp(const FirebaseBootstrap());
   }
 }

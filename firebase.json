@@ -1,0 +1,33 @@
+{
+  "firestore": {
+    "database": "nova-app",
+    "location": "europe-west3",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json",
+    "edition": "enterprise",
+    "dataAccessMode": "FIRESTORE_NATIVE"
+  },
+  "auth": {
+    "providers": {
+      "anonymous": true,
+      "emailPassword": true
+    }
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080,
+      "edition": "enterprise"
+    },
+    "singleProjectMode": true
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "notifications",
+      "runtime": "nodejs22"
+    }
+  ]
+}
