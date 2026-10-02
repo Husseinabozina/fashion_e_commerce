@@ -1,3 +1,4 @@
+import 'package:fashion_e_commerce/features/notifications/presentation/widgets/push_listener.dart';
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/routing/app_router.dart';
 import 'package:fashion_e_commerce/core/localization/locale_cubit.dart';
@@ -52,28 +53,35 @@ class FashionApp extends StatelessWidget {
                         ],
                         child: BlocBuilder<LocaleCubit, Locale>(
                           builder: (context, locale) {
-                            return MaterialApp(
-                              title: 'Fashion E-Commerce',
-                              debugShowCheckedModeBanner: false,
-                              builder: (_, child) =>
-                                  AnnotatedRegion<SystemUiOverlayStyle>(
-                                value: SystemUiOverlayStyle.dark,
-                                child: child!,
-                              ),
-                              locale: locale,
-                              supportedLocales: const [
-                                Locale('en'),
-                                Locale('ar'),
-                              ],
-                              localizationsDelegates: const [
-                                GlobalMaterialLocalizations.delegate,
-                                GlobalWidgetsLocalizations.delegate,
-                                GlobalCupertinoLocalizations.delegate,
-                              ],
-                              theme: AppTheme.lightThemeFor(locale),
-                              initialRoute: Routes.initialSplash,
-                              onGenerateRoute: AppRouter.onGenerateRoute,
-                            );
+                            return PushListener(
+                                builder: (navigatorKey, messengerKey,
+                                        observer) =>
+                                    MaterialApp(
+                                      navigatorKey: navigatorKey,
+                                      navigatorObservers: [observer],
+                                      scaffoldMessengerKey: messengerKey,
+                                      title: 'Fashion E-Commerce',
+                                      debugShowCheckedModeBanner: false,
+                                      builder: (_, child) =>
+                                          AnnotatedRegion<SystemUiOverlayStyle>(
+                                        value: SystemUiOverlayStyle.dark,
+                                        child: child!,
+                                      ),
+                                      locale: locale,
+                                      supportedLocales: const [
+                                        Locale('en'),
+                                        Locale('ar'),
+                                      ],
+                                      localizationsDelegates: const [
+                                        GlobalMaterialLocalizations.delegate,
+                                        GlobalWidgetsLocalizations.delegate,
+                                        GlobalCupertinoLocalizations.delegate,
+                                      ],
+                                      theme: AppTheme.lightThemeFor(locale),
+                                      initialRoute: Routes.initialSplash,
+                                      onGenerateRoute:
+                                          AppRouter.onGenerateRoute,
+                                    ));
                           },
                         ),
                       ),

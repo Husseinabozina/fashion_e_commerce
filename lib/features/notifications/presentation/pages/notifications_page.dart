@@ -1,3 +1,6 @@
+import 'package:fashion_e_commerce/core/di/service_locator.dart';
+import 'package:fashion_e_commerce/core/presentation/account_action.dart';
+import 'package:fashion_e_commerce/features/notifications/domain/services/push_notifications.dart';
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/localization/app_strings.dart';
@@ -16,6 +19,48 @@ class NotificationsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(AppStrings.of(context).notifications.toUpperCase()),
         actions: [
+          if (serviceLocator.isRegistered<PushNotifications>())
+            PopupMenuButton<bool>(
+              icon: const Icon(Icons.notifications_active_outlined),
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                    value: true,
+                    child: Text(AppStrings.of(context).isArabic
+                        ? 'تفعيل إشعارات الجهاز'
+                        : 'Enable device notifications')),
+                PopupMenuItem(
+                    value: false,
+                    child: Text(AppStrings.of(context).isArabic
+                        ? 'إيقاف إشعارات الجهاز'
+                        : 'Disable device notifications')),
+              ],
+              onSelected: (enabled) async {
+                final push = serviceLocator<PushNotifications>();
+                final result = await accountAction(context, () async {
+                  if (!enabled) {
+                    await push.disable();
+                    return 'disabled';
+                  }
+                  return (await push.enable()).name;
+                });
+                if (!context.mounted || result == null) return;
+                final arabic = AppStrings.of(context).isArabic;
+                final message = switch (result) {
+                  'enabled' =>
+                    arabic ? 'تم تفعيل الإشعارات.' : 'Notifications enabled.',
+                  'disabled' =>
+                    arabic ? 'تم إيقاف الإشعارات.' : 'Notifications disabled.',
+                  'denied' => arabic
+                      ? 'اسمح بالإشعارات من إعدادات الجهاز.'
+                      : 'Allow notifications in your device settings.',
+                  _ => arabic
+                      ? 'الإشعارات غير جاهزة على الجهاز. حاول لاحقًا.'
+                      : 'Notifications are not ready on this device. Try later.',
+                };
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text(message)));
+              },
+            ),
           TextButton(
             onPressed: context.read<NotificationsCubit>().markAllRead,
             child: Text(

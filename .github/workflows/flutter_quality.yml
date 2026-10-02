@@ -56,3 +56,15 @@ jobs:
         run: npm --prefix tools/firebase ci
       - name: Verify rules and account linking on emulators
         run: tools/firebase/node_modules/.bin/firebase emulators:exec --only auth,firestore --project demo-nova 'npm --prefix tools/firebase run test:rules'
+
+  notification-functions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+      - run: npm --prefix functions ci
+      - run: npm --prefix functions test

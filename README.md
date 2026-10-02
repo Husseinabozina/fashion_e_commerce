@@ -31,7 +31,7 @@ Firestore persists the catalog, wishlist, bag, shopping preferences, followed br
 
 Checkout is explicitly simulated: no payment gateway, card collection or real charge. Demo receipts are under `demoOrders`; their price snapshots and totals cannot be edited after creation. Trusted fulfillment must set delivery status before returns become eligible. Clients cannot create real orders or paid/delivered status.
 
-Stock alerts currently save requests; push delivery, FCM/server triggers, catalog administration, real payment/fulfillment and verified-purchase reviews are future backend work. Reviews require an email/password account. Notification records are server-owned; clients may only mark their own notifications read.
+Mobile push registration, foreground/open handling and stock/order notification functions are implemented and locally tested. Automated delivery is not deployed: it needs Blaze activation, and iPhone delivery needs an APNs key. Catalog administration, real payment/fulfillment and verified-purchase reviews remain production work. Reviews require an email/password account. Notification records are server-owned; clients may only mark their own notifications read.
 
 Rules validate owners and document schemas, block arbitrary fields/roles, protect catalog prices and deny unspecified paths. They are prototype rules covered by adversarial emulator tests; review them before broad public release. The six seeded products are sample catalog data. No billing plan was upgraded during setup.
 
@@ -66,4 +66,4 @@ node tools/firebase/live-smoke.mjs
 
 `seed` overwrites only the 12 public documents in `catalog-seed.json`. `live-smoke` creates two temporary anonymous test users, verifies actual server reads/writes and isolation, then removes their test wishlist documents and users. Database creation must explicitly enable Firestore data access and realtime updates; the Firebase deployment configuration alone does not currently set realtime mode.
 
-See [architecture](docs/architecture/clean_architecture.md) and [Firebase acceptance/audit](docs/firebase-integration.md).
+See [live commerce and push activation](docs/live-commerce.md), [architecture](docs/architecture/clean_architecture.md) and [Firebase acceptance/audit](docs/firebase-integration.md).

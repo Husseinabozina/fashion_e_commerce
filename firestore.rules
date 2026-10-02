@@ -158,6 +158,19 @@ service cloud.firestore {
     match /catalog/{id} { allow read: if authenticated(); allow write: if false; }
     match /brands/{id} { allow read: if authenticated(); allow write: if false; }
     match /promotions/{id} { allow read: if authenticated(); allow write: if false; }
+    // Token possession can transfer one installation to the current account.
+    // Sender checks this binding, so old private device records cannot receive.
+    match /deviceBindings/{id} {
+      allow get: if authenticated() && resource.data.ownerUid == request.auth.uid;
+      allow list: if false;
+      allow create, update: if authenticated()
+        && fields(request.resource.data,['ownerUid','updatedAt'])
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.updatedAt == request.time
+        && existsAfter(/databases/$(database)/documents/users/$(request.auth.uid)/devices/$(id));
+      allow delete: if authenticated()
+        && (!exists(/databases/$(database)/documents/deviceBindings/$(id)) || resource.data.ownerUid == request.auth.uid);
+    }
     match /users/{uid} {
       allow read, write: if false;
       match /cart/{id} {
@@ -179,6 +192,19 @@ service cloud.firestore {
       match /addresses/{id} {
         allow read, delete: if owner(uid);
         allow create, update: if owner(uid) && validAddress(request.resource.data);
+      }
+      match /devices/{id} {
+        allow read, delete: if owner(uid);
+        allow create, update: if owner(uid)
+          && fields(request.resource.data,['token','platform','updatedAt'])
+          && text(request.resource.data.token,20,2048)
+          && request.resource.data.platform in ['android','iOS']
+          && request.resource.data.updatedAt == request.time;
+      }
+      match /settings/push {
+        allow read, delete: if owner(uid);
+        allow create, update: if owner(uid)
+          && fields(request.resource.data,['enabled']) && request.resource.data.enabled is bool;
       }
       match /settings/shopping {
         allow read, delete: if owner(uid);

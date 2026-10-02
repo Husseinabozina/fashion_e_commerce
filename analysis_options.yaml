@@ -11,6 +11,8 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
+    - build/**
+    - functions/node_modules/**
     - tools/firebase/node_modules/**
 
 linter:

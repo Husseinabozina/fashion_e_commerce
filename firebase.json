@@ -22,5 +22,12 @@
       "edition": "enterprise"
     },
     "singleProjectMode": true
-  }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "notifications",
+      "runtime": "nodejs22"
+    }
+  ]
 }

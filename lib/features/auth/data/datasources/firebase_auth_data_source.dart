@@ -4,7 +4,10 @@ import 'package:fashion_e_commerce/features/auth/domain/entities/app_user.dart';
 import 'package:fashion_e_commerce/features/auth/domain/entities/auth_exception.dart';
 
 class FirebaseAuthDataSource implements AuthDataSource {
-  FirebaseAuthDataSource(this._auth);
+  FirebaseAuthDataSource(this._auth,
+      {this.beforeAccountChange, this.afterAccountChange});
+  final Future<void> Function()? beforeAccountChange;
+  final Future<void> Function()? afterAccountChange;
   final FirebaseAuth _auth;
 
   static Future<User> ensureSession(FirebaseAuth auth) async =>
@@ -30,11 +33,16 @@ class FirebaseAuthDataSource implements AuthDataSource {
   Future<AppUser> signIn(
       {required String email, required String password}) async {
     try {
+      await beforeAccountChange?.call();
       final result = await _auth.signInWithEmailAndPassword(
           email: email.trim(), password: password);
       return mapUser(result.user!);
     } on FirebaseAuthException catch (error) {
       throw AuthException(error.code);
+    } finally {
+      try {
+        await afterAccountChange?.call();
+      } catch (_) {}
     }
   }
 
@@ -43,8 +51,11 @@ class FirebaseAuthDataSource implements AuthDataSource {
       {required String name,
       required String email,
       required String password}) async {
+    var changesAccount = false;
     try {
       final current = await ensureSession(_auth);
+      changesAccount = !current.isAnonymous;
+      if (changesAccount) await beforeAccountChange?.call();
       // Linking retains the guest's saved items, cart and addresses under its UID.
       final result = current.isAnonymous
           ? await current.linkWithCredential(EmailAuthProvider.credential(
@@ -56,6 +67,12 @@ class FirebaseAuthDataSource implements AuthDataSource {
       return mapUser(_auth.currentUser!);
     } on FirebaseAuthException catch (error) {
       throw AuthException(error.code);
+    } finally {
+      if (changesAccount) {
+        try {
+          await afterAccountChange?.call();
+        } catch (_) {}
+      }
     }
   }
 
@@ -70,7 +87,14 @@ class FirebaseAuthDataSource implements AuthDataSource {
 
   @override
   Future<AppUser> signOut() async {
-    await _auth.signOut();
-    return currentUser();
+    try {
+      await beforeAccountChange?.call();
+      await _auth.signOut();
+      return await currentUser();
+    } finally {
+      try {
+        await afterAccountChange?.call();
+      } catch (_) {}
+    }
   }
 }

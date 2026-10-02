@@ -114,3 +114,32 @@ test('return must accompany delivered order transition atomically',async()=>{
 
 const {authFlow}=await import('./auth.test.mjs');
 test('guest upgrade preserves UID and saved data; failed sign-in never creates a user; new guest isolation and registered sign-in restore',authFlow);
+
+test('device tokens and push preferences are private, bounded and cannot create messages',async()=>{
+ const data={token:'valid-token-12345678901234567890',platform:'android',updatedAt:serverTimestamp()};
+ const ref=doc(alice,'users/alice/devices/device');
+ await assertSucceeds(setDoc(ref,data));
+ await assertFails(getDoc(doc(bob,'users/alice/devices/device')));
+ await assertFails(deleteDoc(doc(bob,'users/alice/devices/device')));
+ for(const patch of [{token:'x'},{token:'x'.repeat(2049)},{platform:'web'},{ownerUid:'bob'},{updatedAt:Timestamp.fromMillis(1)}]) await assertFails(setDoc(ref,{...data,...patch}));
+ await assertSucceeds(setDoc(doc(alice,'users/alice/settings/push'),{enabled:true}));
+ await assertFails(setDoc(doc(bob,'users/alice/settings/push'),{enabled:false}));
+ await assertFails(setDoc(doc(alice,'users/alice/settings/push'),{enabled:true,role:'admin'}));
+ await assertFails(setDoc(doc(alice,'notificationOutbox/fake'),{uid:'alice',token:data.token}));
+ await assertSucceeds(deleteDoc(ref));
+ await assertSucceeds(deleteDoc(doc(alice,'deviceBindings/already-removed')));
+});
+
+test('one device binding transfers ownership without exposing the previous account',async()=>{
+ const token='unique-installation-token-1234567890';
+ const data={token,platform:'android',updatedAt:serverTimestamp()};
+ const bind={ownerUid:'alice',updatedAt:serverTimestamp()};
+ let batch=writeBatch(alice);batch.set(doc(alice,'users/alice/devices/install'),data);batch.set(doc(alice,'deviceBindings/install'),bind);await assertSucceeds(batch.commit());
+ await assertFails(getDoc(doc(bob,'deviceBindings/install')));
+ await assertFails(setDoc(doc(bob,'deviceBindings/install'),{ownerUid:'bob',updatedAt:serverTimestamp()}));
+ batch=writeBatch(bob);batch.set(doc(bob,'users/bob/devices/install'),data);batch.set(doc(bob,'deviceBindings/install'),{ownerUid:'bob',updatedAt:serverTimestamp()});await assertSucceeds(batch.commit());
+ await assertFails(getDoc(doc(alice,'deviceBindings/install')));
+ await assertFails(deleteDoc(doc(alice,'deviceBindings/install')));
+ await assertSucceeds(getDoc(doc(bob,'deviceBindings/install')));
+ await assertFails(setDoc(doc(bob,'deviceBindings/install'),{ownerUid:'alice',updatedAt:serverTimestamp()}));
+});

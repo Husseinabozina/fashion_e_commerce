@@ -47,3 +47,6 @@ tools/firebase/node_modules/
 .firebase/
 *-debug.log
 *.pbxproj.backup
+
+/functions/node_modules/
+**/xcshareddata/swiftpm/

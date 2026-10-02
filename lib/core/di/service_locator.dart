@@ -1,3 +1,6 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:fashion_e_commerce/features/notifications/data/datasources/firebase_push_notifications.dart';
+import 'package:fashion_e_commerce/features/notifications/domain/services/push_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fashion_e_commerce/core/firebase/firebase_account_store.dart';
@@ -131,12 +134,21 @@ import 'package:get_it/get_it.dart';
 final GetIt serviceLocator = GetIt.instance;
 
 void configureDependencies(
-    {FirebaseFirestore? firestore, FirebaseAuth? firebaseAuth}) {
+    {FirebaseFirestore? firestore,
+    FirebaseAuth? firebaseAuth,
+    FirebaseMessaging? messaging}) {
   if ((firestore == null) != (firebaseAuth == null))
     throw ArgumentError('Provide both Firebase services.');
   final store =
       firestore != null ? FirebaseAccountStore(firestore, firebaseAuth!) : null;
   if (serviceLocator.isRegistered<HomeCubit>()) return;
+
+  final push = store != null && messaging != null
+      ? FirebasePushNotifications(store, messaging)
+      : null;
+  if (push != null)
+    serviceLocator.registerSingleton<PushNotifications>(push,
+        dispose: (service) => service.dispose());
 
   serviceLocator
     ..registerLazySingleton<AddressesDataSource>(
@@ -165,7 +177,9 @@ void configureDependencies(
     ..registerLazySingleton<AuthDataSource>(
       () => firebaseAuth == null
           ? InMemoryAuthDataSource()
-          : FirebaseAuthDataSource(firebaseAuth),
+          : FirebaseAuthDataSource(firebaseAuth,
+              beforeAccountChange: push?.beforeAccountChange,
+              afterAccountChange: push?.afterAccountChange),
     )
     ..registerLazySingleton<AuthRepository>(
       () => AuthRepositoryImpl(serviceLocator<AuthDataSource>()),

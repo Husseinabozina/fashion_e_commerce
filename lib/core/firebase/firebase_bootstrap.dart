@@ -1,3 +1,6 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
+import 'package:fashion_e_commerce/features/notifications/domain/services/push_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,7 +27,19 @@ Future<void> initializeFirebaseDependencies() async {
   }
   await auth.authStateChanges().first;
   await FirebaseAuthDataSource.ensureSession(auth);
-  configureDependencies(firestore: db, firebaseAuth: auth);
+  final mobilePush = !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
+  configureDependencies(
+      firestore: db,
+      firebaseAuth: auth,
+      messaging: mobilePush ? FirebaseMessaging.instance : null);
+  if (serviceLocator.isRegistered<PushNotifications>()) {
+    // Push readiness does not block browsing/authentication.
+    try {
+      await serviceLocator<PushNotifications>().start();
+    } catch (_) {}
+  }
 }
 
 class FirebaseBootstrap extends StatefulWidget {

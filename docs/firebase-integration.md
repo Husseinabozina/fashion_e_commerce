@@ -35,7 +35,9 @@ All personal queries target the exact `users/{currentUID}/{collection}` path. Ca
 | `notifications` | Owner read; mark read only; creation/content server-owned |
 | `demoOrders` | Owner; bounded demo snapshot, immutable price/total/time; no client delivery/payment progress |
 | `returnRequests` | Owner; delivered order/item, allowed reason/size; atomic order transition and request creation |
-| Other paths/real orders | Denied |
+| `users/{uid}/devices`, `settings/push` | Owner registration/preferences; exact bounded token/platform/server time |
+| `deviceBindings/{tokenKey}` | One current owner per installation; private get, no lists; atomic own-device registration |
+| `notificationOutbox`, other paths/real orders | Server-owned; denied to clients |
 
 ## Meaningful verification
 
@@ -46,4 +48,4 @@ All personal queries target the exact `users/{currentUID}/{collection}` path. Ca
 
 ## Remaining production work
 
-Secure payment backend and webhook settlement, authoritative fulfillment/catalog admin, push alert triggers/FCM, verified purchase review policy, monitoring and scale-oriented indexes/pagination. Rules are a reviewed prototype and require another review before broad public sharing.
+Secure payment backend and webhook settlement, authoritative fulfillment/catalog admin, activation of the tested FCM/notification functions, verified purchase review policy, monitoring and scale-oriented indexes/pagination. Rules are a reviewed prototype and require another review before broad public sharing.
