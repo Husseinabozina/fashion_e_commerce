@@ -5,9 +5,11 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -49,4 +51,5 @@ tools/firebase/node_modules/
 *.pbxproj.backup
 
 /functions/node_modules/
+
 **/xcshareddata/swiftpm/
