@@ -1,3 +1,4 @@
+import 'package:fashion_e_commerce/core/branding/nova_launch_view.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fashion_e_commerce/features/notifications/domain/services/push_notifications.dart';
@@ -57,25 +58,26 @@ class _FirebaseBootstrapState extends State<FirebaseBootstrap> {
         if (snapshot.connectionState == ConnectionState.done &&
             !snapshot.hasError) return const FashionApp();
         return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            home: Scaffold(
-                body: SafeArea(
-                    child: Center(
-                        child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: snapshot.hasError
-                  ? Column(mainAxisSize: MainAxisSize.min, children: [
-                      const Text(
-                          'تعذر الاتصال. تأكد من الإنترنت وحاول مرة أخرى.\nCould not connect. Please check your connection.',
-                          textAlign: TextAlign.center),
-                      const SizedBox(height: 16),
-                      FilledButton(
-                          onPressed: () => setState(
-                              () => _ready = initializeFirebaseDependencies()),
-                          child: const Text('حاول مرة أخرى · Retry')),
-                    ])
-                  : const CircularProgressIndicator(color: AppColors.nearBlack),
-            )))));
+          title: 'NOVA',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          home: NovaLaunchView(
+            progress: snapshot.hasError ? 1 : 0,
+            footer: snapshot.hasError
+                ? Column(mainAxisSize: MainAxisSize.min, children: [
+                    const Text(
+                        'تعذر الاتصال. تأكد من الإنترنت وحاول مرة أخرى.\nCould not connect. Please check your connection.',
+                        textAlign: TextAlign.center,
+                        style:
+                            TextStyle(color: AppColors.offWhite, fontSize: 13)),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                        onPressed: () => setState(
+                            () => _ready = initializeFirebaseDependencies()),
+                        child: const Text('حاول مرة أخرى · Retry')),
+                  ])
+                : null,
+          ),
+        );
       });
 }

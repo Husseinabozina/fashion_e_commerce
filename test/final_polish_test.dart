@@ -137,7 +137,6 @@ Future<void> _home(WidgetTester tester) async {
   await tester.pump();
   await tester.pump(AppConstants.initialSplashDuration);
   await tester.pump(const Duration(milliseconds: 250));
-  await tester.pump(AppConstants.brandRevealDuration);
   await tester.pumpAndSettle();
   if (find.byType(OnboardingPage).evaluate().isNotEmpty) {
     await tester.scrollUntilVisible(find.text('SKIP FOR NOW'), 150);

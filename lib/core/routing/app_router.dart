@@ -30,7 +30,6 @@ import 'package:fashion_e_commerce/features/orders/presentation/cubit/order_deta
 import 'package:fashion_e_commerce/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/pages/order_details_page.dart';
 import 'package:fashion_e_commerce/features/orders/presentation/pages/orders_page.dart';
-import 'package:fashion_e_commerce/features/splash/presentation/pages/brand_reveal_splash_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/pages/initial_splash_page.dart';
 import 'package:fashion_e_commerce/features/wishlist/presentation/pages/wishlist_page.dart';
 import 'package:flutter/material.dart';
@@ -40,8 +39,6 @@ abstract final class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     return switch (settings.name) {
       Routes.initialSplash => _page(const InitialSplashPage(), settings),
-      Routes.brandRevealSplash =>
-        _page(const BrandRevealSplashPage(), settings),
       Routes.onboarding => _page(
           BlocProvider<OnboardingCubit>(
             create: (_) => serviceLocator<OnboardingCubit>(),

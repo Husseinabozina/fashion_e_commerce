@@ -60,7 +60,7 @@ class FashionApp extends StatelessWidget {
                                       navigatorKey: navigatorKey,
                                       navigatorObservers: [observer],
                                       scaffoldMessengerKey: messengerKey,
-                                      title: 'Fashion E-Commerce',
+                                      title: 'NOVA',
                                       debugShowCheckedModeBanner: false,
                                       builder: (_, child) =>
                                           AnnotatedRegion<SystemUiOverlayStyle>(

@@ -41,7 +41,6 @@ void main() {
               await tester.pump();
               await tester.pump(AppConstants.initialSplashDuration);
               await tester.pump(const Duration(milliseconds: 250));
-              await tester.pump(AppConstants.brandRevealDuration);
               await tester.pumpAndSettle();
               if (find.byType(OnboardingPage).evaluate().isNotEmpty) {
                 await tester.tap(find.text('SKIP FOR NOW'));

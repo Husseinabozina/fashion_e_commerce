@@ -1,3 +1,4 @@
+import 'package:fashion_e_commerce/core/branding/nova_logo.dart';
 import 'package:fashion_e_commerce/core/config/app_theme.dart';
 import 'package:fashion_e_commerce/core/config/app_icons.dart';
 import 'package:fashion_e_commerce/core/routing/routes.dart';
@@ -104,12 +105,7 @@ class _TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(
-          'NOVA_',
-          textDirection: TextDirection.ltr,
-          textScaler: TextScaler.noScaling,
-          style: AppTheme.display(fontSize: 26),
-        ),
+        const NovaWordmark(fontSize: 26, color: AppColors.nearBlack),
         const Spacer(),
         IconButton(
           tooltip: AppStrings.of(context).notifications,

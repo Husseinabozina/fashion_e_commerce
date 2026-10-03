@@ -1,0 +1,16 @@
+{
+  "name": "NOVA Fold",
+  "palette": {
+    "background": "#0A0A0A",
+    "foreground": "#C8FF1E"
+  },
+  "source": "tools/branding/mark_geometry.json",
+  "concept": "Built-in ImageGen; rebuilt as clean, deterministic vector geometry for native and Flutter rendering.",
+  "exports": [
+    "nova-mark.svg",
+    "nova-mark.png",
+    "nova-app-icon.svg",
+    "nova-app-icon.png"
+  ],
+  "adaptive_safe_zone": "Foreground contained inside the central 66dp circle of the 108dp viewport."
+}

@@ -4,9 +4,8 @@ import 'package:fashion_e_commerce/core/di/service_locator.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/home_page.dart';
 import 'package:fashion_e_commerce/features/catalog/presentation/pages/product_details_page.dart';
 import 'package:fashion_e_commerce/features/onboarding/presentation/pages/onboarding_page.dart';
-import 'package:fashion_e_commerce/features/splash/presentation/pages/brand_reveal_splash_page.dart';
 import 'package:fashion_e_commerce/features/splash/presentation/pages/initial_splash_page.dart';
-import 'package:fashion_e_commerce/features/splash/presentation/widgets/brand_logo.dart';
+import 'package:fashion_e_commerce/core/branding/nova_logo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,20 +18,6 @@ void main() {
 
     expect(find.byType(InitialSplashPage), findsOneWidget);
     expect(find.byType(BrandLogo), findsOneWidget);
-    expect(find.byType(BrandRevealSplashPage), findsNothing);
-  });
-
-  testWidgets('initial splash navigates to brand reveal after the delay',
-      (tester) async {
-    await tester.pumpWidget(const FashionApp());
-    await tester.pump();
-
-    await tester.pump(AppConstants.initialSplashDuration);
-    await tester.pump(const Duration(milliseconds: 250));
-
-    expect(find.byType(BrandRevealSplashPage), findsOneWidget);
-    expect(find.byType(BrandLogo), findsOneWidget);
-    expect(tester.takeException(), isNull);
   });
 
   testWidgets('first splash flow reaches onboarding', (tester) async {
@@ -41,7 +26,6 @@ void main() {
 
     await tester.pump(AppConstants.initialSplashDuration);
     await tester.pump(const Duration(milliseconds: 250));
-    await tester.pump(AppConstants.brandRevealDuration);
     await tester.pumpAndSettle();
 
     expect(find.byType(OnboardingPage), findsOneWidget);
@@ -92,7 +76,6 @@ void main() {
     await tester.pump(AppConstants.initialSplashDuration);
 
     expect(tester.takeException(), isNull);
-    expect(find.byType(BrandRevealSplashPage), findsNothing);
   });
 }
 
@@ -102,7 +85,6 @@ Future<void> _reachHome(WidgetTester tester) async {
 
   await tester.pump(AppConstants.initialSplashDuration);
   await tester.pump(const Duration(milliseconds: 250));
-  await tester.pump(AppConstants.brandRevealDuration);
   await tester.pumpAndSettle();
 
   if (find.byType(OnboardingPage).evaluate().isNotEmpty) {
