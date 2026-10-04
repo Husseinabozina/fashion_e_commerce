@@ -1,0 +1,16 @@
+{
+  "name": "nova-firebase-verification",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:rules": "node --test rules.test.mjs",
+    "seed": "node seed.mjs"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "5.0.2",
+    "firebase": "12.19.0",
+    "firebase-tools": "15.32.1",
+    "@google-cloud/firestore": "9.3.0",
+    "google-auth-library": "11.1.0"
+  }
+}

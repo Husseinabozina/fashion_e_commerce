@@ -1,55 +1,136 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fashion_e_commerce/core/config/app_icons.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class AppTheme {
-  static TextStyle? heading1TextStyle({Color color = AppTheme.colorText7}) =>
-      mainTextStyle(
-          color: color, fontSize: font36.sp, fontWeight: fontWeightBold);
-  static TextStyle? heading2TextStyle({Color color = AppTheme.colorText1}) =>
-      mainTextStyle(
-          color: color, fontSize: font24.sp, fontWeight: fontWeightBold);
-  static TextStyle? heading3TextStyle({Color color = AppTheme.colorText1}) =>
-      mainTextStyle(
-          color: color, fontSize: font20.sp, fontWeight: fontWeightBold);
-  static TextStyle? font16TextStyle({Color color = AppTheme.colorText1}) =>
-      mainTextStyle(
-          color: color, fontSize: font20.sp, fontWeight: fontWeightBold);
-  static TextStyle? font14TextStyle({Color color = AppTheme.colorText1}) =>
-      mainTextStyle(
-          color: color, fontSize: font20.sp, fontWeight: fontWeightBold);
-  static TextStyle? mainTextStyle(
-          {Color? color, double? fontSize, FontWeight? fontWeight}) =>
-      TextStyle(color: color, fontSize: fontSize, fontWeight: fontWeight);
+abstract final class AppColors {
+  static const nearBlack = Color(0xFF0A0A0A);
+  static const offWhite = Color(0xFFF5F5F2);
+  static const concrete = Color(0xFFC9C9C4);
+  static const darkGray = Color(0xFF242424);
+  static const midGray = Color(0xFF62625E);
+  static const acidLime = Color(0xFFC8FF1E);
+  static const white = Colors.white;
+}
 
-  //font
-  static const double font36 = 36;
-  static const double font24 = 24;
-  static const double font20 = 20;
-  static const double font18 = 18;
-  static const double font17 = 14;
-  static const double font16 = 12;
-  static const double font15 = 15;
-  static const double font14 = 14;
-  static const double font13 = 9;
-  static const double font12 = 12;
-  //app color
-  static const Color colorPrimary = Color(0xFFDD8560);
-  static const Color colorSecondary = Color(0xFF4D4D4D);
-  static const Color colorText1 = Colors.black;
-  static const Color colorText2 = Color(0xFFA1A8B0);
-  static const Color colorText3 = Color(0xFF858585);
-  static const Color colorText4 = Color(0xFF717784);
-  static const Color colorText5 = Color(0xFF727272);
-  static const Color colorText6 = Color(0xFF3B4453);
+abstract final class AppTheme {
+  static const Color colorPrimary = AppColors.acidLime;
+  static const Color colorSecondary = AppColors.nearBlack;
 
-  static const Color colorText7 = Colors.white;
+  static TextStyle display({
+    double fontSize = 48,
+    Color color = AppColors.nearBlack,
+  }) {
+    return GoogleFonts.syne(
+      fontSize: fontSize,
+      fontWeight: FontWeight.w800,
+      height: 0.9,
+      letterSpacing: -1.2,
+      color: color,
+    );
+  }
 
-  //fontWeight
-  static const fontWeightLight = FontWeight.w300;
-  static const fontWeightnomral = FontWeight.w400;
-  static const fontWeightMedium = FontWeight.w500;
-  static const fontWeightSemiBold = FontWeight.w600;
-  static const fontWeightBold = FontWeight.w700;
-  static const fontWeightExtraBold = FontWeight.w800;
-  static const fontWeightBlack = FontWeight.w900;
+  static TextStyle displayFor(
+    BuildContext context, {
+    double fontSize = 48,
+    Color color = AppColors.nearBlack,
+  }) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
+    if (isArabic) {
+      return GoogleFonts.ibmPlexSansArabic(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w700,
+        height: 1.05,
+        color: color,
+      );
+    }
+
+    return display(fontSize: fontSize, color: color);
+  }
+
+  static ThemeData lightThemeFor(Locale locale) {
+    final isArabic = locale.languageCode == 'ar';
+    final textTheme = (isArabic
+            ? GoogleFonts.ibmPlexSansArabicTextTheme()
+            : GoogleFonts.archivoTextTheme())
+        .apply(
+      bodyColor: AppColors.nearBlack,
+      displayColor: AppColors.nearBlack,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      scaffoldBackgroundColor: AppColors.offWhite,
+      colorScheme: const ColorScheme.light(
+        primary: AppColors.nearBlack,
+        onPrimary: AppColors.white,
+        primaryContainer: AppColors.acidLime,
+        onPrimaryContainer: AppColors.nearBlack,
+        secondary: AppColors.nearBlack,
+        onSecondary: AppColors.white,
+        secondaryContainer: AppColors.acidLime,
+        onSecondaryContainer: AppColors.nearBlack,
+        surface: AppColors.offWhite,
+        onSurface: AppColors.nearBlack,
+      ),
+      textTheme: textTheme,
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.acidLime,
+          foregroundColor: AppColors.nearBlack,
+        ),
+      ),
+      actionIconTheme: ActionIconThemeData(
+        // Phosphor arrows mirror automatically in RTL.
+        backButtonIconBuilder: (_) => Icon(AppIcons.arrowLeft),
+        closeButtonIconBuilder: (_) => Icon(AppIcons.close),
+      ),
+      appBarTheme: AppBarTheme(
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: AppColors.offWhite,
+        foregroundColor: AppColors.nearBlack,
+        titleTextStyle: textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w800,
+          color: AppColors.nearBlack,
+        ),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        elevation: 0,
+        height: 68,
+        backgroundColor: AppColors.white,
+        indicatorColor: Colors.transparent,
+        iconTheme: WidgetStateProperty.resolveWith<IconThemeData>(
+          (states) => IconThemeData(
+            color: states.contains(WidgetState.selected)
+                ? AppColors.nearBlack
+                : AppColors.midGray,
+            size: 22,
+          ),
+        ),
+        labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>(
+          (states) => TextStyle(
+            color: states.contains(WidgetState.selected)
+                ? AppColors.nearBlack
+                : AppColors.midGray,
+            fontSize: 11,
+            fontWeight: states.contains(WidgetState.selected)
+                ? FontWeight.w800
+                : FontWeight.w600,
+          ),
+        ),
+      ),
+      dividerColor: AppColors.nearBlack.withValues(alpha: 0.12),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+
+  static ThemeData get lightTheme => lightThemeFor(const Locale('en'));
 }

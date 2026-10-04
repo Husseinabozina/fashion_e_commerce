@@ -1,0 +1,183 @@
+{
+  "catalog/settings": {
+    "categories": [
+      "Sneakers",
+      "Hoodies",
+      "Jackets",
+      "T-Shirts",
+      "Bags"
+    ]
+  },
+  "products/nb-9060": {
+    "brand": "NEW BALANCE",
+    "name": "9060",
+    "category": "Sneakers",
+    "price": 3499.0,
+    "previousPrice": 3999.0,
+    "imageUrl": "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=900&q=80",
+    "colors": [
+      "Black",
+      "Grey",
+      "Sand"
+    ],
+    "sizes": [
+      "40",
+      "41",
+      "42",
+      "43",
+      "44"
+    ],
+    "outOfStockSizes": [
+      "44"
+    ],
+    "fit": "Regular fit",
+    "description": "A layered street runner with an oversized sole and everyday cushioning.",
+    "isNew": true,
+    "catalogOrder": 0
+  },
+  "products/nike-air": {
+    "brand": "NIKE",
+    "name": "Air Max Essential",
+    "category": "Sneakers",
+    "price": 2999.0,
+    "previousPrice": null,
+    "imageUrl": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
+    "colors": [
+      "Red",
+      "White"
+    ],
+    "sizes": [
+      "40",
+      "41",
+      "42",
+      "43"
+    ],
+    "outOfStockSizes": [],
+    "fit": "True to size",
+    "description": "A clean everyday sneaker with visible cushioning and a bold color story.",
+    "isNew": true,
+    "catalogOrder": 1
+  },
+  "products/street-01": {
+    "brand": "NOVA SELECT",
+    "name": "Street Runner 01",
+    "category": "Sneakers",
+    "price": 2799.0,
+    "previousPrice": null,
+    "imageUrl": "https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=900&q=80",
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "41",
+      "42",
+      "43",
+      "44"
+    ],
+    "outOfStockSizes": [],
+    "fit": "Regular fit",
+    "description": "Minimal street runner selected for daily rotation and clean styling.",
+    "isNew": false,
+    "catalogOrder": 2
+  },
+  "products/street-02": {
+    "brand": "NOVA SELECT",
+    "name": "Court Low 02",
+    "category": "Sneakers",
+    "price": 3199.0,
+    "previousPrice": null,
+    "imageUrl": "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=900&q=80",
+    "colors": [
+      "White",
+      "Grey"
+    ],
+    "sizes": [
+      "39",
+      "40",
+      "41",
+      "42",
+      "43"
+    ],
+    "outOfStockSizes": [],
+    "fit": "Slightly narrow",
+    "description": "Low-profile court styling with a clean upper and versatile neutral finish.",
+    "isNew": false,
+    "catalogOrder": 3
+  },
+  "products/hoodie-01": {
+    "brand": "NOVA SELECT",
+    "name": "Heavyweight Logo Hoodie",
+    "category": "Hoodies",
+    "price": 1899.0,
+    "previousPrice": null,
+    "imageUrl": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=900&q=80",
+    "colors": [
+      "Black",
+      "Grey"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "outOfStockSizes": [],
+    "fit": "Oversized fit",
+    "description": "Heavyweight brushed cotton hoodie cut oversized for street layering.",
+    "isNew": true,
+    "catalogOrder": 4
+  },
+  "products/jacket-01": {
+    "brand": "NOVA SELECT",
+    "name": "Utility Overshirt",
+    "category": "Jackets",
+    "price": 2399.0,
+    "previousPrice": null,
+    "imageUrl": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=900&q=80",
+    "colors": [
+      "Olive",
+      "Black"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "outOfStockSizes": [],
+    "fit": "Relaxed fit",
+    "description": "Structured utility layer with roomy pockets and a relaxed silhouette.",
+    "isNew": false,
+    "catalogOrder": 5
+  },
+  "brands/new-balance": {
+    "name": "NEW BALANCE",
+    "tagline": "GREY DAYS. FUTURE FORWARD.",
+    "description": "Performance roots, everyday comfort and layered street silhouettes."
+  },
+  "brands/nike": {
+    "name": "NIKE",
+    "tagline": "MOVE DIFFERENT.",
+    "description": "Sport-driven design translated into everyday street rotation."
+  },
+  "brands/nova-select": {
+    "name": "NOVA SELECT",
+    "tagline": "CURATED FOR THE ROTATION.",
+    "description": "A tight edit of street essentials, utility layers and daily footwear."
+  },
+  "promotions/STREET10": {
+    "title": "Street Drop 10%",
+    "type": "percentage",
+    "value": 10,
+    "minimumSubtotal": 1500,
+    "maximumDiscount": 700
+  },
+  "promotions/NOVA500": {
+    "title": "NOVA 500 EGP Off",
+    "type": "fixed",
+    "value": 500,
+    "minimumSubtotal": 4000,
+    "maximumDiscount": null
+  }
+}

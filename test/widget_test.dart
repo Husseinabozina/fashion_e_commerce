@@ -1,30 +1,96 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:fashion_e_commerce/app/app.dart';
+import 'package:fashion_e_commerce/core/config/app_constants.dart';
+import 'package:fashion_e_commerce/core/di/service_locator.dart';
+import 'package:fashion_e_commerce/features/catalog/presentation/pages/home_page.dart';
+import 'package:fashion_e_commerce/features/catalog/presentation/pages/product_details_page.dart';
+import 'package:fashion_e_commerce/features/onboarding/presentation/pages/onboarding_page.dart';
+import 'package:fashion_e_commerce/features/splash/presentation/pages/initial_splash_page.dart';
+import 'package:fashion_e_commerce/core/branding/nova_logo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:fashion_e_commerce/main.dart';
-
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  setUpAll(configureDependencies);
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets('app starts on the initial splash page', (tester) async {
+    await tester.pumpWidget(const FashionApp());
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.byType(InitialSplashPage), findsOneWidget);
+    expect(find.byType(BrandLogo), findsOneWidget);
   });
+
+  testWidgets('first splash flow reaches onboarding', (tester) async {
+    await tester.pumpWidget(const FashionApp());
+    await tester.pump();
+
+    await tester.pump(AppConstants.initialSplashDuration);
+    await tester.pump(const Duration(milliseconds: 250));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(OnboardingPage), findsOneWidget);
+    expect(find.text('BUILD YOUR\nROTATION.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('product card opens product details', (tester) async {
+    await _reachHome(tester);
+
+    await tester.drag(
+      find.byType(ListView).first,
+      const Offset(0, -520),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('9060'), findsOneWidget);
+
+    await tester.tap(find.text('9060'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ProductDetailsPage), findsOneWidget);
+
+    await tester.drag(
+      find.byType(ListView).last,
+      const Offset(0, -430),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('SELECT SIZE'), findsOneWidget);
+    expect(find.text('SELECT A SIZE'), findsOneWidget);
+
+    await tester.tap(find.text('42').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('ADD TO BAG  →'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('disposing initial splash cancels delayed navigation',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: InitialSplashPage()),
+    );
+
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
+    await tester.pump(AppConstants.initialSplashDuration);
+
+    expect(tester.takeException(), isNull);
+  });
+}
+
+Future<void> _reachHome(WidgetTester tester) async {
+  await tester.pumpWidget(const FashionApp());
+  await tester.pump();
+
+  await tester.pump(AppConstants.initialSplashDuration);
+  await tester.pump(const Duration(milliseconds: 250));
+  await tester.pumpAndSettle();
+
+  if (find.byType(OnboardingPage).evaluate().isNotEmpty) {
+    await tester.tap(find.text('SKIP FOR NOW'));
+    await tester.pumpAndSettle();
+  }
+
+  expect(find.byType(HomePage), findsOneWidget);
 }
