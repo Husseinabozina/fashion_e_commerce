@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://husseinabozina.github.io/fashion_e_commerce/sitemap.xml

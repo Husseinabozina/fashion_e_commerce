@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>NOVA — Style in motion · Flutter case study</title>
+    <meta
+      name="description"
+      content="Explore NOVA, a Flutter fashion app by Hussein Abozina. Editorial shopping, a custom motion identity, Firebase accounts and MyFatoorah sandbox checkout."
+    />
+    <meta name="theme-color" content="#0a0a0a" />
+    <link
+      rel="canonical"
+      href="https://husseinabozina.github.io/fashion_e_commerce/"
+    />
+    <meta property="og:title" content="NOVA — Style in motion" />
+    <meta
+      property="og:description"
+      content="A fashion storefront with a point of view. Explore the Flutter product, its motion identity and the engineering behind it."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://husseinabozina.github.io/fashion_e_commerce/"
+    />
+    <meta
+      property="og:image"
+      content="https://husseinabozina.github.io/fashion_e_commerce/assets/brand/social-cover.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="assets/brand/nova-mark.svg" />
+    <link
+      rel="preload"
+      href="assets/brand/Syne.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="header">
+      <a class="wordmark" href="#" aria-label="NOVA home"
+        ><img
+          src="assets/brand/nova-mark.svg"
+          width="25"
+          height="28"
+          alt=""
+        />NOVA</a
+      >
+      <nav aria-label="Main navigation">
+        <a href="#experience">Experience</a><a href="#film">Film</a
+        ><a href="#engineering">Engineering</a>
+      </nav>
+      <a
+        class="source-link"
+        href="https://github.com/Husseinabozina/fashion_e_commerce"
+        >Source code <span aria-hidden="true">↗</span></a
+      >
+    </header>
+    <main id="main">
+      <section class="hero wrap" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">
+            <span class="dot"></span> A FLUTTER PRODUCT BY HUSSEIN ABOZINA
+          </p>
+          <h1 id="hero-title">STYLE<br />IN <span>MOTION.</span></h1>
+          <p class="lead">
+            A fashion storefront with a point of view.<br />From the first fold
+            to the final checkout.
+          </p>
+          <p class="intro">
+            NOVA brings an editorial streetwear identity to a connected mobile
+            shopping experience — with saved pieces, personal accounts and a
+            working sandbox payment flow.
+          </p>
+          <div class="actions">
+            <a class="button lime" href="#film"
+              >Watch the app <span aria-hidden="true">↗</span></a
+            ><a class="text-link" href="#experience"
+              >Explore the experience <span aria-hidden="true">↓</span></a
+            >
+          </div>
+          <p class="hero-meta">
+            Flutter / Firebase / Arabic + English / iOS + Android
+          </p>
+        </div>
+        <div class="hero-stage" aria-label="NOVA home and discovery screens">
+          <div class="orbit-label">NOVA / COLLECTION 026</div>
+          <div class="phone phone-back">
+            <img
+              src="assets/screens/discover.png"
+              width="1206"
+              height="2622"
+              alt="Dark Discover screen with an editorial product feature"
+            />
+          </div>
+          <div class="phone phone-front">
+            <img
+              src="assets/screens/home.png"
+              width="1206"
+              height="2622"
+              alt="NOVA home screen with Drop 026 and new arrivals"
+              fetchpriority="high"
+            />
+          </div>
+          <div class="stage-caption">
+            <span>01 — THE STOREFRONT</span><span>REAL APP CAPTURES</span>
+          </div>
+        </div>
+      </section>
+      <div class="ribbon" aria-label="Project capabilities">
+        <span>EDITORIAL COMMERCE</span><i aria-hidden="true">✳</i
+        ><span>CONNECTED FLOWS</span><i aria-hidden="true">✳</i
+        ><span>CRAFTED IN FLUTTER</span><i aria-hidden="true">✳</i
+        ><span>STYLE IN MOTION</span>
+      </div>
+      <section
+        id="experience"
+        class="experience section"
+        aria-labelledby="experience-title"
+      >
+        <div class="wrap">
+          <div class="section-heading">
+            <p class="eyebrow">01 / THE EXPERIENCE</p>
+            <h2 id="experience-title">
+              A whole journey.<br /><span class="muted">In every detail.</span>
+            </h2>
+            <p>
+              Browse freely. Find a piece. Build a look. Keep it saved.<br />A
+              consistent visual language connects each step.
+            </p>
+          </div>
+          <div class="experience-layout">
+            <div
+              class="experience-list"
+              role="tablist"
+              aria-label="Explore app screens"
+              aria-orientation="vertical"
+            >
+              <button
+                class="experience-tab active"
+                role="tab"
+                id="tab-home"
+                aria-selected="true"
+                aria-controls="screen-panel"
+                data-screen="home"
+              >
+                <span class="step">01</span
+                ><span
+                  ><strong>Discover the drop</strong
+                  ><small
+                    >Editorial home, new arrivals and categories.</small
+                  ></span
+                ><span aria-hidden="true">↗</span>
+              </button>
+              <button
+                class="experience-tab"
+                role="tab"
+                id="tab-discover"
+                aria-selected="false"
+                tabindex="-1"
+                aria-controls="screen-panel"
+                data-screen="discover"
+              >
+                <span class="step">02</span
+                ><span
+                  ><strong>Find your rotation</strong
+                  ><small>A contrasting dark Discover experience.</small></span
+                ><span aria-hidden="true">↗</span>
+              </button>
+              <button
+                class="experience-tab"
+                role="tab"
+                id="tab-bag"
+                aria-selected="false"
+                tabindex="-1"
+                aria-controls="screen-panel"
+                data-screen="bag"
+              >
+                <span class="step">03</span
+                ><span
+                  ><strong>Make it yours</strong
+                  ><small
+                    >Sizes, quantities, promotions and clear totals.</small
+                  ></span
+                ><span aria-hidden="true">↗</span>
+              </button>
+              <button
+                class="experience-tab"
+                role="tab"
+                id="tab-account"
+                aria-selected="false"
+                tabindex="-1"
+                aria-controls="screen-panel"
+                data-screen="account"
+              >
+                <span class="step">04</span
+                ><span
+                  ><strong>Keep your world close</strong
+                  ><small
+                    >Guest browsing, saved pieces and personal data.</small
+                  ></span
+                ><span aria-hidden="true">↗</span>
+              </button>
+              <button
+                class="experience-tab"
+                role="tab"
+                id="tab-confirmation"
+                aria-selected="false"
+                tabindex="-1"
+                aria-controls="screen-panel"
+                data-screen="confirmation"
+              >
+                <span class="step">05</span
+                ><span
+                  ><strong>Close the loop</strong
+                  ><small
+                    >A clear demo receipt after order submission.</small
+                  ></span
+                ><span aria-hidden="true">↗</span>
+              </button>
+            </div>
+            <div
+              class="screen-stage"
+              id="screen-panel"
+              role="tabpanel"
+              aria-labelledby="tab-home"
+            >
+              <span class="screen-index" aria-hidden="true">01</span
+              ><button class="screen-zoom" aria-label="Enlarge home screenshot">
+                <img
+                  id="active-screen"
+                  src="assets/screens/home.png"
+                  width="1206"
+                  height="2622"
+                  alt="NOVA home — Drop 026, new arrivals and navigation"
+                  loading="lazy"
+                />
+              </button>
+              <p class="screen-hint">
+                SELECT A CHAPTER · TAP SCREEN TO ENLARGE
+              </p>
+            </div>
+          </div>
+          <noscript
+            ><p>
+              JavaScript is disabled.
+              <a href="assets/screens/home.png">Home</a> ·
+              <a href="assets/screens/discover.png">Discover</a> ·
+              <a href="assets/screens/bag.png">Bag</a> ·
+              <a href="assets/screens/account.png">Account</a> ·
+              <a href="assets/screens/confirmation.png">Confirmation</a>
+            </p></noscript
+          >
+        </div>
+      </section>
+      <section id="film" class="film section">
+        <div class="wrap film-layout">
+          <div>
+            <p class="eyebrow">02 / SEE IT MOVE</p>
+            <h2>THE APP.<br /><span class="lime-text">IN ACTION.</span></h2>
+            <p class="lead">A 50-second look inside NOVA.</p>
+            <p class="body-copy">
+              Recorded from the running Flutter app on an iPhone simulator.
+              Follow the launch, browse the collection and explore product
+              details, sizes and complete-the-look suggestions.
+            </p>
+            <a
+              class="text-link"
+              href="assets/video/nova-walkthrough.mp4"
+              download
+              >Download the film <span aria-hidden="true">↓</span></a
+            >
+            <div class="film-note">
+              <span>ACTUAL APP FOOTAGE</span>
+              <p>
+                This cut focuses on browsing and product selection. The sandbox
+                payment integration is documented separately below.
+              </p>
+            </div>
+          </div>
+          <div class="video-shell">
+            <video
+              controls
+              playsinline
+              preload="none"
+              poster="assets/screens/home.png"
+              aria-label="NOVA app walkthrough: launch, browsing and product selection"
+            >
+              <source
+                src="assets/video/nova-walkthrough.mp4"
+                type="video/mp4"
+              />
+              <p>
+                <a href="assets/video/nova-walkthrough.mp4"
+                  >Download the NOVA walkthrough</a
+                >
+              </p></video
+            ><span class="video-caption"
+              >NOVA / IPHONE SIMULATOR / 00:50 · SILENT</span
+            >
+          </div>
+        </div>
+      </section>
+      <section class="identity section">
+        <div class="wrap identity-layout">
+          <div class="identity-art">
+            <img
+              class="brand-symbol"
+              src="assets/brand/nova-mark.svg"
+              width="300"
+              height="300"
+              alt="NOVA Fold: a ribbon-like N with a diagonal seam"
+            /><span class="identity-word">NOVA</span
+            ><span class="identity-tag">STYLE IN MOTION</span>
+          </div>
+          <div>
+            <p class="eyebrow">03 / THE IDENTITY</p>
+            <h2>A fold.<br />A direction.<br />A signature.</h2>
+            <p class="body-copy">
+              Three shapes form one distinctive N. A diagonal seam suggests
+              folded fabric and movement, carrying the streetwear character from
+              the launcher icon into the app.
+            </p>
+            <p class="body-copy">
+              The native splash and Flutter launch share the same mark. A finite
+              1.6-second reveal introduces the wordmark; reduced-motion
+              preferences show the final identity immediately.
+            </p>
+            <div class="swatches" aria-label="Brand colors">
+              <span><i style="background: #c8ff1e"></i>ACID LIME</span
+              ><span><i style="background: #0a0a0a"></i>INK</span
+              ><span><i style="background: #f5f5f2"></i>OFF-WHITE</span>
+            </div>
+            <a
+              class="text-link"
+              href="https://github.com/Husseinabozina/fashion_e_commerce/blob/master/docs/branding/README.md"
+              >Explore the identity system ↗</a
+            >
+          </div>
+        </div>
+      </section>
+      <section id="engineering" class="engineering section">
+        <div class="wrap">
+          <div class="section-heading">
+            <p class="eyebrow">04 / UNDER THE SURFACE</p>
+            <h2>Designed to browse.<br />Built to inspect.</h2>
+            <p>
+              The visual experience is backed by explicit state, data
+              boundaries<br />and tests for the moments where commerce flows get
+              difficult.
+            </p>
+          </div>
+          <div class="engineering-grid">
+            <article>
+              <span class="eng-no">01 / STRUCTURE</span>
+              <h3>Features with boundaries.</h3>
+              <p>
+                Flutter presentation and Cubits sit above domain contracts.
+                Firebase and in-memory adapters are composed centrally, so the
+                showcase can run with either data source.
+              </p>
+              <a
+                href="https://github.com/Husseinabozina/fashion_e_commerce/blob/master/docs/architecture/clean_architecture.md"
+                >Read the architecture ↗</a
+              >
+            </article>
+            <article>
+              <span class="eng-no">02 / IDENTITY & DATA</span>
+              <h3>Personal means personal.</h3>
+              <p>
+                Anonymous guests can link an email account. Account changes
+                reset personal state; Firestore rules separate users and protect
+                catalog prices and demo receipts.
+              </p>
+              <a
+                href="https://github.com/Husseinabozina/fashion_e_commerce/blob/master/test/firebase_data_test.dart"
+                >Inspect persistence tests ↗</a
+              >
+            </article>
+            <article>
+              <span class="eng-no">03 / SANDBOX CHECKOUT</span>
+              <h3>Verify. Then confirm.</h3>
+              <p>
+                MyFatoorah hosts the test payment. NOVA verifies invoice
+                identity, reference, amount and status before saving a demo
+                order. Retry handling avoids duplicate receipts.
+              </p>
+              <a
+                href="https://github.com/Husseinabozina/fashion_e_commerce/blob/master/docs/sandbox-payments.md"
+                >Read the payment flow ↗</a
+              >
+            </article>
+            <article>
+              <span class="eng-no">04 / CONFIDENCE</span>
+              <h3>Test the edges.</h3>
+              <p>
+                Coverage includes payment failures, session changes, checkout
+                retries, Arabic layouts, launch motion and security rules.
+                GitHub Actions runs the Flutter, emulator and function suites.
+              </p>
+              <a
+                href="https://github.com/Husseinabozina/fashion_e_commerce/actions/workflows/flutter_quality.yml"
+                >View the quality checks ↗</a
+              >
+            </article>
+          </div>
+          <div class="architecture" aria-label="Architecture flow">
+            <span>SCREENS + CUBITS</span><b aria-hidden="true">→</b
+            ><span>DOMAIN CONTRACTS</span><b aria-hidden="true">←</b
+            ><span>FIREBASE / DEMO DATA</span>
+          </div>
+        </div>
+      </section>
+      <section class="scope section">
+        <div class="wrap scope-layout">
+          <div>
+            <p class="eyebrow">05 / PROJECT SCOPE</p>
+            <h2>Explore it.<br />Know its scope.</h2>
+            <p class="body-copy">
+              NOVA is a portfolio application with sample catalog data and
+              virtual transactions. It demonstrates product design and
+              implementation without operating a real store.
+            </p>
+            <div class="actions">
+              <a
+                class="button dark"
+                href="https://github.com/Husseinabozina/fashion_e_commerce#run-locally"
+                >Run the project ↗</a
+              ><a
+                class="text-link"
+                href="https://github.com/Husseinabozina/fashion_e_commerce/releases"
+                >Android releases ↗</a
+              >
+            </div>
+            <p class="small">
+              The October 3 Android release is an earlier sandbox snapshot and
+              predates the current identity shown here. Build from source for
+              the current version.
+            </p>
+          </div>
+          <div class="scope-details">
+            <details open>
+              <summary>
+                What works in this demo <span aria-hidden="true">+</span>
+              </summary>
+              <p>
+                Browsing, search, saved products, bag changes, promotions,
+                addresses, accounts and demo order receipts. Firebase-backed
+                state and a separate in-memory showcase mode are available.
+                Arabic and English are supported.
+              </p>
+            </details>
+            <details>
+              <summary>
+                How test payments work <span aria-hidden="true">+</span>
+              </summary>
+              <p>
+                The public MyFatoorah sandbox uses a fixed virtual 1 KWD charge,
+                separate from the sample EGP basket total. No real money moves.
+                NOVA must be open to verify the result; there is no background
+                payment webhook. Availability depends on the provider.
+              </p>
+            </details>
+            <details>
+              <summary>
+                What is outside the demo <span aria-hidden="true">+</span>
+              </summary>
+              <p>
+                Live charges, stock fulfillment, real shipping and operational
+                refunds are outside this project. Push registration and
+                notification functions are implemented, but automated push
+                delivery is not deployed.
+              </p>
+            </details>
+            <details>
+              <summary>
+                About the visuals <span aria-hidden="true">+</span>
+              </summary>
+              <p>
+                Screens and footage are from the running app, captured on
+                October 5, 2026. Product images, names and prices are
+                illustrative sample content; brand labels do not imply
+                partnership or verified inventory.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+      <footer class="footer">
+        <div class="wrap">
+          <p class="eyebrow">A PROJECT BY HUSSEIN ABOZINA</p>
+          <h2>LET’S BUILD<br />SOMETHING <span>GOOD.</span></h2>
+          <div class="footer-links">
+            <a class="button lime" href="https://github.com/Husseinabozina"
+              >Meet the developer ↗</a
+            ><a href="https://husseinabozina.github.io/Brees-Mobile-App/"
+              >Brees ↗</a
+            ><a href="https://husseinabozina.github.io/medical_app/"
+              >HealthTrack ↗</a
+            ><a href="https://github.com/Husseinabozina/fashion_e_commerce"
+              >NOVA source ↗</a
+            >
+          </div>
+          <div class="footer-bottom">
+            <span>NOVA / STYLE IN MOTION</span
+            ><span>FLUTTER PRODUCT CASE STUDY · 2026</span
+            ><a href="#">BACK TO TOP ↑</a>
+          </div>
+        </div>
+      </footer>
+    </main>
+    <dialog id="screenshot-dialog" aria-labelledby="dialog-title">
+      <div class="dialog-head">
+        <h2 id="dialog-title">NOVA — Home</h2>
+        <button id="close-dialog" aria-label="Close screenshot">Close ×</button>
+      </div>
+      <img id="dialog-image" width="1206" height="2622" alt="" />
+      <p>
+        <a
+          id="original-link"
+          href="assets/screens/home.png"
+          target="_blank"
+          rel="noopener"
+          >Open original screenshot ↗</a
+        >
+      </p>
+    </dialog>
+  </body>
+</html>
