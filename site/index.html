@@ -6,7 +6,7 @@
     <title>NOVA — Style in motion · Flutter case study</title>
     <meta
       name="description"
-      content="Explore NOVA, a Flutter fashion app by Hussein Abozina. Editorial shopping, a custom motion identity, Firebase accounts and MyFatoorah sandbox checkout."
+      content="Explore NOVA, a Flutter fashion app by Hussein Abozina. Editorial shopping, a distinctive motion identity and a connected mobile experience."
     />
     <meta name="theme-color" content="#0a0a0a" />
     <link
@@ -52,7 +52,7 @@
       >
       <nav aria-label="Main navigation">
         <a href="#experience">Experience</a><a href="#film">Film</a
-        ><a href="#engineering">Engineering</a>
+        ><a href="#craft">The details</a>
       </nav>
       <a
         class="source-link"
@@ -74,7 +74,7 @@
           <p class="intro">
             NOVA brings an editorial streetwear identity to a connected mobile
             shopping experience — with saved pieces, personal accounts and a
-            working sandbox payment flow.
+            considered checkout experience.
           </p>
           <div class="actions">
             <a class="button lime" href="#film"
@@ -83,9 +83,7 @@
               >Explore the experience <span aria-hidden="true">↓</span></a
             >
           </div>
-          <p class="hero-meta">
-            Flutter / Firebase / Arabic + English / iOS + Android
-          </p>
+          <p class="hero-meta">Arabic + English / iOS + Android</p>
         </div>
         <div class="hero-stage" aria-label="NOVA home and discovery screens">
           <div class="orbit-label">NOVA / COLLECTION 026</div>
@@ -270,15 +268,15 @@
             </p>
             <a
               class="text-link"
-              href="assets/video/nova-walkthrough.mp4"
+              href="assets/video/nova-walkthrough.mp4?v=1080"
               download
               >Download the film <span aria-hidden="true">↓</span></a
             >
             <div class="film-note">
               <span>ACTUAL APP FOOTAGE</span>
               <p>
-                This cut focuses on browsing and product selection. The sandbox
-                payment integration is documented separately below.
+                From opening the app to choosing a piece — the interface,
+                transitions and interactions are captured as they happen.
               </p>
             </div>
           </div>
@@ -291,16 +289,16 @@
               aria-label="NOVA app walkthrough: launch, browsing and product selection"
             >
               <source
-                src="assets/video/nova-walkthrough.mp4"
+                src="assets/video/nova-walkthrough.mp4?v=1080"
                 type="video/mp4"
               />
               <p>
-                <a href="assets/video/nova-walkthrough.mp4"
+                <a href="assets/video/nova-walkthrough.mp4?v=1080"
                   >Download the NOVA walkthrough</a
                 >
               </p></video
             ><span class="video-caption"
-              >NOVA / IPHONE SIMULATOR / 00:50 · SILENT</span
+              >NOVA / IPHONE SIMULATOR / 00:50 · 1080 HD · SILENT</span
             >
           </div>
         </div>
@@ -343,150 +341,83 @@
           </div>
         </div>
       </section>
-      <section id="engineering" class="engineering section">
+      <section id="craft" class="engineering section">
         <div class="wrap">
           <div class="section-heading">
-            <p class="eyebrow">04 / UNDER THE SURFACE</p>
-            <h2>Designed to browse.<br />Built to inspect.</h2>
+            <p class="eyebrow">04 / THE DETAILS</p>
+            <h2>Made to feel<br />like one experience.</h2>
             <p>
-              The visual experience is backed by explicit state, data
-              boundaries<br />and tests for the moments where commerce flows get
-              difficult.
+              From discovering a collection to saving a favorite,<br />the small
+              decisions make the journey feel connected.
             </p>
           </div>
           <div class="engineering-grid">
             <article>
-              <span class="eng-no">01 / STRUCTURE</span>
-              <h3>Features with boundaries.</h3>
+              <span class="eng-no">01 / DISCOVERY</span>
+              <h3>Find your next favorite.</h3>
               <p>
-                Flutter presentation and Cubits sit above domain contracts.
-                Firebase and in-memory adapters are composed centrally, so the
-                showcase can run with either data source.
+                Editorial collections, clear categories and product search give
+                shoppers different ways to find a piece that fits their style.
               </p>
-              <a
-                href="https://github.com/Husseinabozina/fashion_e_commerce/blob/master/docs/architecture/clean_architecture.md"
-                >Read the architecture ↗</a
-              >
             </article>
             <article>
-              <span class="eng-no">02 / IDENTITY & DATA</span>
-              <h3>Personal means personal.</h3>
+              <span class="eng-no">02 / PERSONAL SPACE</span>
+              <h3>Keep the good finds.</h3>
               <p>
-                Anonymous guests can link an email account. Account changes
-                reset personal state; Firestore rules separate users and protect
-                catalog prices and demo receipts.
+                Saved pieces, followed brands and recently viewed products make
+                it easy to return to something that caught your eye.
               </p>
-              <a
-                href="https://github.com/Husseinabozina/fashion_e_commerce/blob/master/test/firebase_data_test.dart"
-                >Inspect persistence tests ↗</a
-              >
             </article>
             <article>
-              <span class="eng-no">03 / SANDBOX CHECKOUT</span>
-              <h3>Verify. Then confirm.</h3>
+              <span class="eng-no">03 / THE JOURNEY</span>
+              <h3>From a piece to a look.</h3>
               <p>
-                MyFatoorah hosts the test payment. NOVA verifies invoice
-                identity, reference, amount and status before saving a demo
-                order. Retry handling avoids duplicate receipts.
+                Choose colors and sizes, explore outfit suggestions and manage
+                everything in one bag before moving through checkout.
               </p>
-              <a
-                href="https://github.com/Husseinabozina/fashion_e_commerce/blob/master/docs/sandbox-payments.md"
-                >Read the payment flow ↗</a
-              >
             </article>
             <article>
-              <span class="eng-no">04 / CONFIDENCE</span>
-              <h3>Test the edges.</h3>
+              <span class="eng-no">04 / EVERY TOUCH</span>
+              <h3>A consistent rhythm.</h3>
               <p>
-                Coverage includes payment failures, session changes, checkout
-                retries, Arabic layouts, launch motion and security rules.
-                GitHub Actions runs the Flutter, emulator and function suites.
+                A shared visual identity, considered transitions and Arabic and
+                English layouts carry the same character throughout the app.
               </p>
-              <a
-                href="https://github.com/Husseinabozina/fashion_e_commerce/actions/workflows/flutter_quality.yml"
-                >View the quality checks ↗</a
-              >
             </article>
-          </div>
-          <div class="architecture" aria-label="Architecture flow">
-            <span>SCREENS + CUBITS</span><b aria-hidden="true">→</b
-            ><span>DOMAIN CONTRACTS</span><b aria-hidden="true">←</b
-            ><span>FIREBASE / DEMO DATA</span>
           </div>
         </div>
       </section>
-      <section class="scope section">
+      <section id="download" class="scope section">
         <div class="wrap scope-layout">
           <div>
-            <p class="eyebrow">05 / PROJECT SCOPE</p>
-            <h2>Explore it.<br />Know its scope.</h2>
+            <p class="eyebrow">05 / TRY NOVA</p>
+            <h2>See it.<br />Feel it.<br />Explore it.</h2>
             <p class="body-copy">
-              NOVA is a portfolio application with sample catalog data and
-              virtual transactions. It demonstrates product design and
-              implementation without operating a real store.
+              Take the experience beyond the screenshots. Explore the
+              collection, save a favorite and try the journey on your Android
+              phone.
             </p>
             <div class="actions">
               <a
                 class="button dark"
-                href="https://github.com/Husseinabozina/fashion_e_commerce#run-locally"
-                >Run the project ↗</a
-              ><a
-                class="text-link"
-                href="https://github.com/Husseinabozina/fashion_e_commerce/releases"
-                >Android releases ↗</a
-              >
+                href="https://github.com/Husseinabozina/fashion_e_commerce/releases/download/nova-identity-android-v1.0.1/NOVA-1.0.1-Android.apk"
+                >Download for Android ↓</a
+              ><a class="text-link" href="#film">Watch first ↗</a>
             </div>
             <p class="small">
-              The October 3 Android release is an earlier sandbox snapshot and
-              predates the current identity shown here. Build from source for
-              the current version.
+              NOVA 1.0.1 · Portfolio demo · No real purchases.
             </p>
           </div>
-          <div class="scope-details">
-            <details open>
-              <summary>
-                What works in this demo <span aria-hidden="true">+</span>
-              </summary>
-              <p>
-                Browsing, search, saved products, bag changes, promotions,
-                addresses, accounts and demo order receipts. Firebase-backed
-                state and a separate in-memory showcase mode are available.
-                Arabic and English are supported.
-              </p>
-            </details>
-            <details>
-              <summary>
-                How test payments work <span aria-hidden="true">+</span>
-              </summary>
-              <p>
-                The public MyFatoorah sandbox uses a fixed virtual 1 KWD charge,
-                separate from the sample EGP basket total. No real money moves.
-                NOVA must be open to verify the result; there is no background
-                payment webhook. Availability depends on the provider.
-              </p>
-            </details>
-            <details>
-              <summary>
-                What is outside the demo <span aria-hidden="true">+</span>
-              </summary>
-              <p>
-                Live charges, stock fulfillment, real shipping and operational
-                refunds are outside this project. Push registration and
-                notification functions are implemented, but automated push
-                delivery is not deployed.
-              </p>
-            </details>
-            <details>
-              <summary>
-                About the visuals <span aria-hidden="true">+</span>
-              </summary>
-              <p>
-                Screens and footage are from the running app, captured on
-                October 5, 2026. Product images, names and prices are
-                illustrative sample content; brand labels do not imply
-                partnership or verified inventory.
-              </p>
-            </details>
+          <div class="identity-art">
+            <img
+              class="brand-symbol"
+              src="assets/brand/nova-mark.svg"
+              width="300"
+              height="300"
+              alt="NOVA Fold app identity"
+              loading="lazy"
+            /><span class="identity-word">NOVA</span
+            ><span class="identity-tag">TAKE THE NEXT STEP</span>
           </div>
         </div>
       </section>

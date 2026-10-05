@@ -2,17 +2,16 @@
   <img src="assets/branding/nova-mark.svg" width="72" height="72" alt="NOVA Fold mark" />
   <h1>NOVA — Style in motion.</h1>
   <p><strong>An editorial fashion experience, built in Flutter.</strong></p>
-  <p>Distinctive identity. Connected shopping flows. Firebase-backed accounts. Sandbox checkout.</p>
+  <p>Distinctive identity. Connected shopping flows. A considered mobile experience.</p>
   <p>
     <a href="https://husseinabozina.github.io/fashion_e_commerce/"><strong>Explore the portfolio ↗</strong></a> &nbsp; · &nbsp;
     <a href="https://husseinabozina.github.io/fashion_e_commerce/#film"><strong>Watch the app ↗</strong></a> &nbsp; · &nbsp;
-    <a href="#run-locally"><strong>Run locally ↓</strong></a>
+    <a href="https://github.com/Husseinabozina/fashion_e_commerce/releases/download/nova-identity-android-v1.0.1/NOVA-1.0.1-Android.apk"><strong>Download Android ↓</strong></a>
   </p>
   <p>
     <a href="https://github.com/Husseinabozina/fashion_e_commerce/actions/workflows/flutter_quality.yml"><img src="https://github.com/Husseinabozina/fashion_e_commerce/actions/workflows/flutter_quality.yml/badge.svg" alt="Flutter, Firebase and function checks" /></a>
     <img src="https://img.shields.io/badge/Flutter-3.41.9-02569B?logo=flutter&logoColor=white" alt="Tested with Flutter 3.41.9" />
     <img src="https://img.shields.io/badge/Arabic_%2B_English-0A0A0A" alt="Arabic and English" />
-    <img src="https://img.shields.io/badge/Payments-Sandbox_only-C8FF1E?labelColor=0A0A0A" alt="Sandbox payments only" />
   </p>
 </div>
 
@@ -21,8 +20,6 @@
 </a>
 
 NOVA connects the visual energy of a streetwear editorial with the practical details of mobile shopping: finding a product, choosing a size, saving a piece, managing a bag and completing a demo order. Its custom **Fold N** identity carries through the app icon, native splash and animated Flutter launch.
-
-This is a **portfolio application** with sample products and virtual transactions. It is not an operating retailer, and it does not collect real payments or fulfill orders.
 
 ## See the experience
 
@@ -45,20 +42,38 @@ These are captures from the running iPhone simulator app, supplied by the projec
 
 ## Product capabilities
 
-| Journey             | Implemented experience                                                                                      |
-| ------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Discover            | Editorial home, categories, search, product details, sizes/colors and complete-the-look suggestions         |
-| Save                | Wishlist, followed brands, recently viewed items and shopping preferences                                   |
-| Build a bag         | Variant selection, quantities, removal, promotion codes and EGP totals                                      |
-| Check out           | Address → delivery → payment → review → demo receipt                                                        |
-| Pay in a sandbox    | MyFatoorah hosted test checkout, result verification, pending/retry handling and duplicate-order protection |
-| Keep an account     | Anonymous guest sessions, email/password registration and login, password reset and account-scoped data     |
-| Localize            | English and Arabic interfaces, including RTL layouts                                                        |
-| Recognize the brand | Shared vector identity, native icons/splash and a finite launch animation with reduced-motion support       |
+| Journey             | Implemented experience                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------------------- |
+| Discover            | Editorial home, categories, search, product details, sizes/colors and complete-the-look suggestions     |
+| Save                | Wishlist, followed brands, recently viewed items and shopping preferences                               |
+| Build a bag         | Variant selection, quantities, removal, promotion codes and EGP totals                                  |
+| Check out           | Address → delivery → payment → review → order confirmation                                              |
+| Keep an account     | Anonymous guest sessions, email/password registration and login, password reset and account-scoped data |
+| Localize            | English and Arabic interfaces, including RTL layouts                                                    |
+| Recognize the brand | Shared vector identity, native icons/splash and a finite launch animation with reduced-motion support   |
 
 For clients, the project demonstrates a connected shopping experience that can be explored and reviewed. For engineering teams, its repositories, adapters and tests make the implementation decisions inspectable.
 
-## Engineering worth inspecting
+## The identity
+
+**NOVA Fold** uses three vector pieces and a diagonal seam to suggest folded fabric and forward movement. Acid lime creates a clear action color against near-black and off-white; the bundled Syne display face gives the wordmark and headlines their wide editorial character.
+
+| Ink       | Acid lime | Off-white | Motion                                               |
+| --------- | --------- | --------- | ---------------------------------------------------- |
+| `#0A0A0A` | `#C8FF1E` | `#F5F5F2` | Finite 1.6-second reveal; reduced-motion alternative |
+
+[Identity sources, design provenance and export process](docs/branding/README.md) · [Animated preview from the actual Flutter widget](site/assets/brand/launch.gif)
+
+## Try NOVA on Android
+
+**[Download NOVA 1.0.1](https://github.com/Husseinabozina/fashion_e_commerce/releases/download/nova-identity-android-v1.0.1/NOVA-1.0.1-Android.apk)** — the current Fold icon, NOVA splash and animated launch.
+
+Portfolio demo with sample content; no real purchases. [Release details](https://github.com/Husseinabozina/fashion_e_commerce/releases/tag/nova-identity-android-v1.0.1).
+
+<details>
+<summary><strong>For developers: architecture, verification and setup</strong></summary>
+
+### Engineering
 
 ```mermaid
 flowchart LR
@@ -82,25 +97,6 @@ Feature-first Clean Architecture keeps UI state separate from networking and sto
 | Consistent launch geometry    | The same N shape drives the vector exports and Flutter rendering                | [Brand source and motion](docs/branding/README.md) · [Launch tests](test/nova_launch_test.dart) |
 
 **Quality checks:** [GitHub Actions](https://github.com/Husseinabozina/fashion_e_commerce/actions/workflows/flutter_quality.yml) runs Flutter analysis/tests, Firebase rules/auth emulator verification and notification-function tests. Provider smoke tests are opt-in so ordinary CI does not create payment invoices. See the workflow and test sources for current results rather than a frozen test-count badge.
-
-## The identity
-
-**NOVA Fold** uses three vector pieces and a diagonal seam to suggest folded fabric and forward movement. Acid lime creates a clear action color against near-black and off-white; the bundled Syne display face gives the wordmark and headlines their wide editorial character.
-
-| Ink       | Acid lime | Off-white | Motion                                               |
-| --------- | --------- | --------- | ---------------------------------------------------- |
-| `#0A0A0A` | `#C8FF1E` | `#F5F5F2` | Finite 1.6-second reveal; reduced-motion alternative |
-
-[Identity sources, design provenance and export process](docs/branding/README.md) · [Animated preview from the actual Flutter widget](site/assets/brand/launch.gif)
-
-## Demo scope, clearly stated
-
-- **Payments:** the public MyFatoorah sandbox creates a fixed **virtual 1 KWD** invoice, separate from the sample EGP bag total. No real charge. NOVA verifies invoice identity, reference, amount and status before saving a demo receipt. Confirmation requires the app to be open; there is no background payment webhook.
-- **Data:** Firebase-backed accounts and shopping state are implemented. An in-memory mode is available for UI exploration. Sample product names, images and prices are illustrative, not verified inventory or brand partnerships.
-- **Notifications:** push registration, handling and notification functions are implemented; automated delivery is **not deployed**. Device push requires additional service configuration.
-- **Operations:** real inventory, shipping, live payments and operational refunds are outside this showcase. Order receipts and delivery estimates are demo content.
-
-The [payment guide](docs/sandbox-payments.md) explains test cards, retry behavior and provider limitations. Private merchant credentials never belong in a mobile app or a public repository.
 
 ## Run locally
 
@@ -127,13 +123,9 @@ flutter test
 
 For backend/emulator setup, account behavior and maintenance commands, see [runtime and Firebase notes](docs/runtime-and-firebase.md).
 
-### Android download
+Payment configuration and prototype boundaries are documented in the [integration guide](docs/sandbox-payments.md) and [runtime notes](docs/runtime-and-firebase.md).
 
-[Android sandbox releases](https://github.com/Husseinabozina/fashion_e_commerce/releases) are available for manual exploration. The **October 3, 2026 APK is an earlier snapshot and predates the current branding shown above**. Build from current source for the latest identity:
-
-```sh
-flutter build apk --release
-```
+</details>
 
 ## Explore the project
 
